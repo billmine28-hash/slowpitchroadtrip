@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slowpitch Road Trip: senior slowpitch tournaments, bat reviews, workouts and more</title>
+<meta name="description" content="An independent hub for senior slowpitch players age 40 and up: tournaments, bat reviews, workouts, links, and photos.">
+<style>
+  :root {
+    --night: #0a1a33;
+    --night-2: #11264a;
+    --night-3: #1c3763;
+    --ball: #fbb41b;
+    --stitch: #e8312f;
+    --white: #fff;
+    --mist: #b9c6dd;
+    --display: Impact, "Haettenschweiler", "Arial Narrow Bold", "Arial Black", "Helvetica Neue", Arial, sans-serif;
+    --body: "Avenir Next", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { font-size: 18px; scroll-behavior: smooth; }
+  body { margin: 0; background: var(--night); color: var(--white); font-family: var(--body); line-height: 1.55; }
+  a { color: var(--ball); }
+  :focus-visible { outline: 3px solid var(--ball); outline-offset: 3px; }
+  .wrap { max-width: none; margin: 0; padding: 0 clamp(20px, 4vw, 72px); }
+  .display { font-family: var(--display); text-transform: uppercase; font-weight: 900; letter-spacing: -.01em; }
+
+  .sample-banner { background: var(--ball); color: var(--night); padding: 8px 16px; text-align: center; font-weight: 800; font-size: .85rem; }
+
+  .topbar { position: relative; z-index: 3; background: rgba(10,26,51,.94); border-bottom: 1px solid var(--night-3); }
+  .topbar .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 24px; padding-top: 12px; padding-bottom: 12px; }
+  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--white); }
+  .brand img { height: 62px; width: auto; display: block; }
+  .nav { display: flex; flex-wrap: wrap; gap: 2px 20px; }
+  .nav a { color: var(--white); text-decoration: none; font-weight: 700; font-size: .95rem; padding: 8px 0; border-bottom: 3px solid transparent; }
+  .nav a:hover { border-bottom-color: var(--ball); }
+
+  /* hero with real photo */
+  .hero { position: relative; min-height: 560px; display: flex; align-items: flex-end; background: var(--night) url("images/hero-field.jpg") center 35% / cover no-repeat; }
+  .hero::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10,26,51,.78) 0%, rgba(10,26,51,.3) 52%, rgba(10,26,51,0) 100%), linear-gradient(0deg, var(--night) 0%, rgba(10,26,51,0) 28%); }
+  .hero .wrap { position: relative; width: 100%; padding-top: 80px; padding-bottom: 56px; }
+  .hero h1 { margin: 0; }
+  .hero-logo img { display: block; width: min(572px, 100%); height: auto; filter: drop-shadow(0 6px 18px rgba(0,0,0,.55)); }
+  .tag { margin: 22px 0 0; font-size: clamp(1.15rem, 2.6vw, 1.6rem); font-weight: 700; max-width: 26ch; }
+  .age { display: inline-block; border: 2px solid var(--ball); color: var(--ball); font-weight: 800; padding: 4px 12px; border-radius: 4px; margin-bottom: 20px; font-size: .95rem; }
+  .cta-row { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 12px; }
+  .btn { display: inline-block; background: var(--ball); color: var(--night); font: inherit; font-weight: 900; padding: 13px 24px; min-height: 50px; border: 2px solid var(--ball); border-radius: 4px; cursor: pointer; text-decoration: none; }
+  .btn:hover { background: #fff; border-color: #fff; }
+  .btn.ghost { background: transparent; color: #fff; border-color: #fff; }
+  .btn.ghost:hover { background: #fff; color: var(--night); }
+
+  section { padding: 48px 0 20px; }
+  h2 { font-family: var(--display); font-weight: 900; text-transform: uppercase; font-size: clamp(2rem, 5.5vw, 3.2rem); line-height: 1; margin: 0 0 10px; }
+  .lede { color: var(--mist); margin: 0 0 24px; max-width: 60ch; }
+
+  /* explore tiles */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+  .tile { background: var(--night-2); border-top: 4px solid var(--ball); border-radius: 4px; padding: 22px 22px 24px; position: relative; }
+  .tile svg { width: 40px; height: 40px; margin-bottom: 12px; stroke: var(--ball); fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .tile h3 { font-family: var(--display); font-weight: 900; text-transform: uppercase; font-size: 1.7rem; margin: 0 0 6px; line-height: 1; }
+  .tile p { margin: 0 0 14px; color: var(--mist); }
+  .soon { display: inline-block; font-size: .8rem; font-weight: 800; background: var(--night-3); color: #fff; border-radius: 3px; padding: 2px 10px; }
+
+  /* tournaments */
+  .t-head { position: relative; min-height: 220px; display: flex; align-items: flex-end; border-radius: 4px; overflow: hidden; background: var(--night-2) url("images/tournaments-aerial.jpg") center 55% / cover no-repeat; margin-bottom: 22px; }
+  .t-head::before { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(10,26,51,.95) 0%, rgba(10,26,51,.25) 70%); }
+  .t-head > div { position: relative; padding: 24px; }
+  .t-head h2 { margin: 0 0 4px; }
+  .t-head p { margin: 0; color: var(--mist); max-width: 60ch; }
+
+  .filters { background: var(--night-2); border: 2px solid var(--night-3); border-radius: 4px; padding: 18px; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px 16px; align-items: end; }
+  .field label { display: block; font-weight: 800; font-size: .88rem; margin-bottom: 4px; color: var(--ball); }
+  .field select, .field input { width: 100%; min-height: 48px; font: inherit; color: var(--night); background: #fff; border: 3px solid transparent; border-radius: 4px; padding: 8px 12px; }
+  .field select:focus, .field input:focus { border-color: var(--ball); outline: none; }
+  .field.search { grid-column: 1 / -1; }
+  .btn-reset { min-height: 48px; font: inherit; font-weight: 800; background: transparent; color: #fff; border: 2px solid #fff; border-radius: 4px; padding: 8px 18px; cursor: pointer; }
+  .btn-reset:hover { background: #fff; color: var(--night); }
+  .sort-mobile { display: none; }
+
+  .resultbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 20px; margin: 20px 0 10px; align-items: center; }
+  .count { font-family: var(--display); font-weight: 900; text-transform: uppercase; font-size: 1.5rem; }
+  .copy-link { font: inherit; font-weight: 700; background: none; border: 0; color: var(--ball); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; padding: 8px 0; }
+
+  .board { background: var(--night-2); border-radius: 4px; overflow: hidden; border: 2px solid var(--night-3); }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { background: #061226; padding: 0; text-align: left; border-bottom: 3px solid var(--ball); }
+  thead th button { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 8px; width: 100%; padding: 14px; cursor: pointer; font-weight: 800; font-size: .9rem; color: var(--ball); }
+  thead th button:hover { background: var(--night-3); }
+  thead th button:focus-visible { outline: 3px solid var(--ball); outline-offset: -3px; }
+  thead th .plain { display: block; padding: 14px; font-weight: 800; font-size: .9rem; color: var(--ball); }
+  .arrow { font-size: .75rem; opacity: .4; }
+  th[aria-sort="ascending"] .arrow, th[aria-sort="descending"] .arrow { opacity: 1; }
+  tbody td { padding: 12px 14px; border-top: 1px solid var(--night-3); vertical-align: middle; font-size: .95rem; }
+  tbody tr:hover { background: var(--night-3); }
+  td.event { font-weight: 800; font-size: 1.02rem; }
+  .date-cell { display: flex; align-items: center; gap: 12px; white-space: nowrap; }
+  .cal { flex: none; width: 54px; text-align: center; background: #fff; color: var(--night); border-radius: 4px; overflow: hidden; line-height: 1; }
+  .cal .m { display: block; background: var(--stitch); color: #fff; font-weight: 900; font-size: .7rem; padding: 3px 0; text-transform: uppercase; }
+  .cal .d { display: block; font-family: var(--display); font-weight: 900; font-size: 1.6rem; padding: 5px 0 4px; }
+  .range { color: var(--mist); font-size: .85rem; }
+  .chip { display: inline-block; background: var(--ball); color: var(--night); border-radius: 3px; padding: 0 9px; margin: 0 4px 4px 0; font-weight: 900; font-size: .85rem; }
+  .linkbtn { display: inline-block; border: 2px solid var(--ball); border-radius: 4px; padding: 3px 12px; font-weight: 800; text-decoration: none; white-space: nowrap; }
+  .linkbtn:hover { background: var(--ball); color: var(--night); }
+  .empty { padding: 40px 20px; text-align: center; }
+  .empty strong { display: block; font-family: var(--display); font-weight: 900; text-transform: uppercase; font-size: 1.7rem; margin-bottom: 6px; }
+  .more-row { text-align: center; margin-top: 16px; }
+  .updated { color: var(--mist); font-size: .9rem; margin-top: 12px; }
+
+  /* about */
+  .about { margin-top: 36px; background: var(--night-2); border-top: 4px solid var(--ball); }
+  .about .wrap { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px 56px; padding-top: 12px; padding-bottom: 28px; }
+  .about section { padding: 28px 0 0; }
+  .about h2 { font-size: 2.2rem; }
+  .about p { max-width: 56ch; color: var(--mist); }
+  .signup { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+  .signup input { flex: 1 1 220px; min-height: 50px; font: inherit; padding: 8px 14px; border: 3px solid transparent; border-radius: 4px; color: var(--night); }
+  .signup .btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+  footer { padding: 28px 0 48px; color: var(--mist); font-size: .9rem; background: #061226; }
+  footer p { margin: 0 0 8px; max-width: 80ch; }
+
+  @media (max-width: 760px) {
+    .hero { min-height: 520px; }
+    .hero::before { background: linear-gradient(0deg, var(--night) 0%, rgba(10,26,51,.7) 55%, rgba(10,26,51,.45) 100%); }
+    thead { position: absolute; left: -9999px; }
+    table, tbody, tr, td { display: block; width: 100%; }
+    tbody tr { padding: 14px; border-top: 3px solid var(--night-3); }
+    tbody tr:first-child { border-top: 0; }
+    tbody td { border: 0; padding: 4px 0; }
+    tbody td[data-label]::before { content: attr(data-label) ": "; font-weight: 800; color: var(--mist); }
+    .date-cell { white-space: normal; }
+    .sort-mobile { display: block; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .btn, .linkbtn, .nav a { transition: background-color .15s, border-color .15s; }
+  }
+</style>
+</head>
+<body>
+
+<div class="sample-banner" role="note">SAMPLE DATA: every tournament listed is fake. Replace with real listings before launch.</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="logo" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="46" fill="#fbb41b" stroke="#0a1a33" stroke-width="4"/>
+      <path d="M22 17 C40 34 40 66 22 83" fill="none" stroke="#e8312f" stroke-width="4" stroke-linecap="round"/>
+      <path d="M78 17 C60 34 60 66 78 83" fill="none" stroke="#e8312f" stroke-width="4" stroke-linecap="round"/>
+      <g stroke="#e8312f" stroke-width="3" stroke-linecap="round">
+        <path d="M27 28l7-2M31 39l8-1M33 50h8M31 61l8 1M27 72l7 2"/>
+        <path d="M73 28l-7-2M69 39l-8-1M67 50h-8M69 61l-8 1M73 72l-7 2"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Slowpitch Road Trip home"><img src="images/logo-small.png" alt="Slowpitch Road Trip logo" width="120" height="80"></a>
+    <nav class="nav" aria-label="Main">
+      <a href="#tournaments">Tournaments</a>
+      <a href="#explore">Bat reviews</a>
+      <a href="#explore">Workouts</a>
+      <a href="#explore">Links</a>
+      <a href="#explore">Photos</a>
+      <a href="#explore">Shop</a>
+      <a href="#about">About</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="hero">
+    <div class="wrap">
+      <div class="age">Built for players age 40 and up</div>
+      <h1 class="hero-logo"><img src="images/logo.png" alt="Slowpitch Road Trip"></h1>
+      <p class="tag">Find your next tournament. Keep your game going.</p>
+      <div class="cta-row">
+        <a class="btn" href="#tournaments">Find a tournament</a>
+        <a class="btn ghost" href="#explore">See what's here</a>
+      </div>
+    </div>
+  </div>
+
+  <section id="explore" aria-labelledby="x-h">
+    <div class="wrap">
+      <h2 id="x-h">Everything senior slowpitch</h2>
+      <p class="lede">One place for the things players actually look for. Tournaments are live in sample form now, and the rest is being built.</p>
+      <div class="tiles">
+        <div class="tile">
+          <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M6 42L30 18"/><path d="M30 18l6-10a4 4 0 0 1 4 4l-10 6z"/><circle cx="12" cy="36" r="2"/></svg>
+          <h3>Bat reviews</h3><p>Honest swing reports from players who use the bats every week.</p><span class="soon">Coming soon</span>
+        </div>
+        <div class="tile">
+          <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M6 24h36M12 16v16M36 16v16M8 20v8M40 20v8"/></svg>
+          <h3>Workouts</h3><p>Strength and mobility plans built to keep you swinging past 40.</p><span class="soon">Coming soon</span>
+        </div>
+        <div class="tile">
+          <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M20 28a8 8 0 0 0 11 0l7-7a8 8 0 0 0-11-11l-3 3"/><path d="M28 20a8 8 0 0 0-11 0l-7 7a8 8 0 0 0 11 11l3-3"/></svg>
+          <h3>Links</h3><p>The best slowpitch associations, leagues, and sites in one list.</p><span class="soon">Coming soon</span>
+        </div>
+        <div class="tile">
+          <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="12" width="36" height="26" rx="3"/><circle cx="24" cy="25" r="7"/><path d="M17 12l3-5h8l3 5"/></svg>
+          <h3>Photos</h3><p>Send in your best action shot and see it on the wall.</p><span class="soon">Coming soon</span>
+        </div>
+        <div class="tile">
+          <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 16h32l-3 26H11z"/><path d="M17 20v-6a7 7 0 0 1 14 0v6"/></svg>
+          <h3>Shop</h3><p>Lineup cards and team tools, sold through Etsy.</p><span class="soon">Coming soon</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tournaments" aria-labelledby="t-h">
+    <div class="wrap">
+      <div class="t-head">
+        <div>
+          <h2 id="t-h">Tournament finder</h2>
+          <p>Senior divisions only. Search by state, month, organization, or division, and click a heading to sort.</p>
+        </div>
+      </div>
+
+      <form class="filters" id="filters" onsubmit="return false" aria-label="Filter tournaments">
+        <div class="field"><label for="f-state">State</label><select id="f-state"><option value="">All states</option></select></div>
+        <div class="field"><label for="f-month">Month</label><select id="f-month"><option value="">Any month</option></select></div>
+        <div class="field"><label for="f-org">Organization</label><select id="f-org"><option value="">All organizations</option></select></div>
+        <div class="field"><label for="f-div">Division</label><select id="f-div"><option value="">All divisions</option></select></div>
+        <div class="field search"><label for="f-q">Search by name or city</label><input id="f-q" type="search" placeholder="Try a city or tournament name" autocomplete="off"></div>
+        <div class="field sort-mobile">
+          <label for="f-sort">Sort by</label>
+          <select id="f-sort">
+            <option value="start:asc">Date, soonest first</option>
+            <option value="name:asc">Name, A to Z</option>
+            <option value="state:asc">State, A to Z</option>
+          </select>
+        </div>
+        <div class="field"><button type="button" class="btn-reset" id="reset">Clear filters</button></div>
+      </form>
+
+      <p class="updated">Always confirm dates, fees, and divisions with the organizer before you book.</p>
+    </div>
+  </section>
+
+  <div class="about" id="about">
+    <div class="wrap">
+      <section aria-labelledby="a-h">
+        <h2 id="a-h">About this site</h2>
+        <p>Slowpitch Road Trip is an independent project by a senior slowpitch player who runs the All Things Slowpitch Facebook group. It is not run by, or affiliated with, any association or bat company.</p>
+      </section>
+      <section aria-labelledby="e-h">
+        <h2 id="e-h">New listings by email</h2>
+        <p>One email a month with new tournaments and site updates. Nothing else.</p>
+        <form class="signup" onsubmit="return false">
+          <label for="email" style="position:absolute;left:-9999px">Email address</label>
+          <input id="email" type="email" placeholder="you@example.com" autocomplete="email">
+          <button class="btn" type="submit" disabled title="Sign-up is not connected yet">Join the list</button>
+        </form>
+      </section>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Independent directory of listed events. Not an official association schedule. Confirm details with the organizer before booking.</p>
+    <p>Slowpitch Road Trip is not affiliated with any tournament organization named on this site. Names are used only to identify the organizer.</p>
+    <p>Contact: <a href="mailto:hello@example.com">hello@example.com</a> (placeholder address)</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // SAMPLE DATA ONLY. Every row is fake. Replace this array with real listings.
+  var DATA = [
+    { name: "Sample Tournament A", org: "Sample Org 1", start: "2027-01-16", end: "2027-01-17", city: "Sampleville", state: "FL", divs: ["50+", "60+"], url: "#", checked: "2026-11-01" },
+    { name: "Sample Tournament B", org: "Sample Org 2", start: "2027-02-06", end: "2027-02-07", city: "Exampleton", state: "GA", divs: ["40+", "55+"], url: "#", checked: "2026-11-01" },
+    { name: "Sample Tournament C", org: "Sample Org 1", start: "2027-03-13", end: "2027-03-14", city: "Testburg", state: "TX", divs: ["50+", "60+", "65+"], url: "#", checked: "2026-11-02" },
+    { name: "Sample Tournament D", org: "Sample Org 3", start: "2027-03-27", end: "2027-03-28", city: "Placeholder Falls", state: "AZ", divs: ["40+", "50+"], url: "#", checked: "2026-11-02" },
+    { name: "Sample Tournament E", org: "Sample Org 2", start: "2027-04-17", end: "2027-04-18", city: "Mockford", state: "TN", divs: ["55+", "60+", "70+"], url: "#", checked: "2026-11-03" },
+    { name: "Sample Tournament F", org: "Sample Org 3", start: "2027-05-08", end: "2027-05-09", city: "Dummy Springs", state: "NC", divs: ["40+", "50+", "60+"], url: "#", checked: "2026-11-03" },
+    { name: "Sample Tournament G", org: "Sample Org 1", start: "2027-06-12", end: "2027-06-13", city: "Sampleville", state: "OH", divs: ["50+", "65+"], url: "#", checked: "2026-11-04" },
+    { name: "Sample Tournament H", org: "Sample Org 2", start: "2027-06-26", end: "2027-06-27", city: "Testburg", state: "PA", divs: ["40+", "55+"], url: "#", checked: "2026-11-04" },
+    { name: "Sample Tournament I", org: "Sample Org 3", start: "2027-07-17", end: "2027-07-18", city: "Exampleton", state: "MD", divs: ["50+", "60+"], url: "#", checked: "2026-11-05" },
+    { name: "Sample Tournament J", org: "Sample Org 1", start: "2027-09-11", end: "2027-09-12", city: "Placeholder Falls", state: "IN", divs: ["60+", "70+"], url: "#", checked: "2026-11-05" },
+    { name: "Sample Tournament K", org: "Sample Org 2", start: "2027-10-02", end: "2027-10-03", city: "Mockford", state: "FL", divs: ["40+", "50+", "55+"], url: "#", checked: "2026-11-06" },
+    { name: "Sample Tournament L", org: "Sample Org 3", start: "2027-11-13", end: "2027-11-14", city: "Dummy Springs", state: "NV", divs: ["50+", "60+", "65+"], url: "#", checked: "2026-11-06" }
+  ];
+  var PREVIEW = 6;
+  var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var MON_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var els = { state: $("f-state"), month: $("f-month"), org: $("f-org"), div: $("f-div"), q: $("f-q"), sort: $("f-sort") };
+  var sortKey = "start", sortDir = "asc", showAll = false;
+
+  function parse(iso) { var p = iso.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function fmtRange(a, b) {
+    var d1 = parse(a), d2 = parse(b), y = d1.getFullYear();
+    if (a === b) return MON_SHORT[d1.getMonth()] + " " + d1.getDate() + ", " + y;
+    if (d1.getMonth() === d2.getMonth()) return MON_SHORT[d1.getMonth()] + " " + d1.getDate() + "–" + d2.getDate() + ", " + y;
+    return MON_SHORT[d1.getMonth()] + " " + d1.getDate() + " – " + MON_SHORT[d2.getMonth()] + " " + d2.getDate() + ", " + y;
+  }
+  function fmtDay(iso) { var d = parse(iso); return MON_SHORT[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear(); }
+  function uniq(arr) { return arr.filter(function (v, i) { return arr.indexOf(v) === i; }); }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+
+  function fillOptions() {
+    uniq(DATA.map(function (r) { return r.state; })).sort().forEach(function (s) { els.state.add(new Option(s, s)); });
+    uniq(DATA.map(function (r) { return parse(r.start).getMonth(); })).sort(function (a, b) { return a - b; })
+      .forEach(function (m) { els.month.add(new Option(MONTHS[m], String(m))); });
+    uniq(DATA.map(function (r) { return r.org; })).sort().forEach(function (o) { els.org.add(new Option(o, o)); });
+    uniq([].concat.apply([], DATA.map(function (r) { return r.divs; }))).sort().forEach(function (d) { els.div.add(new Option(d, d)); });
+  }
+  function anyFilter() { return !!(els.state.value || els.month.value !== "" || els.org.value || els.div.value || els.q.value.trim()); }
+
+  function filtered() {
+    var q = els.q.value.trim().toLowerCase();
+    return DATA.filter(function (r) {
+      if (els.state.value && r.state !== els.state.value) return false;
+      if (els.month.value !== "" && String(parse(r.start).getMonth()) !== els.month.value) return false;
+      if (els.org.value && r.org !== els.org.value) return false;
+      if (els.div.value && r.divs.indexOf(els.div.value) < 0) return false;
+      if (q && (r.name + " " + r.city + " " + r.state).toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    });
+  }
+  function sorted(list) {
+    var k = sortKey, dir = sortDir === "asc" ? 1 : -1;
+    return list.slice().sort(function (a, b) {
+      var x = a[k], y = b[k];
+      if (k === "state") { x = a.state + a.city; y = b.state + b.city; }
+      if (x < y) return -1 * dir;
+      if (x > y) return 1 * dir;
+      return a.start < b.start ? -1 : a.start > b.start ? 1 : 0;
+    });
+  }
+
+  function render() {
+    if (!$("rows")) { writeUrl(); return; }
+    var all = sorted(filtered());
+    var limited = !showAll && !anyFilter() && all.length > PREVIEW;
+    var list = limited ? all.slice(0, PREVIEW) : all;
+    $("rows").innerHTML = list.map(function (r) {
+      var d = parse(r.start);
+      return "<tr>" +
+        '<td data-label="Dates"><div class="date-cell"><span class="cal"><span class="m">' + MON_SHORT[d.getMonth()] + '</span><span class="d">' + d.getDate() + '</span></span><span class="range">' + fmtRange(r.start, r.end) + "</span></div></td>" +
+        '<td class="event">' + esc(r.name) + "</td>" +
+        '<td data-label="Organization">' + esc(r.org) + "</td>" +
+        '<td data-label="Location">' + esc(r.city) + ", " + esc(r.state) + "</td>" +
+        '<td data-label="Divisions">' + r.divs.map(function (x) { return '<span class="chip">' + esc(x) + "</span>"; }).join("") + "</td>" +
+        '<td data-label="Official page"><a class="linkbtn" href="' + esc(r.url) + '">Sample link</a></td>' +
+        '<td data-label="Last checked">' + fmtDay(r.checked) + "</td>" +
+        "</tr>";
+    }).join("");
+    $("empty").hidden = all.length > 0;
+    $("tbl").hidden = all.length === 0;
+    $("more").hidden = !limited;
+    $("more").textContent = "Show all " + all.length + " tournaments";
+    $("count").textContent = all.length === 1 ? "1 tournament found" : all.length + " tournaments found";
+
+    document.querySelectorAll("thead th[data-key]").forEach(function (th) {
+      var on = th.getAttribute("data-key") === sortKey;
+      th.setAttribute("aria-sort", on ? (sortDir === "asc" ? "ascending" : "descending") : "none");
+      th.querySelector(".arrow").innerHTML = on && sortDir === "desc" ? "&#9660;" : "&#9650;";
+    });
+    var sv = sortKey + ":" + sortDir;
+    if (els.sort.querySelector('option[value="' + sv + '"]')) els.sort.value = sv;
+    writeUrl();
+  }
+
+  function writeUrl() {
+    var p = new URLSearchParams();
+    if (els.state.value) p.set("state", els.state.value);
+    if (els.month.value !== "") p.set("month", els.month.value);
+    if (els.org.value) p.set("org", els.org.value);
+    if (els.div.value) p.set("div", els.div.value);
+    if (els.q.value.trim()) p.set("q", els.q.value.trim());
+    var s = p.toString();
+    try { history.replaceState(null, "", location.pathname + (s ? "?" + s : "") + location.hash); } catch (e) {}
+  }
+  function readUrl() {
+    var p = new URLSearchParams(location.search);
+    function setIf(el, v) { if (v !== null && el.querySelector('option[value="' + v.replace(/"/g, "") + '"]')) el.value = v; }
+    setIf(els.state, p.get("state")); setIf(els.month, p.get("month")); setIf(els.org, p.get("org")); setIf(els.div, p.get("div"));
+    if (p.get("q")) els.q.value = p.get("q");
+  }
+
+  ["state", "month", "org", "div"].forEach(function (k) { els[k].addEventListener("change", render); });
+  els.q.addEventListener("input", render);
+  els.sort.addEventListener("change", function () { var p = els.sort.value.split(":"); sortKey = p[0]; sortDir = p[1]; render(); });
+  if ($("rows")) document.querySelectorAll("thead th[data-key] button").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var key = btn.parentNode.getAttribute("data-key");
+      if (sortKey === key) sortDir = sortDir === "asc" ? "desc" : "asc"; else { sortKey = key; sortDir = "asc"; }
+      render();
+    });
+  });
+  if ($("more")) $("more").addEventListener("click", function () { showAll = true; render(); });
+  $("reset").addEventListener("click", function () {
+    els.state.value = ""; els.month.value = ""; els.org.value = ""; els.div.value = ""; els.q.value = "";
+    sortKey = "start"; sortDir = "asc"; showAll = false; render();
+  });
+  if ($("copy")) $("copy").addEventListener("click", function () {
+    var btn = $("copy");
+    function done(msg) { btn.textContent = msg; setTimeout(function () { btn.textContent = "Copy a link to this search"; }, 2000); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(location.href).then(function () { done("Link copied"); }, function () { done("Copy the address bar link"); });
+    } else { done("Copy the address bar link"); }
+  });
+
+  fillOptions();
+  readUrl();
+  render();
+})();
+</script>
+</body>
+</html>
