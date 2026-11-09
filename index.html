@@ -238,6 +238,27 @@
         <div class="field"><button type="button" class="btn-reset" id="reset">Clear filters</button></div>
       </form>
 
+      <p class="updated" id="count" aria-live="polite"></p>
+
+      <div class="board">
+        <table id="tbl">
+          <thead>
+            <tr>
+              <th scope="col" data-key="start" aria-sort="ascending"><button type="button">Dates <span class="arrow">&#9650;</span></button></th>
+              <th scope="col" data-key="name" aria-sort="none"><button type="button">Tournament <span class="arrow">&#9650;</span></button></th>
+              <th scope="col" data-key="org" aria-sort="none"><button type="button">Organization <span class="arrow">&#9650;</span></button></th>
+              <th scope="col" data-key="state" aria-sort="none"><button type="button">Location <span class="arrow">&#9650;</span></button></th>
+              <th scope="col"><span class="plain">Divisions</span></th>
+              <th scope="col"><span class="plain">Official page</span></th>
+              <th scope="col"><span class="plain">Last checked</span></th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+        <div class="empty" id="empty" hidden><strong>No tournaments match</strong>Try a different state or month, or clear the filters.</div>
+      </div>
+      <div class="more-row"><button type="button" class="btn" id="more" hidden>Show all tournaments</button></div>
+
       <p class="updated">Always confirm dates, fees, and divisions with the organizer before you book.</p>
     </div>
   </section>
@@ -265,7 +286,7 @@
   <div class="wrap">
     <p>Independent directory of listed events. Not an official association schedule. Confirm details with the organizer before booking.</p>
     <p>Slowpitch Road Trip is not affiliated with any tournament organization named on this site. Names are used only to identify the organizer.</p>
-    <p>Contact: <a href="mailto:hello@example.com">hello@example.com</a> (placeholder address)</p>
+    <p>Contact: <a href="mailto:slowpitchroadtrip@yahoo.com">slowpitchroadtrip@yahoo.com</a></p>
   </div>
 </footer>
 
