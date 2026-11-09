@@ -115,7 +115,10 @@
   .about p { max-width: 56ch; color: var(--mist); }
   .signup { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
   .signup input { flex: 1 1 220px; min-height: 50px; font: inherit; padding: 8px 14px; border: 3px solid transparent; border-radius: 4px; color: var(--night); }
-  .signup .btn[disabled] { opacity: .5; cursor: not-allowed; }
+  .signup .btn[disabled] { opacity: .5; cursor: wait; }
+  .signup-msg { margin: 12px 0 0; font-weight: 700; min-height: 1.5em; }
+  .signup-msg.ok { color: var(--ball); }
+  .signup-msg.err { color: #ff8a80; }
 
   footer { padding: 28px 0 48px; color: var(--mist); font-size: .9rem; background: #061226; }
   footer p { margin: 0 0 8px; max-width: 80ch; }
@@ -272,11 +275,12 @@
       <section aria-labelledby="e-h">
         <h2 id="e-h">New listings by email</h2>
         <p>One email a month with new tournaments and site updates. Nothing else.</p>
-        <form class="signup" onsubmit="return false">
+        <form class="signup" id="signup" action="https://app.kit.com/forms/10168040/subscriptions" method="post">
           <label for="email" style="position:absolute;left:-9999px">Email address</label>
-          <input id="email" type="email" placeholder="you@example.com" autocomplete="email">
-          <button class="btn" type="submit" disabled title="Sign-up is not connected yet">Join the list</button>
+          <input id="email" name="email_address" type="email" placeholder="you@example.com" autocomplete="email" required>
+          <button class="btn" type="submit">Join the list</button>
         </form>
+        <p class="signup-msg" id="signup-msg" role="status" aria-live="polite"></p>
       </section>
     </div>
   </div>
@@ -433,6 +437,33 @@
   fillOptions();
   readUrl();
   render();
+})();
+
+/* Email sign-up: sends the address to Kit without leaving the page.
+   If JavaScript is off, the form still posts straight to Kit. */
+(function () {
+  var form = document.getElementById("signup");
+  if (!form || !window.fetch) return;
+  var msg = document.getElementById("signup-msg");
+  var btn = form.querySelector("button");
+  function say(text, cls) { msg.textContent = text; msg.className = "signup-msg " + cls; }
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    btn.disabled = true; btn.textContent = "Joining...";
+    say("", "");
+    fetch(form.action, { method: "POST", body: new FormData(form), headers: { Accept: "application/json" } })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (res) {
+        if (res.ok && (!res.d.status || res.d.status === "success")) {
+          form.reset();
+          say("Thanks, you're on the list! Check your inbox for a confirmation email.", "ok");
+        } else {
+          say("That didn't go through. Please check your email address and try again.", "err");
+        }
+      })
+      .catch(function () { say("Something went wrong. Please try again, or email slowpitchroadtrip@yahoo.com.", "err"); })
+      .then(function () { btn.disabled = false; btn.textContent = "Join the list"; });
+  });
 })();
 </script>
 </body>
