@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Senior slowpitch tournaments | Slowpitch Road Trip</title>
+<meta name="description" content="Find senior slowpitch tournaments by state, month, organization, or division.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="sample-banner" role="note">SAMPLE DATA: every tournament listed is fake. Replace with real listings before launch.</div>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Slowpitch Road Trip home"><img src="images/logo-small.png" alt="Slowpitch Road Trip logo" width="120" height="80"></a>
+    <nav class="nav" aria-label="Main">
+      <a href="tournaments.html" aria-current="page">Tournaments</a>
+      <a href="reviews.html">Bat reviews</a>
+      <a href="index.html#explore">Workouts</a>
+      <a href="links.html">Links</a>
+      <a href="index.html#explore">Photos</a>
+      <a href="index.html#explore">Shop</a>
+      <a href="index.html#about">About</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top" class="subpage">
+  <section id="tournaments" aria-labelledby="t-h">
+    <div class="wrap">
+      <div class="t-head">
+        <div>
+          <h2 id="t-h">Tournament finder</h2>
+          <p>Senior divisions only. Search by state, month, organization, or division, and click a heading to sort.</p>
+        </div>
+      </div>
+
+      <form class="filters" id="filters" onsubmit="return false" aria-label="Filter tournaments">
+        <div class="field"><label for="f-state">State</label><select id="f-state"><option value="">All states</option></select></div>
+        <div class="field"><label for="f-month">Month</label><select id="f-month"><option value="">Any month</option></select></div>
+        <div class="field"><label for="f-org">Organization</label><select id="f-org"><option value="">All organizations</option></select></div>
+        <div class="field"><label for="f-div">Division</label><select id="f-div"><option value="">All divisions</option></select></div>
+        <div class="field search"><label for="f-q">Search by name or city</label><input id="f-q" type="search" placeholder="Try a city or tournament name" autocomplete="off"></div>
+        <div class="field sort-mobile">
+          <label for="f-sort">Sort by</label>
+          <select id="f-sort">
+            <option value="start:asc">Date, soonest first</option>
+            <option value="name:asc">Name, A to Z</option>
+            <option value="state:asc">State, A to Z</option>
+          </select>
+        </div>
+        <div class="field"><button type="button" class="btn-reset" id="reset">Clear filters</button></div>
+      </form>
+
+      <p class="updated" id="count" aria-live="polite"></p>
+
+      <div class="board">
+        <table id="tbl">
+          <thead>
+            <tr>
+              <th scope="col" data-key="start" aria-sort="ascending"><button type="button">Dates <span class="arrow">&#9650;</span></button></th>
+              <th scope="col" data-key="name" aria-sort="none"><button type="button">Tournament <span class="arrow">&#9650;</span></button></th>
+              <th scope="col" data-key="org" aria-sort="none"><button type="button">Organization <span class="arrow">&#9650;</span></button></th>
+              <th scope="col" data-key="state" aria-sort="none"><button type="button">Location <span class="arrow">&#9650;</span></button></th>
+              <th scope="col"><span class="plain">Divisions</span></th>
+              <th scope="col"><span class="plain">Official page</span></th>
+              <th scope="col"><span class="plain">Last checked</span></th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+        <div class="empty" id="empty" hidden><strong>No tournaments match</strong>Try a different state or month, or clear the filters.</div>
+      </div>
+      <div class="more-row"><button type="button" class="btn" id="more" hidden>Show all tournaments</button></div>
+
+      <p class="updated">Always confirm dates, fees, and divisions with the organizer before you book.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Independent directory of listed events. Not an official association schedule. Confirm details with the organizer before booking.</p>
+    <p>Slowpitch Road Trip is not affiliated with any tournament organization named on this site. Names are used only to identify the organizer.</p>
+    <p>Contact: <a href="mailto:slowpitchroadtrip@yahoo.com">slowpitchroadtrip@yahoo.com</a></p>
+  </div>
+</footer>
+<script>
+(function () {
+  // SAMPLE DATA ONLY. Every row is fake. Replace this array with real listings.
+  var DATA = [
+    { name: "Sample Tournament A", org: "Sample Org 1", start: "2027-01-16", end: "2027-01-17", city: "Sampleville", state: "FL", divs: ["50+", "60+"], url: "#", checked: "2026-11-01" },
+    { name: "Sample Tournament B", org: "Sample Org 2", start: "2027-02-06", end: "2027-02-07", city: "Exampleton", state: "GA", divs: ["40+", "55+"], url: "#", checked: "2026-11-01" },
+    { name: "Sample Tournament C", org: "Sample Org 1", start: "2027-03-13", end: "2027-03-14", city: "Testburg", state: "TX", divs: ["50+", "60+", "65+"], url: "#", checked: "2026-11-02" },
+    { name: "Sample Tournament D", org: "Sample Org 3", start: "2027-03-27", end: "2027-03-28", city: "Placeholder Falls", state: "AZ", divs: ["40+", "50+"], url: "#", checked: "2026-11-02" },
+    { name: "Sample Tournament E", org: "Sample Org 2", start: "2027-04-17", end: "2027-04-18", city: "Mockford", state: "TN", divs: ["55+", "60+", "70+"], url: "#", checked: "2026-11-03" },
+    { name: "Sample Tournament F", org: "Sample Org 3", start: "2027-05-08", end: "2027-05-09", city: "Dummy Springs", state: "NC", divs: ["40+", "50+", "60+"], url: "#", checked: "2026-11-03" },
+    { name: "Sample Tournament G", org: "Sample Org 1", start: "2027-06-12", end: "2027-06-13", city: "Sampleville", state: "OH", divs: ["50+", "65+"], url: "#", checked: "2026-11-04" },
+    { name: "Sample Tournament H", org: "Sample Org 2", start: "2027-06-26", end: "2027-06-27", city: "Testburg", state: "PA", divs: ["40+", "55+"], url: "#", checked: "2026-11-04" },
+    { name: "Sample Tournament I", org: "Sample Org 3", start: "2027-07-17", end: "2027-07-18", city: "Exampleton", state: "MD", divs: ["50+", "60+"], url: "#", checked: "2026-11-05" },
+    { name: "Sample Tournament J", org: "Sample Org 1", start: "2027-09-11", end: "2027-09-12", city: "Placeholder Falls", state: "IN", divs: ["60+", "70+"], url: "#", checked: "2026-11-05" },
+    { name: "Sample Tournament K", org: "Sample Org 2", start: "2027-10-02", end: "2027-10-03", city: "Mockford", state: "FL", divs: ["40+", "50+", "55+"], url: "#", checked: "2026-11-06" },
+    { name: "Sample Tournament L", org: "Sample Org 3", start: "2027-11-13", end: "2027-11-14", city: "Dummy Springs", state: "NV", divs: ["50+", "60+", "65+"], url: "#", checked: "2026-11-06" }
+  ];
+  var PREVIEW = 6;
+  var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var MON_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var els = { state: $("f-state"), month: $("f-month"), org: $("f-org"), div: $("f-div"), q: $("f-q"), sort: $("f-sort") };
+  var sortKey = "start", sortDir = "asc", showAll = false;
+
+  function parse(iso) { var p = iso.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function fmtRange(a, b) {
+    var d1 = parse(a), d2 = parse(b), y = d1.getFullYear();
+    if (a === b) return MON_SHORT[d1.getMonth()] + " " + d1.getDate() + ", " + y;
+    if (d1.getMonth() === d2.getMonth()) return MON_SHORT[d1.getMonth()] + " " + d1.getDate() + "–" + d2.getDate() + ", " + y;
+    return MON_SHORT[d1.getMonth()] + " " + d1.getDate() + " – " + MON_SHORT[d2.getMonth()] + " " + d2.getDate() + ", " + y;
+  }
+  function fmtDay(iso) { var d = parse(iso); return MON_SHORT[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear(); }
+  function uniq(arr) { return arr.filter(function (v, i) { return arr.indexOf(v) === i; }); }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+
+  function fillOptions() {
+    uniq(DATA.map(function (r) { return r.state; })).sort().forEach(function (s) { els.state.add(new Option(s, s)); });
+    uniq(DATA.map(function (r) { return parse(r.start).getMonth(); })).sort(function (a, b) { return a - b; })
+      .forEach(function (m) { els.month.add(new Option(MONTHS[m], String(m))); });
+    uniq(DATA.map(function (r) { return r.org; })).sort().forEach(function (o) { els.org.add(new Option(o, o)); });
+    uniq([].concat.apply([], DATA.map(function (r) { return r.divs; }))).sort().forEach(function (d) { els.div.add(new Option(d, d)); });
+  }
+  function anyFilter() { return !!(els.state.value || els.month.value !== "" || els.org.value || els.div.value || els.q.value.trim()); }
+
+  function filtered() {
+    var q = els.q.value.trim().toLowerCase();
+    return DATA.filter(function (r) {
+      if (els.state.value && r.state !== els.state.value) return false;
+      if (els.month.value !== "" && String(parse(r.start).getMonth()) !== els.month.value) return false;
+      if (els.org.value && r.org !== els.org.value) return false;
+      if (els.div.value && r.divs.indexOf(els.div.value) < 0) return false;
+      if (q && (r.name + " " + r.city + " " + r.state).toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    });
+  }
+  function sorted(list) {
+    var k = sortKey, dir = sortDir === "asc" ? 1 : -1;
+    return list.slice().sort(function (a, b) {
+      var x = a[k], y = b[k];
+      if (k === "state") { x = a.state + a.city; y = b.state + b.city; }
+      if (x < y) return -1 * dir;
+      if (x > y) return 1 * dir;
+      return a.start < b.start ? -1 : a.start > b.start ? 1 : 0;
+    });
+  }
+
+  function render() {
+    if (!$("rows")) { writeUrl(); return; }
+    var all = sorted(filtered());
+    var limited = !showAll && !anyFilter() && all.length > PREVIEW;
+    var list = limited ? all.slice(0, PREVIEW) : all;
+    $("rows").innerHTML = list.map(function (r) {
+      var d = parse(r.start);
+      return "<tr>" +
+        '<td data-label="Dates"><div class="date-cell"><span class="cal"><span class="m">' + MON_SHORT[d.getMonth()] + '</span><span class="d">' + d.getDate() + '</span></span><span class="range">' + fmtRange(r.start, r.end) + "</span></div></td>" +
+        '<td class="event">' + esc(r.name) + "</td>" +
+        '<td data-label="Organization">' + esc(r.org) + "</td>" +
+        '<td data-label="Location">' + esc(r.city) + ", " + esc(r.state) + "</td>" +
+        '<td data-label="Divisions">' + r.divs.map(function (x) { return '<span class="chip">' + esc(x) + "</span>"; }).join("") + "</td>" +
+        '<td data-label="Official page"><a class="linkbtn" href="' + esc(r.url) + '">Sample link</a></td>' +
+        '<td data-label="Last checked">' + fmtDay(r.checked) + "</td>" +
+        "</tr>";
+    }).join("");
+    $("empty").hidden = all.length > 0;
+    $("tbl").hidden = all.length === 0;
+    $("more").hidden = !limited;
+    $("more").textContent = "Show all " + all.length + " tournaments";
+    $("count").textContent = all.length === 1 ? "1 tournament found" : all.length + " tournaments found";
+
+    document.querySelectorAll("thead th[data-key]").forEach(function (th) {
+      var on = th.getAttribute("data-key") === sortKey;
+      th.setAttribute("aria-sort", on ? (sortDir === "asc" ? "ascending" : "descending") : "none");
+      th.querySelector(".arrow").innerHTML = on && sortDir === "desc" ? "&#9660;" : "&#9650;";
+    });
+    var sv = sortKey + ":" + sortDir;
+    if (els.sort.querySelector('option[value="' + sv + '"]')) els.sort.value = sv;
+    writeUrl();
+  }
+
+  function writeUrl() {
+    var p = new URLSearchParams();
+    if (els.state.value) p.set("state", els.state.value);
+    if (els.month.value !== "") p.set("month", els.month.value);
+    if (els.org.value) p.set("org", els.org.value);
+    if (els.div.value) p.set("div", els.div.value);
+    if (els.q.value.trim()) p.set("q", els.q.value.trim());
+    var s = p.toString();
+    try { history.replaceState(null, "", location.pathname + (s ? "?" + s : "") + location.hash); } catch (e) {}
+  }
+  function readUrl() {
+    var p = new URLSearchParams(location.search);
+    function setIf(el, v) { if (v !== null && el.querySelector('option[value="' + v.replace(/"/g, "") + '"]')) el.value = v; }
+    setIf(els.state, p.get("state")); setIf(els.month, p.get("month")); setIf(els.org, p.get("org")); setIf(els.div, p.get("div"));
+    if (p.get("q")) els.q.value = p.get("q");
+  }
+
+  ["state", "month", "org", "div"].forEach(function (k) { els[k].addEventListener("change", render); });
+  els.q.addEventListener("input", render);
+  els.sort.addEventListener("change", function () { var p = els.sort.value.split(":"); sortKey = p[0]; sortDir = p[1]; render(); });
+  if ($("rows")) document.querySelectorAll("thead th[data-key] button").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var key = btn.parentNode.getAttribute("data-key");
+      if (sortKey === key) sortDir = sortDir === "asc" ? "desc" : "asc"; else { sortKey = key; sortDir = "asc"; }
+      render();
+    });
+  });
+  if ($("more")) $("more").addEventListener("click", function () { showAll = true; render(); });
+  $("reset").addEventListener("click", function () {
+    els.state.value = ""; els.month.value = ""; els.org.value = ""; els.div.value = ""; els.q.value = "";
+    sortKey = "start"; sortDir = "asc"; showAll = false; render();
+  });
+  if ($("copy")) $("copy").addEventListener("click", function () {
+    var btn = $("copy");
+    function done(msg) { btn.textContent = msg; setTimeout(function () { btn.textContent = "Copy a link to this search"; }, 2000); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(location.href).then(function () { done("Link copied"); }, function () { done("Copy the address bar link"); });
+    } else { done("Copy the address bar link"); }
+  });
+
+  fillOptions();
+  readUrl();
+  render();
+})();
+</script>
+
+</body>
+</html>
