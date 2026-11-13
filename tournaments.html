@@ -7,6 +7,7 @@
 <title>Senior slowpitch tournaments | Slowpitch Road Trip</title>
 <meta name="description" content="Find senior slowpitch tournaments by state, month, organization, or division.">
 <link rel="stylesheet" href="style.css">
+<style>.btn[hidden]{display:none}</style>
 </head>
 <body>
 
@@ -39,7 +40,11 @@
         <div class="field"><label for="f-state">State</label><select id="f-state"><option value="">All states</option></select></div>
         <div class="field"><label for="f-month">Month</label><select id="f-month"><option value="">Any month</option></select></div>
         <div class="field"><label for="f-org">Organization</label><select id="f-org"><option value="">All organizations</option></select></div>
+        <div class="field"><label for="f-type">Type</label><select id="f-type"><option value="">All events</option><option value="main">Championships and qualifiers</option><option value="rec">Recreational</option></select></div>
         <div class="field"><label for="f-div">Division</label><select id="f-div"><option value="">All divisions</option></select></div>
+        <div class="field"><label for="f-zip">Your ZIP code</label><input id="f-zip" inputmode="numeric" maxlength="5" placeholder="15825" autocomplete="postal-code"></div>
+        <div class="field"><label for="f-miles">Within</label><select id="f-miles"><option value="">Any distance</option><option value="150">150 miles</option><option value="300">300 miles</option><option value="500">500 miles</option><option value="1000">1,000 miles</option></select></div>
+        <div class="field"><button type="button" class="btn-reset" id="f-geo">Use my location</button></div>
         <div class="field search"><label for="f-q">Search by name or city</label><input id="f-q" type="search" placeholder="Try a city or tournament name" autocomplete="off"></div>
         <div class="field sort-mobile">
           <label for="f-sort">Sort by</label>
@@ -47,12 +52,14 @@
             <option value="start:asc">Date, soonest first</option>
             <option value="name:asc">Name, A to Z</option>
             <option value="state:asc">State, A to Z</option>
+            <option value="dist:asc" id="sort-dist" hidden>Distance, nearest first</option>
           </select>
         </div>
         <div class="field"><button type="button" class="btn-reset" id="reset">Clear filters</button></div>
       </form>
 
       <p class="updated" id="count" aria-live="polite"></p>
+      <p class="updated" id="dist-note" aria-live="polite" hidden></p>
 
       <div class="board">
         <table id="tbl">
@@ -73,7 +80,7 @@
       </div>
       <div class="more-row"><button type="button" class="btn" id="more" hidden>Show all tournaments</button></div>
 
-      <p class="updated">Showing ISSA, TPSSA, and SSUSA events so far. More organizations are being added. Always confirm dates, fees, and divisions with the organizer before you book.</p>
+      <p class="updated">Showing ISSA, TPSSA, and SSUSA events so far, including SSUSA-sanctioned recreational events. Distances are straight-line estimates to the event city. More organizations are being added. Always confirm dates, fees, and divisions with the organizer before you book.</p>
     </div>
   </section>
 
@@ -90,42 +97,47 @@
 (function () {
   // ISSA 2027 events, read from seniorsoftball.org on Nov 12, 2026. Add other organizations below.
   var DATA = [
-    { name: "ISSA/WBSC World Tournament of Champions", org: "ISSA", start: "2027-02-02", end: "2027-02-07", city: "Tampa Bay region", state: "FL", loc: "", divs: ["40+", "50+", "55+", "60+", "65+", "70+", "75+", "80+", "85+"], more: false, url: "https://www.seniorsoftball.org/2027-issawbsc-world-tournament-of-champions.html", checked: "2026-11-12" },
-    { name: "Treasure Coast USA Championships", org: "ISSA", start: "2027-03-03", end: "2027-03-07", city: "Vero Beach / Sebastian", state: "FL", loc: "", divs: ["70+", "75+", "80+", "85+"], more: true, url: "https://www.seniorsoftball.org/treasure-coast-usa-championships.html", checked: "2026-11-12" },
-    { name: "Southeastern Spring National", org: "ISSA", start: "2027-03-16", end: "2027-03-21", city: "Elgin / Columbia", state: "SC", loc: "", divs: ["40+", "50+", "55+", "60+", "65+", "70+", "75+", "80+", "85+"], more: false, url: "https://www.seniorsoftball.org/issa-southeastern-usa-championships.html", checked: "2026-11-12" },
-    { name: "Myrtle Beach USA Championships", org: "ISSA", start: "2027-04-02", end: "2027-04-07", city: "Myrtle Beach", state: "SC", loc: "", divs: ["40+", "50+", "55+", "60+", "65+", "70+", "75+", "80+", "85+"], more: false, url: "https://www.seniorsoftball.org/issa-myrtle-beach-usa-championships.html", checked: "2026-11-12" },
-    { name: "Western USA Championships", org: "ISSA", start: "2027-04-23", end: "2027-04-25", city: "Temple", state: "TX", loc: "", divs: [], more: true, url: "https://www.seniorsoftball.org/issa-western-usa-championships.html", checked: "2026-11-12" },
-    { name: "Eastern Spring National", org: "ISSA", start: "2027-04-28", end: "2027-05-02", city: "Charlotte / Lake Norman", state: "NC", loc: "", divs: ["70+", "75+", "80+", "85+"], more: true, url: "https://www.seniorsoftball.org/issa-spring-national.html", checked: "2026-11-12" },
-    { name: "Women's Spring National", org: "ISSA", start: "2027-04-30", end: "2027-05-02", city: "Mooresville", state: "NC", loc: "", divs: ["40+", "80+"], more: true, url: "https://www.seniorsoftball.org/issa-womens-spring-national.html", checked: "2026-11-12" },
-    { name: "Southern USA Championships", org: "ISSA", start: "2027-05-12", end: "2027-05-16", city: "Auburn", state: "AL", loc: "", divs: ["70+", "75+", "80+", "85+"], more: true, url: "https://www.seniorsoftball.org/issa-southern-usa-championships.html", checked: "2026-11-12" },
-    { name: "Great Smoky Mountain Senior Classic", org: "ISSA", start: "2027-06-04", end: "2027-06-10", city: "Maryville / Knoxville", state: "TN", loc: "", divs: ["40+", "50+", "60+", "65+", "70+", "75+", "80+"], more: true, url: "https://www.seniorsoftball.org/great-smoky-mountain-senior-classic.html", checked: "2026-11-12" },
-    { name: "WBSC Senior World Cup", org: "ISSA", start: "2027-06-22", end: "2027-06-27", city: "Roanoke Valley", state: "", loc: "Roanoke Valley", divs: ["65+", "70+", "75+", "80+", "85+"], more: true, url: "https://www.seniorsoftball.org/isf-senior-world-cup.html", checked: "2026-11-12" },
-    { name: "USA Softball Senior National Championships", org: "ISSA", start: "2027-07-13", end: "2027-07-18", city: "Burlington", state: "NC", loc: "", divs: ["70+", "75+", "80+", "85+"], more: true, url: "https://www.seniorsoftball.org/usa-softball-senior-national-championships.html", checked: "2026-11-12" },
-    { name: "ISSA World Championships", org: "ISSA", start: "2027-08-04", end: "2027-08-08", city: "Richmond", state: "VA", loc: "", divs: ["70+", "75+", "80+", "85+"], more: true, url: "https://www.seniorsoftball.org/issa-world-championships-richmond.html", checked: "2026-11-12" },
-    { name: "Pic-O-Dixie Senior Classic", org: "ISSA", start: "2027-08-18", end: "2027-08-22", city: "Dalton", state: "GA", loc: "Dalton, GA / Ooltewah, TN", divs: ["65+", "70+", "75+", "80+", "85+"], more: true, url: "https://www.seniorsoftball.org/issa-pic-o-dixie-senior-classic.html", checked: "2026-11-12" },
-    { name: "Southside Indy USA Championships", org: "ISSA", start: "2027-09-01", end: "2027-09-05", city: "Indianapolis", state: "IN", loc: "", divs: ["70+", "75+", "80+", "85+"], more: true, url: "https://www.seniorsoftball.org/issa-southside-indy-usa-championships.html", checked: "2026-11-12" },
-    { name: "Winter World Championships", org: "SSUSA", start: "2026-11-10", end: "2026-11-15", city: "Phoenix / Glendale", state: "AZ", loc: "", divs: [], more: true, url: "https://seniorsoftball.com/event/2256", checked: "2026-11-12" },
-    { name: "Oahu Open", org: "SSUSA", start: "2026-11-28", end: "2026-11-29", city: "Honolulu / Waipahu", state: "HI", loc: "", divs: [], more: true, url: "https://seniorsoftball.com/event/2304", checked: "2026-11-12" },
-    { name: "Original Tournament of Champions", org: "SSUSA", start: "2027-01-20", end: "2027-01-24", city: "Polk County", state: "FL", loc: "", divs: [], more: true, url: "https://seniorsoftball.com/event/2297", checked: "2026-11-12" },
-    { name: "Blue Ridge Classic", org: "TPSSA", start: "2027-03-05", end: "2027-03-07", city: "Dalton", state: "GA", loc: "", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/2027-blue-ridge-classic/", checked: "2026-11-12" },
-    { name: "Alabama Championships", org: "TPSSA", start: "2027-04-09", end: "2027-04-11", city: "Dothan", state: "AL", loc: "", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/2027-alabama-championships/", checked: "2026-11-12" },
-    { name: "The Bubba", org: "TPSSA", start: "2027-04-30", end: "2027-05-02", city: "Tupelo", state: "MS", loc: "", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/2027-the-bubba/", checked: "2026-11-12" },
-    { name: "The Southeastern (Men 50-60)", org: "TPSSA", start: "2027-07-09", end: "2027-07-11", city: "Huntsville", state: "AL", loc: "", divs: ["50+","55+","60+"], more: false, ages: "", url: "https://tpseniorsoftball.org/tournament/2027-the-southeastern/", checked: "2026-11-12" },
+    { name: "ISSA/WBSC World Tournament of Champions", lat: 27.95, lon: -82.46, org: "ISSA", start: "2027-02-02", end: "2027-02-07", city: "Tampa Bay region", state: "FL", loc: "", divs: ["40+", "50+", "55+", "60+", "65+", "70+", "75+", "80+", "85+"], more: false, url: "https://www.seniorsoftball.org/2027-issawbsc-world-tournament-of-champions.html", checked: "2026-11-12" },
+    { name: "Treasure Coast USA Championships", lat: 27.64, lon: -80.4, org: "ISSA", start: "2027-03-03", end: "2027-03-07", city: "Vero Beach / Sebastian", state: "FL", loc: "", divs: ["70+", "75+", "80+", "85+"], more: true, url: "https://www.seniorsoftball.org/treasure-coast-usa-championships.html", checked: "2026-11-12" },
+    { name: "Southeastern Spring National", lat: 34.05, lon: -81.03, org: "ISSA", start: "2027-03-16", end: "2027-03-21", city: "Elgin / Columbia", state: "SC", loc: "", divs: ["40+", "50+", "55+", "60+", "65+", "70+", "75+", "80+", "85+"], more: false, url: "https://www.seniorsoftball.org/issa-southeastern-usa-championships.html", checked: "2026-11-12" },
+    { name: "Myrtle Beach USA Championships", lat: 33.69, lon: -78.89, org: "ISSA", start: "2027-04-02", end: "2027-04-07", city: "Myrtle Beach", state: "SC", loc: "", divs: ["40+", "50+", "55+", "60+", "65+", "70+", "75+", "80+", "85+"], more: false, url: "https://www.seniorsoftball.org/issa-myrtle-beach-usa-championships.html", checked: "2026-11-12" },
+    { name: "Western USA Championships", lat: 31.1, lon: -97.34, org: "ISSA", start: "2027-04-23", end: "2027-04-25", city: "Temple", state: "TX", loc: "", divs: [], more: true, url: "https://www.seniorsoftball.org/issa-western-usa-championships.html", checked: "2026-11-12" },
+    { name: "Eastern Spring National", lat: 35.23, lon: -80.84, org: "ISSA", start: "2027-04-28", end: "2027-05-02", city: "Charlotte / Lake Norman", state: "NC", loc: "", divs: ["70+", "75+", "80+", "85+"], more: true, url: "https://www.seniorsoftball.org/issa-spring-national.html", checked: "2026-11-12" },
+    { name: "Women's Spring National", lat: 35.58, lon: -80.81, org: "ISSA", start: "2027-04-30", end: "2027-05-02", city: "Mooresville", state: "NC", loc: "", divs: ["40+", "80+"], more: true, url: "https://www.seniorsoftball.org/issa-womens-spring-national.html", checked: "2026-11-12" },
+    { name: "Southern USA Championships", lat: 32.61, lon: -85.48, org: "ISSA", start: "2027-05-12", end: "2027-05-16", city: "Auburn", state: "AL", loc: "", divs: ["70+", "75+", "80+", "85+"], more: true, url: "https://www.seniorsoftball.org/issa-southern-usa-championships.html", checked: "2026-11-12" },
+    { name: "Great Smoky Mountain Senior Classic", lat: 35.76, lon: -83.97, org: "ISSA", start: "2027-06-04", end: "2027-06-10", city: "Maryville / Knoxville", state: "TN", loc: "", divs: ["40+", "50+", "60+", "65+", "70+", "75+", "80+"], more: true, url: "https://www.seniorsoftball.org/great-smoky-mountain-senior-classic.html", checked: "2026-11-12" },
+    { name: "WBSC Senior World Cup", lat: 37.27, lon: -79.94, org: "ISSA", start: "2027-06-22", end: "2027-06-27", city: "Roanoke Valley", state: "", loc: "Roanoke Valley", divs: ["65+", "70+", "75+", "80+", "85+"], more: true, url: "https://www.seniorsoftball.org/isf-senior-world-cup.html", checked: "2026-11-12" },
+    { name: "USA Softball Senior National Championships", lat: 36.1, lon: -79.44, org: "ISSA", start: "2027-07-13", end: "2027-07-18", city: "Burlington", state: "NC", loc: "", divs: ["70+", "75+", "80+", "85+"], more: true, url: "https://www.seniorsoftball.org/usa-softball-senior-national-championships.html", checked: "2026-11-12" },
+    { name: "ISSA World Championships", lat: 37.54, lon: -77.44, org: "ISSA", start: "2027-08-04", end: "2027-08-08", city: "Richmond", state: "VA", loc: "", divs: ["70+", "75+", "80+", "85+"], more: true, url: "https://www.seniorsoftball.org/issa-world-championships-richmond.html", checked: "2026-11-12" },
+    { name: "Pic-O-Dixie Senior Classic", lat: 34.77, lon: -84.97, org: "ISSA", start: "2027-08-18", end: "2027-08-22", city: "Dalton", state: "GA", loc: "Dalton, GA / Ooltewah, TN", divs: ["65+", "70+", "75+", "80+", "85+"], more: true, url: "https://www.seniorsoftball.org/issa-pic-o-dixie-senior-classic.html", checked: "2026-11-12" },
+    { name: "Southside Indy USA Championships", lat: 39.77, lon: -86.16, org: "ISSA", start: "2027-09-01", end: "2027-09-05", city: "Indianapolis", state: "IN", loc: "", divs: ["70+", "75+", "80+", "85+"], more: true, url: "https://www.seniorsoftball.org/issa-southside-indy-usa-championships.html", checked: "2026-11-12" },
+    { name: "Winter World Championships", lat: 33.45, lon: -112.07, org: "SSUSA", start: "2026-11-10", end: "2026-11-15", city: "Phoenix / Glendale", state: "AZ", loc: "", divs: [], more: true, url: "https://seniorsoftball.com/event/2256", checked: "2026-11-12" },
+    { name: "Oahu Open", lat: 21.31, lon: -157.86, org: "SSUSA", start: "2026-11-28", end: "2026-11-29", city: "Honolulu / Waipahu", state: "HI", loc: "", divs: [], more: true, url: "https://seniorsoftball.com/event/2304", checked: "2026-11-12" },
+    { name: "Original Tournament of Champions", lat: 27.95, lon: -81.75, org: "SSUSA", start: "2027-01-20", end: "2027-01-24", city: "Polk County", state: "FL", loc: "", divs: [], more: true, url: "https://seniorsoftball.com/event/2297", checked: "2026-11-12" },
+    { name: "Blue Ridge Classic", lat: 34.77, lon: -84.97, org: "TPSSA", start: "2027-03-05", end: "2027-03-07", city: "Dalton", state: "GA", loc: "", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/2027-blue-ridge-classic/", checked: "2026-11-12" },
+    { name: "Alabama Championships", lat: 31.22, lon: -85.39, org: "TPSSA", start: "2027-04-09", end: "2027-04-11", city: "Dothan", state: "AL", loc: "", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/2027-alabama-championships/", checked: "2026-11-12" },
+    { name: "The Bubba", lat: 34.26, lon: -88.7, org: "TPSSA", start: "2027-04-30", end: "2027-05-02", city: "Tupelo", state: "MS", loc: "", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/2027-the-bubba/", checked: "2026-11-12" },
+    { name: "The Southeastern (Men 50-60)", lat: 34.73, lon: -86.59, org: "TPSSA", start: "2027-07-09", end: "2027-07-11", city: "Huntsville", state: "AL", loc: "", divs: ["50+","55+","60+"], more: false, ages: "", url: "https://tpseniorsoftball.org/tournament/2027-the-southeastern/", checked: "2026-11-12" },
     { name: "The Southeastern (Men 65-80; Women 40-80)", org: "TPSSA", start: "2027-07-16", end: "2027-07-18", city: "", state: "", loc: "Location not listed", divs: [], more: false, ages: "Men 65-80; Women 40-80", url: "https://tpseniorsoftball.org/tournament/2027-the-southeastern-men-65-80-womens-40-80/", checked: "2026-11-12" },
-    { name: "Twitty", org: "TPSSA", start: "2027-08-06", end: "2027-08-08", city: "Hendersonville", state: "TN", loc: "", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/2027-twitty-mens-50-60/", checked: "2026-11-12" },
-    { name: "The Lancer", org: "TPSSA", start: "2027-08-20", end: "2027-08-22", city: "Dayton", state: "OH", loc: "", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/2027-the-lancer/", checked: "2026-11-12" },
-    { name: "TPSSA National Championships", org: "TPSSA", start: "2027-09-10", end: "2027-09-12", city: "Dalton", state: "GA", loc: "", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/2027-national-championships/", checked: "2026-11-12" },
-    { name: "Brian Wright Memorial World Warm Up", org: "TPSSA", start: "2027-10-06", end: "2027-10-10", city: "Cullman", state: "AL", loc: "", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/world-warm-up-1/", checked: "2026-11-12" },
-    { name: "World Warm Up #2", org: "TPSSA", start: "2027-10-20", end: "2027-10-24", city: "St. Louis", state: "MO", loc: "", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/world-warm-up-2/", checked: "2026-11-12" },
-    { name: "TPSSA World Championships", org: "TPSSA", start: "2027-11-12", end: "2027-11-14", city: "Dalton, GA / Chattanooga, TN", state: "", loc: "Dalton, GA / Chattanooga, TN", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/2027-world-championships/", checked: "2026-11-12" },
+    { name: "Twitty", lat: 36.3, lon: -86.62, org: "TPSSA", start: "2027-08-06", end: "2027-08-08", city: "Hendersonville", state: "TN", loc: "", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/2027-twitty-mens-50-60/", checked: "2026-11-12" },
+    { name: "The Lancer", lat: 39.76, lon: -84.19, org: "TPSSA", start: "2027-08-20", end: "2027-08-22", city: "Dayton", state: "OH", loc: "", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/2027-the-lancer/", checked: "2026-11-12" },
+    { name: "TPSSA National Championships", lat: 34.77, lon: -84.97, org: "TPSSA", start: "2027-09-10", end: "2027-09-12", city: "Dalton", state: "GA", loc: "", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/2027-national-championships/", checked: "2026-11-12" },
+    { name: "Brian Wright Memorial World Warm Up", lat: 34.17, lon: -86.84, org: "TPSSA", start: "2027-10-06", end: "2027-10-10", city: "Cullman", state: "AL", loc: "", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/world-warm-up-1/", checked: "2026-11-12" },
+    { name: "World Warm Up #2", lat: 38.63, lon: -90.2, org: "TPSSA", start: "2027-10-20", end: "2027-10-24", city: "St. Louis", state: "MO", loc: "", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/world-warm-up-2/", checked: "2026-11-12" },
+    { name: "TPSSA World Championships", lat: 34.77, lon: -84.97, org: "TPSSA", start: "2027-11-12", end: "2027-11-14", city: "Dalton, GA / Chattanooga, TN", state: "", loc: "Dalton, GA / Chattanooga, TN", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/2027-world-championships/", checked: "2026-11-12" },
+    { name: "Angel Kids Christmas Benefit (Toys For Kids)", org: "SSUSA", rec: true, lat: 33.45, lon: -112.07, start: "2026-12-04", end: "2026-12-06", city: "Phoenix", state: "AZ", loc: "", divs: [], more: true, url: "https://seniorsoftball.com/event/2257", checked: "2026-11-12" },
+    { name: "Jim Goff Memorial Caribbean Classic", org: "SSUSA", rec: true, start: "2027-01-13", end: "2027-01-18", city: "Punta Cana", state: "", loc: "Punta Cana, Dominican Republic", divs: [], more: true, url: "https://seniorsoftball.com/event/2307", checked: "2026-11-12" },
+    { name: "15th Annual Hawaiian Mayor's Cup", org: "SSUSA", rec: true, lat: 19.64, lon: -155.99, start: "2027-01-18", end: "2027-01-22", city: "Kailua-Kona", state: "HI", loc: "", divs: [], more: true, url: "https://seniorsoftball.com/event/2305", checked: "2026-11-12" },
+    { name: "Down Under Australia Tour", org: "SSUSA", rec: true, start: "2027-03-11", end: "2027-03-24", city: "", state: "", loc: "Sydney, Alice Springs and Cairns, Australia", divs: [], more: true, url: "https://seniorsoftball.com/event/2308", checked: "2026-11-12" },
+    { name: "Hawaiian Cruise Softball Tour", org: "SSUSA", rec: true, lat: 21.31, lon: -157.86, start: "2027-11-03", end: "2027-11-13", city: "Honolulu / Maui / Kona", state: "HI", loc: "", divs: [], more: true, url: "https://seniorsoftball.com/event/2309", checked: "2026-11-12" },
   ];
   var PREVIEW = 6;
   var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   var MON_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
   var $ = function (id) { return document.getElementById(id); };
-  var els = { state: $("f-state"), month: $("f-month"), org: $("f-org"), div: $("f-div"), q: $("f-q"), sort: $("f-sort") };
-  var sortKey = "start", sortDir = "asc", showAll = false;
+  var els = { type: $("f-type"), zip: $("f-zip"), miles: $("f-miles"), state: $("f-state"), month: $("f-month"), org: $("f-org"), div: $("f-div"), q: $("f-q"), sort: $("f-sort") };
+  var sortKey = "start", sortDir = "asc", showAll = false, me = null, skipped = 0;
 
   function parse(iso) { var p = iso.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
   function fmtRange(a, b) {
@@ -145,11 +157,34 @@
     uniq(DATA.map(function (r) { return r.org; })).sort().forEach(function (o) { els.org.add(new Option(o, o)); });
     uniq([].concat.apply([], DATA.map(function (r) { return r.divs; }))).sort().forEach(function (d) { els.div.add(new Option(d, d)); });
   }
-  function anyFilter() { return !!(els.state.value || els.month.value !== "" || els.org.value || els.div.value || els.q.value.trim()); }
+  function miles(a, b, c, d) {
+    var R = 3958.8, r = Math.PI / 180, dLa = (c - a) * r, dLo = (d - b) * r;
+    var h = Math.sin(dLa / 2) * Math.sin(dLa / 2) + Math.cos(a * r) * Math.cos(c * r) * Math.sin(dLo / 2) * Math.sin(dLo / 2);
+    return 2 * R * Math.asin(Math.sqrt(h));
+  }
+  function setMe(lat, lon, label) {
+    me = { lat: lat, lon: lon, label: label };
+    DATA.forEach(function (r) { r._d = (r.lat != null) ? Math.round(miles(lat, lon, r.lat, r.lon)) : null; });
+    $("sort-dist").hidden = false;
+    sortKey = "dist"; sortDir = "asc";
+    render();
+  }
+  function clearMe() { me = null; DATA.forEach(function (r) { r._d = null; }); $("sort-dist").hidden = true; if (sortKey === "dist") { sortKey = "start"; sortDir = "asc"; } }
+  function lookupZip() {
+    var z = els.zip.value.trim();
+    if (!/^\d{5}$/.test(z)) { if (!z) { clearMe(); render(); } return; }
+    fetch("https://api.zippopotam.us/us/" + z).then(function (r) { if (!r.ok) throw 0; return r.json(); })
+      .then(function (j) { var p = j.places[0]; setMe(+p.latitude, +p.longitude, z); })
+      .catch(function () { $("dist-note").hidden = false; $("dist-note").textContent = "That ZIP code was not found. Check it and try again."; });
+  }
+  function anyFilter() { return !!(els.type.value || els.miles.value || els.state.value || els.month.value !== "" || els.org.value || els.div.value || els.q.value.trim()); }
 
   function filtered() {
     var q = els.q.value.trim().toLowerCase();
     return DATA.filter(function (r) {
+      if (els.type.value === "rec" && !r.rec) return false;
+      if (els.type.value === "main" && r.rec) return false;
+      if (me && els.miles.value && (r._d == null || r._d > +els.miles.value)) return false;
       if (els.state.value && r.state !== els.state.value) return false;
       if (els.month.value !== "" && String(parse(r.start).getMonth()) !== els.month.value) return false;
       if (els.org.value && r.org !== els.org.value) return false;
@@ -162,6 +197,7 @@
     var k = sortKey, dir = sortDir === "asc" ? 1 : -1;
     return list.slice().sort(function (a, b) {
       var x = a[k], y = b[k];
+      if (k === "dist") { x = a._d == null ? 99999 : a._d; y = b._d == null ? 99999 : b._d; }
       if (k === "state") { x = a.state + a.city; y = b.state + b.city; }
       if (x < y) return -1 * dir;
       if (x > y) return 1 * dir;
@@ -179,13 +215,15 @@
       return "<tr>" +
         '<td data-label="Dates"><div class="date-cell"><span class="cal"><span class="m">' + MON_SHORT[d.getMonth()] + '</span><span class="d">' + d.getDate() + '</span></span><span class="range">' + fmtRange(r.start, r.end) + "</span></div></td>" +
         '<td class="event">' + esc(r.name) + "</td>" +
-        '<td data-label="Organization">' + esc(r.org) + "</td>" +
-        '<td data-label="Location">' + (r.loc ? esc(r.loc) : esc(r.city) + ", " + esc(r.state)) + "</td>" +
+        '<td data-label="Organization">' + esc(r.org) + (r.rec ? ' <span class="chip">Rec</span>' : "") + "</td>" +
+        '<td data-label="Location">' + (r.loc ? esc(r.loc) : esc(r.city) + ", " + esc(r.state)) + (r._d != null ? '<span class="range"> · about ' + r._d.toLocaleString() + " mi</span>" : "") + "</td>" +
         '<td data-label="Divisions">' + r.divs.map(function (x) { return '<span class="chip">' + esc(x) + "</span>"; }).join("") + (r.ages ? '<span class="range">' + esc(r.ages) + "</span>" : "") + (r.more ? '<span class="range">' + (r.divs.length ? "+ others, " : "") + "see " + esc(r.org) + "</span>" : "") + "</td>" +
         '<td data-label="Official page"><a class="linkbtn" href="' + esc(r.url) + '" target="_blank" rel="noopener noreferrer">' + esc(r.org) + ' page</a></td>' +
         '<td data-label="Last checked">' + fmtDay(r.checked) + "</td>" +
         "</tr>";
     }).join("");
+    var dn = $("dist-note");
+    if (me) { var nc = DATA.filter(function (r) { return r.lat == null; }).length; dn.hidden = false; dn.textContent = "Distances from ZIP " + me.label + ", straight line. " + nc + " event" + (nc === 1 ? " has" : "s have") + " no mapped location and " + (els.miles.value ? "are hidden by the distance filter." : "show no distance."); } else if (dn.textContent.indexOf("not found") < 0) { dn.hidden = true; }
     $("empty").hidden = all.length > 0;
     $("tbl").hidden = all.length === 0;
     $("more").hidden = !limited;
@@ -204,6 +242,7 @@
 
   function writeUrl() {
     var p = new URLSearchParams();
+    if (els.type.value) p.set("type", els.type.value);
     if (els.state.value) p.set("state", els.state.value);
     if (els.month.value !== "") p.set("month", els.month.value);
     if (els.org.value) p.set("org", els.org.value);
@@ -215,11 +254,17 @@
   function readUrl() {
     var p = new URLSearchParams(location.search);
     function setIf(el, v) { if (v !== null && el.querySelector('option[value="' + v.replace(/"/g, "") + '"]')) el.value = v; }
-    setIf(els.state, p.get("state")); setIf(els.month, p.get("month")); setIf(els.org, p.get("org")); setIf(els.div, p.get("div"));
+    setIf(els.type, p.get("type")); setIf(els.state, p.get("state")); setIf(els.month, p.get("month")); setIf(els.org, p.get("org")); setIf(els.div, p.get("div"));
     if (p.get("q")) els.q.value = p.get("q");
   }
 
-  ["state", "month", "org", "div"].forEach(function (k) { els[k].addEventListener("change", render); });
+  ["type", "state", "month", "org", "div", "miles"].forEach(function (k) { els[k].addEventListener("change", render); });
+  els.zip.addEventListener("input", lookupZip);
+  $("f-geo").addEventListener("click", function () {
+    if (!navigator.geolocation) { $("dist-note").hidden = false; $("dist-note").textContent = "Location is not available in this browser. Enter your ZIP code instead."; return; }
+    navigator.geolocation.getCurrentPosition(function (p) { els.zip.value = ""; setMe(p.coords.latitude, p.coords.longitude, "your location"); },
+      function () { $("dist-note").hidden = false; $("dist-note").textContent = "Location was blocked. Enter your ZIP code instead."; });
+  });
   els.q.addEventListener("input", render);
   els.sort.addEventListener("change", function () { var p = els.sort.value.split(":"); sortKey = p[0]; sortDir = p[1]; render(); });
   if ($("rows")) document.querySelectorAll("thead th[data-key] button").forEach(function (btn) {
@@ -231,7 +276,7 @@
   });
   if ($("more")) $("more").addEventListener("click", function () { showAll = true; render(); });
   $("reset").addEventListener("click", function () {
-    els.state.value = ""; els.month.value = ""; els.org.value = ""; els.div.value = ""; els.q.value = "";
+    els.type.value = ""; els.miles.value = ""; els.zip.value = ""; clearMe(); els.state.value = ""; els.month.value = ""; els.org.value = ""; els.div.value = ""; els.q.value = "";
     sortKey = "start"; sortDir = "asc"; showAll = false; render();
   });
   if ($("copy")) $("copy").addEventListener("click", function () {

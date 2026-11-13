@@ -30,12 +30,12 @@
     <div class="wrap">
       <div class="t-head">
         <div>
-          <h2 id="fa-h">Free agent list</h2>
-          <p>Senior players looking for a team for a tournament. Find a player, then email them directly.</p>
+          <h2 id="fa-h">Free agents and teams</h2>
+          <p>Senior players looking for a team, and teams looking for players. Find a match, then email directly.</p>
         </div>
       </div>
 
-      <p><a class="btn" id="join" href="#fa-join">Add yourself to the list</a></p>
+      <p><a class="btn" id="join" href="#fa-join">Add yourself to the list</a> <a class="btn" href="#tm-join">Post a team needing players</a> <a class="linkbtn" href="#tm-list">Jump to teams looking for players</a></p>
 
       <form class="filters" onsubmit="return false" aria-label="Filter free agents">
         <div class="field"><label for="fa-state">State</label><select id="fa-state"><option value="">All states</option></select></div>
@@ -64,7 +64,35 @@
         <p id="j-msg" class="updated" role="status"></p>
       </section>
 
-      <p class="updated">Players are listed only after they ask to be. Contact players directly and use your own judgment. Slowpitch Road Trip does not vet players or organize teams.</p>
+      <h2 id="tm-list">Teams looking for players</h2>
+      <p>Senior teams that need players for a tournament. Find a team, then email the contact directly.</p>
+      <form class="filters" onsubmit="return false" aria-label="Filter teams">
+        <div class="field"><label for="tm-state">State</label><select id="tm-state"><option value="">All states</option></select></div>
+        <div class="field"><label for="tm-div">Division</label><select id="tm-div"><option value="">All divisions</option></select></div>
+        <div class="field"><label for="tm-q">Search</label><input id="tm-q" type="search" placeholder="Team, city, or position"></div>
+      </form>
+      <p id="tm-count" class="range" role="status"></p>
+      <div id="tm-grid" class="fa-grid"></div>
+      <p id="tm-empty" class="updated" hidden>No teams are listed yet. Post yours below.</p>
+      <section id="tm-join" class="fa-join" aria-labelledby="tm-join-h">
+        <h3 id="tm-join-h">Post a team needing players</h3>
+        <p>New posts are reviewed before they appear. The team name, city and state, division, positions needed, tournaments, and contact email will be shown publicly.</p>
+        <form id="tm-form" class="filters" onsubmit="return false">
+          <div class="field"><label for="t-team">Team name</label><input id="t-team" maxlength="60" required></div>
+          <div class="field"><label for="t-city">City</label><input id="t-city" maxlength="60"></div>
+          <div class="field"><label for="t-state">State</label><input id="t-state" maxlength="30" required placeholder="PA"></div>
+          <div class="field"><label for="t-div">Division</label><select id="t-div" required><option value="">Choose</option><option>40+</option><option>50+</option><option>55+</option><option>60+</option><option>65+</option><option>70+</option><option>75+</option><option>80+</option><option>Other</option></select></div>
+          <div class="field"><label for="t-pos">Positions needed</label><input id="t-pos" maxlength="80" placeholder="Pitcher, OF"></div>
+          <div class="field"><label for="t-tour">Tournaments</label><input id="t-tour" maxlength="160" placeholder="Which events you are playing"></div>
+          <div class="field"><label for="t-note">Note</label><input id="t-note" maxlength="200"></div>
+          <div class="field"><label for="t-email">Contact email to show</label><input id="t-email" type="email" maxlength="120" required></div>
+          <div class="field" style="position:absolute;left:-9999px" aria-hidden="true"><label for="t-site">Leave blank</label><input id="t-site" tabindex="-1" autocomplete="off"></div>
+          <button class="btn" id="t-send" type="submit">Submit for review</button>
+        </form>
+        <p id="t-msg" class="updated" role="status"></p>
+      </section>
+
+      <p class="updated">Players and teams are listed only after they ask to be. Contact players directly and use your own judgment. Slowpitch Road Trip does not vet players or teams or organize rosters.</p>
     </div>
   </section>
 </main>
@@ -156,6 +184,61 @@
   }
   ["fa-state", "fa-div"].forEach(function (id) { $(id).addEventListener("change", render); });
   $("fa-q").addEventListener("input", render);
+
+  // Teams looking for players
+  var TEAMS = [];
+  function loadTeams() {
+    if (!LIVE) { renderTeams(); return; }
+    fetch(SUPABASE_URL + "/rest/v1/teams_looking?select=team,city,state,division,positions_needed,tournaments,note,email,created_at&order=created_at.desc", { headers: hdr() })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (rows) {
+        TEAMS = rows;
+        $("tm-state").length = 1; $("tm-div").length = 1;
+        uniq(TEAMS.map(function (t) { return t.state; })).sort().forEach(function (s) { $("tm-state").add(new Option(s, s)); });
+        uniq(TEAMS.map(function (t) { return t.division; })).sort().forEach(function (d) { $("tm-div").add(new Option(d, d)); });
+        renderTeams();
+      })
+      .catch(function () { $("tm-count").textContent = "The list could not be loaded right now. Please try again later."; });
+  }
+  function renderTeams() {
+    var q = $("tm-q").value.toLowerCase(), st = $("tm-state").value, dv = $("tm-div").value;
+    var list = TEAMS.filter(function (t) {
+      if (st && t.state !== st) return false;
+      if (dv && t.division !== dv) return false;
+      if (q && ((t.team || "") + " " + (t.city || "") + " " + (t.positions_needed || "")).toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    });
+    $("tm-empty").hidden = TEAMS.length > 0;
+    $("tm-count").textContent = TEAMS.length ? list.length + " team" + (list.length === 1 ? "" : "s") + " found" : "";
+    $("tm-grid").innerHTML = list.map(function (t) {
+      var sub = encodeURIComponent("Interested in playing for " + t.team);
+      return '<article class="fa-card"><h3>' + esc(t.team) + '</h3>' +
+        '<p><span class="chip">' + esc(t.division) + '</span> ' + esc((t.city ? t.city + ", " : "") + t.state) + '</p>' +
+        (t.positions_needed ? '<p><strong>Needs:</strong> ' + esc(t.positions_needed) + '</p>' : '') +
+        (t.tournaments ? '<p><strong>Playing:</strong> ' + esc(t.tournaments) + '</p>' : '') +
+        (t.note ? '<p>' + esc(t.note) + '</p>' : '') +
+        '<a class="linkbtn" href="mailto:' + esc(t.email) + '?subject=' + sub + '">Contact</a></article>';
+    }).join("");
+  }
+  ["tm-state", "tm-div"].forEach(function (id) { $(id).addEventListener("change", renderTeams); });
+  $("tm-q").addEventListener("input", renderTeams);
+  $("tm-form").addEventListener("submit", function () {
+    var msg = $("t-msg");
+    if ($("t-site").value) return;
+    var f = $("tm-form"); if (!f.checkValidity()) { f.reportValidity(); return; }
+    var row = { team: $("t-team").value.trim(), city: $("t-city").value.trim() || null, state: $("t-state").value.trim(), division: $("t-div").value, positions_needed: $("t-pos").value.trim() || null, tournaments: $("t-tour").value.trim() || null, note: $("t-note").value.trim() || null, email: $("t-email").value.trim() };
+    if (!LIVE) {
+      var body = Object.keys(row).map(function (k) { return k + ": " + (row[k] || ""); }).join("\n");
+      location.href = "mailto:" + SITE_EMAIL + "?subject=" + encodeURIComponent("Post my team needing players") + "&body=" + encodeURIComponent(body);
+      return;
+    }
+    $("t-send").disabled = true;
+    fetch(SUPABASE_URL + "/rest/v1/teams_looking", { method: "POST", headers: hdr({ "Content-Type": "application/json", Prefer: "return=minimal" }), body: JSON.stringify(row) })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); f.reset(); msg.textContent = "Thanks. Your post was received and will appear after it is reviewed."; })
+      .catch(function () { msg.textContent = "Sorry, that did not go through. Please check the fields and try again, or email " + SITE_EMAIL + "."; })
+      .then(function () { $("t-send").disabled = false; });
+  });
+  loadTeams();
   load();
 })();
 </script>
