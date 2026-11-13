@@ -98,6 +98,23 @@
   .more-row { text-align: center; margin-top: 16px; }
   .updated { color: var(--mist); font-size: .9rem; margin-top: 12px; }
 
+  /* gear deals (homepage) */
+  .deals { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 18px; }
+  .deal { background: var(--night-2); border-top: 4px solid var(--ball); border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; }
+  .deal-art { display: flex; align-items: center; justify-content: center; aspect-ratio: 1 / 1; max-height: 300px; background: var(--night-3); text-decoration: none; overflow: hidden; }
+  .deal-art img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .deal-name { font-family: var(--display); font-weight: 900; text-transform: uppercase; font-size: 2.2rem; line-height: 1; color: var(--white); text-align: center; padding: 0 16px; }
+  .deal-body { padding: 18px 20px 22px; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; flex: 1; }
+  .deal-body h3 { font-family: var(--display); font-weight: 900; text-transform: uppercase; font-size: 1.6rem; line-height: 1; margin: 0; }
+  .deal-body p { margin: 0; color: var(--mist); }
+  .deal-body .btn { margin-top: auto; }
+  .deal-code { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; width: 100%; border: 2px dashed var(--ball); border-radius: 4px; padding: 8px 10px 8px 14px; }
+  .deal-code span { color: var(--mist); font-size: .85rem; }
+  .deal-code strong { color: var(--ball); font-size: 1.1rem; letter-spacing: .04em; user-select: all; overflow-wrap: anywhere; }
+  .deal-code .copy { margin-left: auto; font: inherit; font-size: .85rem; font-weight: 800; background: transparent; color: var(--white); border: 2px solid var(--white); border-radius: 4px; padding: 4px 12px; min-height: 40px; cursor: pointer; }
+  .deal-code .copy:hover { background: var(--white); color: var(--night); }
+  .disclosure { color: var(--mist); font-size: .85rem; margin: 18px 0 0; max-width: 80ch; }
+
   /* about */
   .about { margin-top: 36px; background: var(--night-2); border-top: 4px solid var(--ball); }
   .about .wrap { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px 56px; padding-top: 12px; padding-bottom: 28px; }
