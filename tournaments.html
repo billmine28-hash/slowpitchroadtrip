@@ -10,13 +10,12 @@
 </head>
 <body>
 
-<div class="sample-banner" role="note">SAMPLE DATA: every tournament listed is fake. Replace with real listings before launch.</div>
-
 <header class="topbar">
   <div class="wrap">
     <a class="brand" href="index.html" aria-label="Slowpitch Road Trip home"><img src="images/logo-small.png" alt="Slowpitch Road Trip logo" width="120" height="80"></a>
     <nav class="nav" aria-label="Main">
       <a href="tournaments.html" aria-current="page">Tournaments</a>
+      <a href="freeagents.html">Free agents</a>
       <a href="reviews.html">Bat reviews</a>
       <a href="workouts.html">Workouts</a>
       <a href="links.html">Links</a>
@@ -75,7 +74,7 @@
       </div>
       <div class="more-row"><button type="button" class="btn" id="more" hidden>Show all tournaments</button></div>
 
-      <p class="updated">Always confirm dates, fees, and divisions with the organizer before you book.</p>
+      <p class="updated">Showing ISSA, TPSSA, and SSUSA events so far. More organizations are being added. Always confirm dates, fees, and divisions with the organizer before you book.</p>
     </div>
   </section>
 
@@ -90,20 +89,36 @@
 </footer>
 <script>
 (function () {
-  // SAMPLE DATA ONLY. Every row is fake. Replace this array with real listings.
+  // ISSA 2027 events, read from seniorsoftball.org on Nov 12, 2026. Add other organizations below.
   var DATA = [
-    { name: "Sample Tournament A", org: "Sample Org 1", start: "2027-01-16", end: "2027-01-17", city: "Sampleville", state: "FL", divs: ["50+", "60+"], url: "#", checked: "2026-11-01" },
-    { name: "Sample Tournament B", org: "Sample Org 2", start: "2027-02-06", end: "2027-02-07", city: "Exampleton", state: "GA", divs: ["40+", "55+"], url: "#", checked: "2026-11-01" },
-    { name: "Sample Tournament C", org: "Sample Org 1", start: "2027-03-13", end: "2027-03-14", city: "Testburg", state: "TX", divs: ["50+", "60+", "65+"], url: "#", checked: "2026-11-02" },
-    { name: "Sample Tournament D", org: "Sample Org 3", start: "2027-03-27", end: "2027-03-28", city: "Placeholder Falls", state: "AZ", divs: ["40+", "50+"], url: "#", checked: "2026-11-02" },
-    { name: "Sample Tournament E", org: "Sample Org 2", start: "2027-04-17", end: "2027-04-18", city: "Mockford", state: "TN", divs: ["55+", "60+", "70+"], url: "#", checked: "2026-11-03" },
-    { name: "Sample Tournament F", org: "Sample Org 3", start: "2027-05-08", end: "2027-05-09", city: "Dummy Springs", state: "NC", divs: ["40+", "50+", "60+"], url: "#", checked: "2026-11-03" },
-    { name: "Sample Tournament G", org: "Sample Org 1", start: "2027-06-12", end: "2027-06-13", city: "Sampleville", state: "OH", divs: ["50+", "65+"], url: "#", checked: "2026-11-04" },
-    { name: "Sample Tournament H", org: "Sample Org 2", start: "2027-06-26", end: "2027-06-27", city: "Testburg", state: "PA", divs: ["40+", "55+"], url: "#", checked: "2026-11-04" },
-    { name: "Sample Tournament I", org: "Sample Org 3", start: "2027-07-17", end: "2027-07-18", city: "Exampleton", state: "MD", divs: ["50+", "60+"], url: "#", checked: "2026-11-05" },
-    { name: "Sample Tournament J", org: "Sample Org 1", start: "2027-09-11", end: "2027-09-12", city: "Placeholder Falls", state: "IN", divs: ["60+", "70+"], url: "#", checked: "2026-11-05" },
-    { name: "Sample Tournament K", org: "Sample Org 2", start: "2027-10-02", end: "2027-10-03", city: "Mockford", state: "FL", divs: ["40+", "50+", "55+"], url: "#", checked: "2026-11-06" },
-    { name: "Sample Tournament L", org: "Sample Org 3", start: "2027-11-13", end: "2027-11-14", city: "Dummy Springs", state: "NV", divs: ["50+", "60+", "65+"], url: "#", checked: "2026-11-06" }
+    { name: "ISSA/WBSC World Tournament of Champions", org: "ISSA", start: "2027-02-02", end: "2027-02-07", city: "Tampa Bay region", state: "FL", loc: "", divs: ["40+", "50+", "55+", "60+", "65+", "70+", "75+", "80+", "85+"], more: false, url: "https://www.seniorsoftball.org/2027-issawbsc-world-tournament-of-champions.html", checked: "2026-11-12" },
+    { name: "Treasure Coast USA Championships", org: "ISSA", start: "2027-03-03", end: "2027-03-07", city: "Vero Beach / Sebastian", state: "FL", loc: "", divs: ["70+", "75+", "80+", "85+"], more: true, url: "https://www.seniorsoftball.org/treasure-coast-usa-championships.html", checked: "2026-11-12" },
+    { name: "Southeastern Spring National", org: "ISSA", start: "2027-03-16", end: "2027-03-21", city: "Elgin / Columbia", state: "SC", loc: "", divs: ["40+", "50+", "55+", "60+", "65+", "70+", "75+", "80+", "85+"], more: false, url: "https://www.seniorsoftball.org/issa-southeastern-usa-championships.html", checked: "2026-11-12" },
+    { name: "Myrtle Beach USA Championships", org: "ISSA", start: "2027-04-02", end: "2027-04-07", city: "Myrtle Beach", state: "SC", loc: "", divs: ["40+", "50+", "55+", "60+", "65+", "70+", "75+", "80+", "85+"], more: false, url: "https://www.seniorsoftball.org/issa-myrtle-beach-usa-championships.html", checked: "2026-11-12" },
+    { name: "Western USA Championships", org: "ISSA", start: "2027-04-23", end: "2027-04-25", city: "Temple", state: "TX", loc: "", divs: [], more: true, url: "https://www.seniorsoftball.org/issa-western-usa-championships.html", checked: "2026-11-12" },
+    { name: "Eastern Spring National", org: "ISSA", start: "2027-04-28", end: "2027-05-02", city: "Charlotte / Lake Norman", state: "NC", loc: "", divs: ["70+", "75+", "80+", "85+"], more: true, url: "https://www.seniorsoftball.org/issa-spring-national.html", checked: "2026-11-12" },
+    { name: "Women's Spring National", org: "ISSA", start: "2027-04-30", end: "2027-05-02", city: "Mooresville", state: "NC", loc: "", divs: ["40+", "80+"], more: true, url: "https://www.seniorsoftball.org/issa-womens-spring-national.html", checked: "2026-11-12" },
+    { name: "Southern USA Championships", org: "ISSA", start: "2027-05-12", end: "2027-05-16", city: "Auburn", state: "AL", loc: "", divs: ["70+", "75+", "80+", "85+"], more: true, url: "https://www.seniorsoftball.org/issa-southern-usa-championships.html", checked: "2026-11-12" },
+    { name: "Great Smoky Mountain Senior Classic", org: "ISSA", start: "2027-06-04", end: "2027-06-10", city: "Maryville / Knoxville", state: "TN", loc: "", divs: ["40+", "50+", "60+", "65+", "70+", "75+", "80+"], more: true, url: "https://www.seniorsoftball.org/great-smoky-mountain-senior-classic.html", checked: "2026-11-12" },
+    { name: "WBSC Senior World Cup", org: "ISSA", start: "2027-06-22", end: "2027-06-27", city: "Roanoke Valley", state: "", loc: "Roanoke Valley", divs: ["65+", "70+", "75+", "80+", "85+"], more: true, url: "https://www.seniorsoftball.org/isf-senior-world-cup.html", checked: "2026-11-12" },
+    { name: "USA Softball Senior National Championships", org: "ISSA", start: "2027-07-13", end: "2027-07-18", city: "Burlington", state: "NC", loc: "", divs: ["70+", "75+", "80+", "85+"], more: true, url: "https://www.seniorsoftball.org/usa-softball-senior-national-championships.html", checked: "2026-11-12" },
+    { name: "ISSA World Championships", org: "ISSA", start: "2027-08-04", end: "2027-08-08", city: "Richmond", state: "VA", loc: "", divs: ["70+", "75+", "80+", "85+"], more: true, url: "https://www.seniorsoftball.org/issa-world-championships-richmond.html", checked: "2026-11-12" },
+    { name: "Pic-O-Dixie Senior Classic", org: "ISSA", start: "2027-08-18", end: "2027-08-22", city: "Dalton", state: "GA", loc: "Dalton, GA / Ooltewah, TN", divs: ["65+", "70+", "75+", "80+", "85+"], more: true, url: "https://www.seniorsoftball.org/issa-pic-o-dixie-senior-classic.html", checked: "2026-11-12" },
+    { name: "Southside Indy USA Championships", org: "ISSA", start: "2027-09-01", end: "2027-09-05", city: "Indianapolis", state: "IN", loc: "", divs: ["70+", "75+", "80+", "85+"], more: true, url: "https://www.seniorsoftball.org/issa-southside-indy-usa-championships.html", checked: "2026-11-12" },
+    { name: "Winter World Championships", org: "SSUSA", start: "2026-11-10", end: "2026-11-15", city: "Phoenix / Glendale", state: "AZ", loc: "", divs: [], more: true, url: "https://seniorsoftball.com/event/2256", checked: "2026-11-12" },
+    { name: "Oahu Open", org: "SSUSA", start: "2026-11-28", end: "2026-11-29", city: "Honolulu / Waipahu", state: "HI", loc: "", divs: [], more: true, url: "https://seniorsoftball.com/event/2304", checked: "2026-11-12" },
+    { name: "Original Tournament of Champions", org: "SSUSA", start: "2027-01-20", end: "2027-01-24", city: "Polk County", state: "FL", loc: "", divs: [], more: true, url: "https://seniorsoftball.com/event/2297", checked: "2026-11-12" },
+    { name: "Blue Ridge Classic", org: "TPSSA", start: "2027-03-05", end: "2027-03-07", city: "Dalton", state: "GA", loc: "", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/2027-blue-ridge-classic/", checked: "2026-11-12" },
+    { name: "Alabama Championships", org: "TPSSA", start: "2027-04-09", end: "2027-04-11", city: "Dothan", state: "AL", loc: "", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/2027-alabama-championships/", checked: "2026-11-12" },
+    { name: "The Bubba", org: "TPSSA", start: "2027-04-30", end: "2027-05-02", city: "Tupelo", state: "MS", loc: "", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/2027-the-bubba/", checked: "2026-11-12" },
+    { name: "The Southeastern (Men 50-60)", org: "TPSSA", start: "2027-07-09", end: "2027-07-11", city: "Huntsville", state: "AL", loc: "", divs: ["50+","55+","60+"], more: false, ages: "", url: "https://tpseniorsoftball.org/tournament/2027-the-southeastern/", checked: "2026-11-12" },
+    { name: "The Southeastern (Men 65-80; Women 40-80)", org: "TPSSA", start: "2027-07-16", end: "2027-07-18", city: "", state: "", loc: "Location not listed", divs: [], more: false, ages: "Men 65-80; Women 40-80", url: "https://tpseniorsoftball.org/tournament/2027-the-southeastern-men-65-80-womens-40-80/", checked: "2026-11-12" },
+    { name: "Twitty", org: "TPSSA", start: "2027-08-06", end: "2027-08-08", city: "Hendersonville", state: "TN", loc: "", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/2027-twitty-mens-50-60/", checked: "2026-11-12" },
+    { name: "The Lancer", org: "TPSSA", start: "2027-08-20", end: "2027-08-22", city: "Dayton", state: "OH", loc: "", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/2027-the-lancer/", checked: "2026-11-12" },
+    { name: "TPSSA National Championships", org: "TPSSA", start: "2027-09-10", end: "2027-09-12", city: "Dalton", state: "GA", loc: "", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/2027-national-championships/", checked: "2026-11-12" },
+    { name: "Brian Wright Memorial World Warm Up", org: "TPSSA", start: "2027-10-06", end: "2027-10-10", city: "Cullman", state: "AL", loc: "", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/world-warm-up-1/", checked: "2026-11-12" },
+    { name: "World Warm Up #2", org: "TPSSA", start: "2027-10-20", end: "2027-10-24", city: "St. Louis", state: "MO", loc: "", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/world-warm-up-2/", checked: "2026-11-12" },
+    { name: "TPSSA World Championships", org: "TPSSA", start: "2027-11-12", end: "2027-11-14", city: "Dalton, GA / Chattanooga, TN", state: "", loc: "Dalton, GA / Chattanooga, TN", divs: [], more: false, ages: "All ages", url: "https://tpseniorsoftball.org/tournament/2027-world-championships/", checked: "2026-11-12" },
   ];
   var PREVIEW = 6;
   var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -125,7 +140,7 @@
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
 
   function fillOptions() {
-    uniq(DATA.map(function (r) { return r.state; })).sort().forEach(function (s) { els.state.add(new Option(s, s)); });
+    uniq(DATA.map(function (r) { return r.state; })).filter(Boolean).sort().forEach(function (s) { els.state.add(new Option(s, s)); });
     uniq(DATA.map(function (r) { return parse(r.start).getMonth(); })).sort(function (a, b) { return a - b; })
       .forEach(function (m) { els.month.add(new Option(MONTHS[m], String(m))); });
     uniq(DATA.map(function (r) { return r.org; })).sort().forEach(function (o) { els.org.add(new Option(o, o)); });
@@ -139,8 +154,8 @@
       if (els.state.value && r.state !== els.state.value) return false;
       if (els.month.value !== "" && String(parse(r.start).getMonth()) !== els.month.value) return false;
       if (els.org.value && r.org !== els.org.value) return false;
-      if (els.div.value && r.divs.indexOf(els.div.value) < 0) return false;
-      if (q && (r.name + " " + r.city + " " + r.state).toLowerCase().indexOf(q) < 0) return false;
+      if (els.div.value && r.divs.indexOf(els.div.value) < 0 && !r.more && !r.ages) return false;
+      if (q && (r.name + " " + r.city + " " + r.state + " " + (r.loc || "")).toLowerCase().indexOf(q) < 0) return false;
       return true;
     });
   }
@@ -166,9 +181,9 @@
         '<td data-label="Dates"><div class="date-cell"><span class="cal"><span class="m">' + MON_SHORT[d.getMonth()] + '</span><span class="d">' + d.getDate() + '</span></span><span class="range">' + fmtRange(r.start, r.end) + "</span></div></td>" +
         '<td class="event">' + esc(r.name) + "</td>" +
         '<td data-label="Organization">' + esc(r.org) + "</td>" +
-        '<td data-label="Location">' + esc(r.city) + ", " + esc(r.state) + "</td>" +
-        '<td data-label="Divisions">' + r.divs.map(function (x) { return '<span class="chip">' + esc(x) + "</span>"; }).join("") + "</td>" +
-        '<td data-label="Official page"><a class="linkbtn" href="' + esc(r.url) + '">Sample link</a></td>' +
+        '<td data-label="Location">' + (r.loc ? esc(r.loc) : esc(r.city) + ", " + esc(r.state)) + "</td>" +
+        '<td data-label="Divisions">' + r.divs.map(function (x) { return '<span class="chip">' + esc(x) + "</span>"; }).join("") + (r.ages ? '<span class="range">' + esc(r.ages) + "</span>" : "") + (r.more ? '<span class="range">' + (r.divs.length ? "+ others, " : "") + "see " + esc(r.org) + "</span>" : "") + "</td>" +
+        '<td data-label="Official page"><a class="linkbtn" href="' + esc(r.url) + '" target="_blank" rel="noopener noreferrer">' + esc(r.org) + ' page</a></td>' +
         '<td data-label="Last checked">' + fmtDay(r.checked) + "</td>" +
         "</tr>";
     }).join("");
