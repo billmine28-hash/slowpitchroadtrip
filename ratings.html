@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Team ratings | Slowpitch Road Trip</title>
+<meta name="description" content="Find official senior slowpitch team ratings from SSUSA, SPA, and ISSA.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Slowpitch Road Trip home"><img src="images/logo-small.png" alt="Slowpitch Road Trip logo" width="120" height="80"></a>
+    <nav class="nav" aria-label="Main">
+      <a href="tournaments.html">Tournaments</a>
+      <a href="freeagents.html">Free agents</a>
+      <a href="reviews.html">Bat reviews</a>
+      <a href="ratings.html" aria-current="page">Ratings</a>
+      <a href="links.html">Links</a>
+      <a href="blog.html">Blog</a>
+      <a href="workouts.html">Weight training</a>
+      <a href="index.html#about">About</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top" class="subpage">
+  <section id="ratings" aria-labelledby="r-h">
+    <div class="wrap">
+      <h2 id="r-h">Team ratings</h2>
+      <p class="lede">Each association keeps its own official ratings. Pick one below and it opens in a new tab. Once the page loads, press Ctrl+F (Cmd+F on a Mac) to find your team by name.</p>
+      <div class="link-groups">
+        <div class="link-group">
+          <h3>SSUSA ratings</h3>
+          <form class="filters" onsubmit="return false" aria-label="Open SSUSA ratings">
+            <div class="field"><label for="r-ssusa">Division</label>
+              <select id="r-ssusa">
+                <option value="40">Men 40+</option><option value="50">Men 50+</option><option value="55">Men 55+</option><option value="60">Men 60+</option><option value="65">Men 65+</option><option value="70">Men 70+</option><option value="75">Men 75+</option><option value="80">Men 80+</option><option value="85">Men 85+</option>
+                <option value="140">Women 40+</option><option value="150">Women 50+</option><option value="155">Women 55+</option>
+              </select></div>
+            <div class="field"><button type="button" class="btn" id="r-ssusa-go">Open SSUSA ratings</button></div>
+          </form>
+        </div>
+        <div class="link-group">
+          <h3>SPA ratings</h3>
+          <p>All SPA teams on one page. Choose an age group at the top of their page.</p>
+          <p><a class="btn" href="https://www.softballspa.com/ratingsearchresults33.aspx" target="_blank" rel="noopener noreferrer">Open SPA ratings</a></p>
+        </div>
+        <div class="link-group">
+          <h3>ISSA ratings</h3>
+          <p>ISSA posts its ratings on QuickScores.</p>
+          <p><a class="btn" href="https://www.quickscores.com/Orgs/ExtraMsg.php?OrgDir=issa&amp;ExtraMsgID=17859" target="_blank" rel="noopener noreferrer">Open ISSA ratings</a></p>
+        </div>
+      </div>
+      <p class="updated">Ratings belong to each association and may change at any time. Slowpitch Road Trip does not keep or edit them. Check the association's page for the current rating.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+document.getElementById("r-ssusa-go").addEventListener("click", function () {
+  var d = document.getElementById("r-ssusa").value;
+  window.open("https://seniorsoftball.com/?ratings&division=" + encodeURIComponent(d), "_blank", "noopener");
+});
+</script>
+
+<footer>
+  <div class="wrap">
+    <p>Independent directory of listed events. Not an official association schedule. Confirm details with the organizer before booking.</p>
+    <p>Slowpitch Road Trip is not affiliated with any tournament organization named on this site. Names are used only to identify the organizer.</p>
+    <p>Contact: <a href="mailto:slowpitchroadtrip@yahoo.com">slowpitchroadtrip@yahoo.com</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
