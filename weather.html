@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weather | Slowpitch Road Trip</title>
+<meta name="description" content="Check the forecast for any tournament city.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Slowpitch Road Trip home"><img src="images/logo-small.png" alt="Slowpitch Road Trip logo" width="120" height="80"></a>
+    <nav class="nav" aria-label="Main">
+      <a href="tournaments.html">Tournaments</a>
+      <a href="freeagents.html">Free agents</a>
+      <a href="reviews.html">Bat reviews</a>
+      <a href="ratings.html">Ratings</a>
+      <a href="links.html">Links</a>
+      <a href="index.html#about">About</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top" class="subpage">
+  <section id="weather" aria-labelledby="w-h">
+    <div class="wrap">
+      <h2 id="w-h">Weather</h2>
+      <p class="lede">Search a city or ZIP code to see the 7-day forecast. Handy for checking a tournament weekend.</p>
+      <form class="filters" id="w-form" onsubmit="return false" aria-label="Search weather">
+        <div class="field search"><label for="w-q">City or ZIP code</label><input id="w-q" type="search" placeholder="Dalton, GA or 30721" autocomplete="off"></div>
+        <div class="field"><button type="submit" class="btn" id="w-go">Get forecast</button></div>
+      </form>
+      <p class="updated" id="w-msg" role="status" aria-live="polite"></p>
+      <div id="w-choices"></div>
+      <h3 id="w-title" hidden></h3>
+      <div class="board"><table id="w-tbl" hidden>
+        <thead><tr><th scope="col">Day</th><th scope="col">Conditions</th><th scope="col">High / Low</th><th scope="col">Rain chance</th><th scope="col">Wind</th></tr></thead>
+        <tbody id="w-rows"></tbody>
+      </table></div>
+      <p class="updated">Forecasts come from Open-Meteo and are estimates. Check again close to game day.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var CODES = { 0: "Clear", 1: "Mostly clear", 2: "Partly cloudy", 3: "Overcast", 45: "Fog", 48: "Fog", 51: "Light drizzle", 53: "Drizzle", 55: "Heavy drizzle", 56: "Freezing drizzle", 57: "Freezing drizzle", 61: "Light rain", 63: "Rain", 65: "Heavy rain", 66: "Freezing rain", 67: "Freezing rain", 71: "Light snow", 73: "Snow", 75: "Heavy snow", 77: "Snow grains", 80: "Light showers", 81: "Showers", 82: "Heavy showers", 85: "Snow showers", 86: "Snow showers", 95: "Thunderstorms", 96: "Thunderstorms, hail", 99: "Thunderstorms, hail" };
+  var DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function say(t) { $("w-msg").textContent = t; }
+  function json(u) { return fetch(u).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }); }
+
+  function show(lat, lon, label) {
+    $("w-choices").innerHTML = "";
+    say("Loading forecast...");
+    json("https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lon + "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=7")
+      .then(function (j) {
+        var d = j.daily;
+        $("w-rows").innerHTML = d.time.map(function (t, i) {
+          var p = t.split("-"), dt = new Date(+p[0], +p[1] - 1, +p[2]);
+          return "<tr><td data-label=\"Day\">" + DAYS[dt.getDay()] + " " + MON[dt.getMonth()] + " " + dt.getDate() + "</td>" +
+            "<td data-label=\"Conditions\">" + esc(CODES[d.weather_code[i]] || "") + "</td>" +
+            "<td data-label=\"High / Low\">" + Math.round(d.temperature_2m_max[i]) + "&deg; / " + Math.round(d.temperature_2m_min[i]) + "&deg;</td>" +
+            "<td data-label=\"Rain chance\">" + (d.precipitation_probability_max[i] == null ? "n/a" : d.precipitation_probability_max[i] + "%") + "</td>" +
+            "<td data-label=\"Wind\">up to " + Math.round(d.wind_speed_10m_max[i]) + " mph</td></tr>";
+        }).join("");
+        $("w-title").hidden = false; $("w-title").textContent = "7-day forecast for " + label;
+        $("w-tbl").hidden = false; say("");
+      })
+      .catch(function () { say("The forecast could not be loaded right now. Please try again later."); });
+  }
+
+  function search(q) {
+    q = q.trim(); if (!q) return;
+    $("w-tbl").hidden = true; $("w-title").hidden = true; $("w-choices").innerHTML = "";
+    if (/^\d{5}$/.test(q)) {
+      say("Looking up ZIP code...");
+      json("https://api.zippopotam.us/us/" + q).then(function (j) {
+        var p = j.places[0]; show(p.latitude, p.longitude, p["place name"] + ", " + p["state abbreviation"] + " " + q);
+      }).catch(function () { say("That ZIP code was not found. Check it and try again."); });
+      return;
+    }
+    var name = q.split(",")[0].trim();
+    say("Searching...");
+    json("https://geocoding-api.open-meteo.com/v1/search?count=8&language=en&name=" + encodeURIComponent(name)).then(function (j) {
+      var r = (j.results || []);
+      var hint = (q.split(",")[1] || "").trim().toLowerCase();
+      if (hint) { var f = r.filter(function (x) { return (x.admin1 || "").toLowerCase().indexOf(hint) === 0 || (x.country_code || "").toLowerCase() === hint || (x.country || "").toLowerCase().indexOf(hint) === 0; }); if (f.length) r = f; }
+      if (!r.length) { say("No place found. Try a city name with its state, or a ZIP code."); return; }
+      if (r.length === 1) { var x = r[0]; show(x.latitude, x.longitude, x.name + ", " + (x.admin1 || x.country)); return; }
+      say("Choose a place:");
+      $("w-choices").innerHTML = r.map(function (x, i) { return '<p><button type="button" class="linkbtn" data-i="' + i + '">' + esc(x.name + ", " + (x.admin1 || "") + " " + (x.country_code || "")) + "</button></p>"; }).join("");
+      $("w-choices").onclick = function (e) { var b = e.target.closest("button[data-i]"); if (!b) return; var x = r[+b.getAttribute("data-i")]; show(x.latitude, x.longitude, x.name + ", " + (x.admin1 || x.country)); };
+    }).catch(function () { say("The search could not be completed right now. Please try again later."); });
+  }
+
+  $("w-form").addEventListener("submit", function () { search($("w-q").value); });
+  var p = new URLSearchParams(location.search).get("q");
+  if (p) { $("w-q").value = p; search(p); }
+})();
+</script>
+
+<footer>
+  <div class="wrap">
+    <p>Independent directory of listed events. Not an official association schedule. Confirm details with the organizer before booking.</p>
+    <p>Slowpitch Road Trip is not affiliated with any tournament organization named on this site. Names are used only to identify the organizer.</p>
+    <p>Contact: <a href="mailto:slowpitchroadtrip@yahoo.com">slowpitchroadtrip@yahoo.com</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
