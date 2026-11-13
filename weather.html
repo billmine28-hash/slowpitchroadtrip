@@ -50,6 +50,7 @@
   var $ = function (id) { return document.getElementById(id); };
   var CODES = { 0: "Clear", 1: "Mostly clear", 2: "Partly cloudy", 3: "Overcast", 45: "Fog", 48: "Fog", 51: "Light drizzle", 53: "Drizzle", 55: "Heavy drizzle", 56: "Freezing drizzle", 57: "Freezing drizzle", 61: "Light rain", 63: "Rain", 65: "Heavy rain", 66: "Freezing rain", 67: "Freezing rain", 71: "Light snow", 73: "Snow", 75: "Heavy snow", 77: "Snow grains", 80: "Light showers", 81: "Showers", 82: "Heavy showers", 85: "Snow showers", 86: "Snow showers", 95: "Thunderstorms", 96: "Thunderstorms, hail", 99: "Thunderstorms, hail" };
   var DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var STATES = {AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",CO:"Colorado",CT:"Connecticut",DE:"Delaware",FL:"Florida",GA:"Georgia",HI:"Hawaii",ID:"Idaho",IL:"Illinois",IN:"Indiana",IA:"Iowa",KS:"Kansas",KY:"Kentucky",LA:"Louisiana",ME:"Maine",MD:"Maryland",MA:"Massachusetts",MI:"Michigan",MN:"Minnesota",MS:"Mississippi",MO:"Missouri",MT:"Montana",NE:"Nebraska",NV:"Nevada",NH:"New Hampshire",NJ:"New Jersey",NM:"New Mexico",NY:"New York",NC:"North Carolina",ND:"North Dakota",OH:"Ohio",OK:"Oklahoma",OR:"Oregon",PA:"Pennsylvania",RI:"Rhode Island",SC:"South Carolina",SD:"South Dakota",TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",VA:"Virginia",WA:"Washington",WV:"West Virginia",WI:"Wisconsin",WY:"Wyoming",DC:"District of Columbia"};
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   function say(t) { $("w-msg").textContent = t; }
   function json(u) { return fetch(u).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }); }
@@ -88,7 +89,7 @@
     say("Searching...");
     json("https://geocoding-api.open-meteo.com/v1/search?count=8&language=en&name=" + encodeURIComponent(name)).then(function (j) {
       var r = (j.results || []);
-      var hint = (q.split(",")[1] || "").trim().toLowerCase();
+      var hint = (q.split(",")[1] || "").trim(); if (STATES[hint.toUpperCase()]) hint = STATES[hint.toUpperCase()]; hint = hint.toLowerCase();
       if (hint) { var f = r.filter(function (x) { return (x.admin1 || "").toLowerCase().indexOf(hint) === 0 || (x.country_code || "").toLowerCase() === hint || (x.country || "").toLowerCase().indexOf(hint) === 0; }); if (f.length) r = f; }
       if (!r.length) { say("No place found. Try a city name with its state, or a ZIP code."); return; }
       if (r.length === 1) { var x = r[0]; show(x.latitude, x.longitude, x.name + ", " + (x.admin1 || x.country)); return; }
