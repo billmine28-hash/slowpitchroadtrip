@@ -31,8 +31,16 @@
       <div class="t-head">
         <div>
           <h2 id="t-h">Tournament finder</h2>
-          <p>Senior divisions only. Search by state, month, organization, or division, and click a heading to sort.</p>
+          <p>Senior divisions only. Search by state, month, organization, or division, and click a heading to sort. Tap Save on any tournament to build your own season list.</p>
         </div>
+      </div>
+
+      <div id="myseason" class="myseason" hidden>
+        <h3 id="ms-h">My Season</h3>
+        <p class="updated">Tournaments you saved. Mark where you stand, and add them to your calendar. Saved on this device only: if you clear your browser data or switch phones, your list will not follow you.</p>
+        <div id="ms-list"></div>
+        <div class="ms-actions"><button type="button" class="btn" id="ms-all" hidden>Add all to my calendar (file)</button></div>
+        <p class="updated" id="ms-status" role="status" aria-live="polite"></p>
       </div>
 
       <form class="filters" id="filters" onsubmit="return false" aria-label="Filter tournaments">
@@ -71,6 +79,7 @@
               <th scope="col"><span class="plain">Divisions</span></th>
               <th scope="col"><span class="plain">Official page</span></th>
               <th scope="col"><span class="plain">Last checked</span></th>
+              <th scope="col"><span class="plain">My Season</span></th>
             </tr>
           </thead>
           <tbody id="rows"></tbody>
@@ -164,6 +173,76 @@
   function uniq(arr) { return arr.filter(function (v, i) { return arr.indexOf(v) === i; }); }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
 
+  DATA.forEach(function (r) { r.id = (r.org + " " + r.name).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); });
+  var KEY = "srt_myseason", saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { saved = {}; }
+  function persist() { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) { say("Could not save on this device."); } }
+  function byId(id) { for (var i = 0; i < DATA.length; i++) if (DATA[i].id === id) return DATA[i]; return null; }
+  var sayT; function say(m) { var n = document.getElementById("ms-status"); if (!n) return; n.textContent = m; clearTimeout(sayT); sayT = setTimeout(function () { n.textContent = ""; }, 4000); }
+  function overlaps(a, b) { return parse(a.start) <= parse(b.end) && parse(b.start) <= parse(a.end); }
+  function place(r) { return r.loc || ((r.city ? r.city + ", " : "") + r.state).replace(/, $/, ""); }
+  function ymd(d) { return d.getFullYear() + ("0" + (d.getMonth() + 1)).slice(-2) + ("0" + d.getDate()).slice(-2); }
+  function dayAfter(iso) { var d = parse(iso); d.setDate(d.getDate() + 1); return d; }
+  function details(r) { return "Confirm dates and details with the organizer before you book. Official page: " + r.url + " (listed on slowpitchroadtrip.com)"; }
+  function gcalUrl(r) {
+    return "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + encodeURIComponent(r.name) +
+      "&dates=" + ymd(parse(r.start)) + "/" + ymd(dayAfter(r.end)) + "&location=" + encodeURIComponent(place(r)) + "&details=" + encodeURIComponent(details(r));
+  }
+  function icsEsc(x) { return String(x).replace(/\\/g, "\\\\").replace(/;/g, "\;").replace(/,/g, "\\,").replace(/\n/g, "\\n"); }
+  function stamp() { var n = new Date(); function z(v) { return ("0" + v).slice(-2); } return n.getUTCFullYear() + z(n.getUTCMonth() + 1) + z(n.getUTCDate()) + "T" + z(n.getUTCHours()) + z(n.getUTCMinutes()) + z(n.getUTCSeconds()) + "Z"; }
+  function makeIcs(list) {
+    var L = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Slowpitch Road Trip//My Season//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH"];
+    list.forEach(function (r) {
+      L.push("BEGIN:VEVENT", "UID:" + r.id + "-" + r.start + "@slowpitchroadtrip.com", "DTSTAMP:" + stamp(),
+        "DTSTART;VALUE=DATE:" + ymd(parse(r.start)), "DTEND;VALUE=DATE:" + ymd(dayAfter(r.end)),
+        "SUMMARY:" + icsEsc(r.name), "LOCATION:" + icsEsc(place(r)), "DESCRIPTION:" + icsEsc(details(r)), "END:VEVENT");
+    });
+    L.push("END:VCALENDAR");
+    return L.join("\r\n") + "\r\n";
+  }
+  function download(list, name) {
+    var blob = new Blob([makeIcs(list)], { type: "text/calendar;charset=utf-8" });
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+    say("Calendar file ready. Open it to add the dates.");
+  }
+  function mine() {
+    return Object.keys(saved).map(function (id) { return { id: id, r: byId(id) }; })
+      .sort(function (a, b) { if (!a.r) return 1; if (!b.r) return -1; return a.r.start < b.r.start ? -1 : a.r.start > b.r.start ? 1 : 0; });
+  }
+  function renderSeason() {
+    var box = document.getElementById("myseason"); if (!box) return;
+    var list = mine();
+    box.hidden = list.length === 0;
+    var live = list.filter(function (x) { return x.r; }).map(function (x) { return x.r; });
+    var today = new Date(); today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    $("ms-list").innerHTML = list.map(function (x) {
+      var r = x.r, st = saved[x.id];
+      if (!r) return '<div class="ms-card"><strong>A saved tournament is no longer listed.</strong> <button type="button" class="btn-reset" data-rm="' + esc(x.id) + '">Remove</button></div>';
+      var clash = live.filter(function (o) { return o.id !== r.id && overlaps(r, o); });
+      return '<div class="ms-card">' +
+        '<h4>' + esc(r.name) + (parse(r.end) < today ? ' <span class="chip">Ended</span>' : "") + '</h4>' +
+        '<div class="range">' + fmtRange(r.start, r.end) + " · " + esc(place(r)) + " · " + esc(r.org) + "</div>" +
+        (clash.length ? '<div class="ms-warn">Dates overlap with: ' + clash.map(function (c) { return esc(c.name); }).join(", ") + "</div>" : "") +
+        '<div class="ms-seg" role="group" aria-label="Your status for ' + esc(r.name) + '">' +
+        ["Interested", "Going", "Booked"].map(function (s) { return '<button type="button" data-status="' + esc(r.id) + "|" + s + '" class="' + (st === s ? "on" : "") + '" aria-pressed="' + (st === s) + '">' + s + "</button>"; }).join("") + "</div>" +
+        '<div class="ms-row"><a class="linkbtn" href="' + esc(gcalUrl(r)) + '" target="_blank" rel="noopener noreferrer">Add to Google Calendar</a> ' +
+        '<button type="button" class="linkbtn" data-ics="' + esc(r.id) + '">Apple / Outlook (file)</button> ' +
+        '<button type="button" class="btn-reset" data-rm="' + esc(r.id) + '">Remove</button></div></div>';
+    }).join("");
+    $("ms-all").hidden = live.length < 2;
+    $("ms-all").textContent = "Add all " + live.length + " to my calendar (file)";
+  }
+  document.addEventListener("click", function (e) {
+    var b;
+    if ((b = e.target.closest("[data-save]"))) { var id = b.getAttribute("data-save"); if (saved[id]) { delete saved[id]; say("Removed from My Season."); } else { saved[id] = "Interested"; say("Saved to My Season."); } persist(); render(); return; }
+    if ((b = e.target.closest("[data-rm]"))) { delete saved[b.getAttribute("data-rm")]; persist(); render(); return; }
+    if ((b = e.target.closest("[data-status]"))) { var p = b.getAttribute("data-status").split("|"); saved[p[0]] = p[1]; persist(); renderSeason(); return; }
+    if ((b = e.target.closest("[data-ics]"))) { var r = byId(b.getAttribute("data-ics")); if (r) download([r], r.name.replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "") + ".ics"); return; }
+  });
+  var msAll = document.getElementById("ms-all");
+  if (msAll) msAll.addEventListener("click", function () { var l = mine().filter(function (x) { return x.r; }).map(function (x) { return x.r; }); if (l.length) download(l, "My-Season.ics"); });
+
   function fillOptions() {
     uniq(DATA.map(function (r) { return r.state; })).filter(Boolean).sort().forEach(function (s) { els.state.add(new Option(s, s)); });
     uniq(DATA.map(function (r) { return parse(r.start).getMonth(); })).sort(function (a, b) { return a - b; })
@@ -234,6 +313,7 @@
         '<td data-label="Divisions">' + r.divs.map(function (x) { return '<span class="chip">' + esc(x) + "</span>"; }).join("") + (r.ages ? '<span class="range">' + esc(r.ages) + "</span>" : "") + (r.more ? '<span class="range">' + (r.divs.length ? "+ others, " : "") + "see " + esc(r.org) + "</span>" : "") + "</td>" +
         '<td data-label="Official page"><a class="linkbtn" href="' + esc(r.url) + '" target="_blank" rel="noopener noreferrer">' + esc(r.org) + ' page</a></td>' +
         '<td data-label="Last checked">' + fmtDay(r.checked) + "</td>" +
+        '<td data-label="My Season"><button type="button" class="linkbtn ms-save' + (saved[r.id] ? " on" : "") + '" data-save="' + r.id + '" aria-pressed="' + (!!saved[r.id]) + '">' + (saved[r.id] ? "Saved" : "Save") + "</button></td>" +
         "</tr>";
     }).join("");
     var dn = $("dist-note");
@@ -251,6 +331,7 @@
     });
     var sv = sortKey + ":" + sortDir;
     if (els.sort.querySelector('option[value="' + sv + '"]')) els.sort.value = sv;
+    renderSeason();
     writeUrl();
   }
 
