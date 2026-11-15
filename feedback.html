@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Feedback and Suggestions | Slowpitch Road Trip</title>
+<meta name="description" content="Send a suggestion, correction or bug report for Slowpitch Road Trip. Tell us what would make the site more useful for senior slowpitch players.">
+<link rel="canonical" href="https://billmine28-hash.github.io/slowpitchroadtrip/feedback.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Slowpitch Road Trip">
+<meta property="og:title" content="Feedback and Suggestions | Slowpitch Road Trip">
+<meta property="og:description" content="Send a suggestion, correction or bug report for Slowpitch Road Trip. Tell us what would make the site more useful for senior slowpitch players.">
+<meta property="og:url" content="https://billmine28-hash.github.io/slowpitchroadtrip/feedback.html">
+<meta property="og:image" content="https://billmine28-hash.github.io/slowpitchroadtrip/images/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Slowpitch Road Trip home"><img src="images/logo-small.png" alt="Slowpitch Road Trip logo" width="120" height="80"></a>
+    <nav class="nav" aria-label="Main">
+      <a href="tournaments.html">Tournaments</a>
+      <a href="freeagents.html">Free agents</a>
+      <a href="reviews.html">Bat reviews</a>
+      <a href="ratings.html">Ratings</a>
+      <a href="links.html">Links</a>
+      <a href="index.html#about">About</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top" class="subpage">
+  <section aria-labelledby="fb-h">
+    <div class="wrap">
+      <div class="t-head">
+        <div>
+          <h1 id="fb-h">Feedback</h1>
+          <p>Missing a tournament? Something wrong? Got an idea that would help you plan your season? Tell us.</p>
+        </div>
+      </div>
+
+      <form class="fb-form" id="fb-form" onsubmit="return false" aria-label="Send feedback">
+        <div class="field"><label for="fb-type">What is this about?</label>
+          <select id="fb-type">
+            <option>Suggestion</option>
+            <option>Tournament correction or missing event</option>
+            <option>Something is broken</option>
+            <option>Other</option>
+          </select></div>
+        <div class="field"><label for="fb-msg">Your message</label>
+          <textarea id="fb-msg" rows="6" maxlength="1500" placeholder="The more detail the better. For a tournament, include its name and dates."></textarea></div>
+        <div class="field"><label for="fb-name">Your name (optional)</label>
+          <input id="fb-name" maxlength="60" autocomplete="name"></div>
+        <button type="button" class="btn" id="fb-send">Send feedback</button>
+        <p class="updated" id="fb-note" aria-live="polite">This opens a ready-to-send email in your email app. Nothing is sent until you press Send there. Prefer to write it yourself? Email <a href="mailto:slowpitchroadtrip@yahoo.com">slowpitchroadtrip@yahoo.com</a>.</p>
+      </form>
+
+      <p class="updated">We read every message but can't promise to answer each one or to build every idea. We use your email only to reply to you.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Independent directory of listed events. Not an official association schedule. Confirm details with the organizer before booking.</p>
+    <p>Slowpitch Road Trip is not affiliated with any tournament organization named on this site. Names are used only to identify the organizer.</p>
+    <p><a href="reps.html">Equipment reps and industry contacts</a></p>
+    <p><a href="feedback.html">Send feedback</a></p>
+    <p>Contact: <a href="mailto:slowpitchroadtrip@yahoo.com">slowpitchroadtrip@yahoo.com</a></p>
+  </div>
+</footer>
+<style>
+  .fb-form { max-width: 640px; margin: 8px 0 24px; }
+  .fb-form .field { margin-bottom: 16px; }
+  .fb-form label { display: block; font-weight: 700; margin-bottom: 6px; color: var(--ball, #f5b01c); }
+  .fb-form select, .fb-form input, .fb-form textarea { width: 100%; box-sizing: border-box; font: inherit; padding: 12px; border-radius: 4px; border: 1px solid #c9d2e3; background: #fff; color: #0a1a33; }
+  .fb-form textarea { resize: vertical; min-height: 140px; }
+</style>
+<script>
+(function () {
+  var SITE_EMAIL = "slowpitchroadtrip@yahoo.com";
+  document.getElementById("fb-send").addEventListener("click", function () {
+    var msg = document.getElementById("fb-msg").value.trim();
+    var note = document.getElementById("fb-note");
+    if (!msg) { note.textContent = "Please write a message first."; document.getElementById("fb-msg").focus(); return; }
+    var type = document.getElementById("fb-type").value;
+    var name = document.getElementById("fb-name").value.trim();
+    var body = msg + "\n\n" + (name ? "From: " + name + "\n" : "") + "(Sent from the Feedback page)";
+    window.location.href = "mailto:" + SITE_EMAIL + "?subject=" + encodeURIComponent("Site feedback: " + type) + "&body=" + encodeURIComponent(body);
+  });
+})();
+</script>
+</body>
+</html>
