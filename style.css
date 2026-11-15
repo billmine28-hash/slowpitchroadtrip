@@ -208,3 +208,14 @@
 
   .trip-links { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
   .trip-links .linkbtn { margin: 0; }
+
+  .up-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 16px; }
+  .up-card { display: flex; flex-direction: column; gap: 6px; background: var(--night-2); border-top: 4px solid var(--ball); border-radius: 4px; padding: 18px; color: inherit; text-decoration: none; }
+  .up-card:hover { background: var(--night-3); }
+  .up-card strong { font-size: 1.15rem; line-height: 1.25; }
+  .up-date { color: var(--ball); font-weight: 800; }
+  .up-meta { color: var(--mist); }
+  .up-go { margin-top: auto; padding-top: 8px; font-weight: 800; }
+  .up-cta { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 12px; }
+  .watch-item .by { color: var(--mist); font-size: .9rem; }
+  .blog-card { max-width: 640px; }

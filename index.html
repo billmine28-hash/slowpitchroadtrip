@@ -46,11 +46,28 @@
     </div>
   </div>
 
+  <section id="upcoming" aria-labelledby="up-h" hidden>
+    <div class="wrap">
+      <h2 id="up-h">Upcoming tournaments</h2>
+      <p class="lede" id="up-lede">The next senior events on the calendar.</p>
+      <div class="up-grid" id="up-grid"></div>
+      <p class="up-cta"><a class="btn" href="tournaments.html" id="up-all">See all tournaments</a> <a class="btn ghost" href="tournaments.html#myseason">Plan my season</a></p>
+    </div>
+  </section>
+
   <section id="explore" aria-labelledby="x-h">
     <div class="wrap">
       <h2 id="x-h">Everything senior slowpitch</h2>
       <p class="lede">More for senior slowpitch players, beyond the menu above.</p>
       <div class="tiles">
+        <div class="tile">
+          <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="7" y="10" width="34" height="30" rx="3"/><path d="M7 19h34M15 6v8M33 6v8M15 27h6M27 27h6M15 33h6"/></svg>
+          <h3>Tournaments</h3><p>Senior events from ISSA, SSUSA, TPSSA and SPA, with maps, trip links and a season planner.</p><a class="linkbtn" href="tournaments.html">Find a tournament</a>
+        </div>
+        <div class="tile">
+          <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 40l24-24M30 8l10 10-6 6-10-10z"/></svg>
+          <h3>Bat reviews</h3><p>Video reviews from players who swing the bats, credited to their creators.</p><a class="linkbtn" href="reviews.html">Watch reviews</a>
+        </div>
         <div class="tile">
           <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M6 24h36M12 16v16M36 16v16M8 20v8M40 20v8"/></svg>
           <h3>Weight training</h3><p>Weight training channels for players over 50.</p><a class="linkbtn" href="workouts.html">See the channels</a>
@@ -76,7 +93,39 @@
           <div class="watch-frame"><iframe src="https://www.youtube-nocookie.com/embed/S8UdhqBfYCY" title="Mike Hamilton hitting" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
           <figcaption>Mike Hamilton at the plate</figcaption>
         </figure>
+        <figure class="watch-item">
+          <div class="watch-frame"><iframe src="https://www.youtube-nocookie.com/embed/I-KjPMwjoxs" title="Dudley Team Mastery Balanced" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+          <figcaption>Dudley Team Mastery Balanced<br><span class="by">by Fenway's BP with a Purpose</span></figcaption>
+        </figure>
+        <figure class="watch-item">
+          <div class="watch-frame"><iframe src="https://www.youtube-nocookie.com/embed/rGBwNOYALhE" title="Dudley Team Mastery Senior Softball Bat Review" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+          <figcaption>Dudley Team Mastery Senior Softball Bat Review<br><span class="by">by Fat Guy BP</span></figcaption>
+        </figure>
+        <figure class="watch-item">
+          <div class="watch-frame"><iframe src="https://www.youtube-nocookie.com/embed/YEZ-pT9iNz4" title="Dudley Team Mastery Balance Load SSUSA Review" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+          <figcaption>Dudley Team Mastery Balance Load SSUSA Review<br><span class="by">by Big Chef Slowpitch</span></figcaption>
+        </figure>
+        <figure class="watch-item">
+          <div class="watch-frame"><iframe src="https://www.youtube-nocookie.com/embed/4IFfrLdNHWM" title="Original Black Mastery: 1-Piece Senior Softball Bat Review" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+          <figcaption>Original Black Mastery: 1-Piece Senior Softball Bat Review<br><span class="by">by Fat Guy BP</span></figcaption>
+        </figure>
+        <figure class="watch-item">
+          <div class="watch-frame"><iframe src="https://www.youtube-nocookie.com/embed/VrMo2mO3I3k" title="Short Porch “The Recipe” SSUSA Bat Review" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+          <figcaption>Short Porch “The Recipe” SSUSA Bat Review<br><span class="by">by Big Chef Slowpitch</span></figcaption>
+        </figure>
       </div>
+      <p class="up-cta"><a class="btn ghost" href="reviews.html">More bat reviews</a></p>
+    </div>
+  </section>
+
+  <section id="blog-teaser" aria-labelledby="bt-h">
+    <div class="wrap">
+      <h2 id="bt-h">From the blog</h2>
+      <article class="tile blog-card">
+        <h3>Why I built Slowpitch Road Trip</h3>
+        <p>Finding your next senior tournament is harder than it should be. Here is why this site exists and what is coming.</p>
+        <a class="linkbtn" href="blog.html">Read the story</a>
+      </article>
     </div>
   </section>
 
@@ -177,6 +226,31 @@ document.querySelectorAll(".deal-code .copy").forEach(function (b) {
       .catch(function () { say("Something went wrong. Please try again, or email slowpitchroadtrip@yahoo.com.", "err"); })
       .then(function () { btn.disabled = false; btn.textContent = "Join the list"; });
   });
+})();
+</script>
+<script>
+/* Upcoming tournaments: reads the same list the Tournaments page uses, so it never goes stale. */
+(function () {
+  var sec = document.getElementById("upcoming"); if (!sec) return;
+  var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  function d(iso) { var p = iso.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function esc(t) { return String(t).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+  fetch("tournaments.html").then(function (r) { return r.text(); }).then(function (t) {
+    var m = t.match(/var DATA = (\[[\s\S]*?\n  \]);/); if (!m) return;
+    var DATA = (new Function("return " + m[1]))();
+    var now = new Date(); now.setHours(0, 0, 0, 0);
+    var live = DATA.filter(function (r) { return d(r.end) >= now; }).sort(function (a, b) { return d(a.start) - d(b.start); });
+    if (!live.length) return;
+    var orgs = {}; live.forEach(function (r) { orgs[r.org] = 1; });
+    document.getElementById("up-lede").textContent = live.length + " upcoming senior events from " + Object.keys(orgs).length + " organizations. Next up:";
+    document.getElementById("up-all").textContent = "See all " + live.length + " tournaments";
+    document.getElementById("up-grid").innerHTML = live.slice(0, 4).map(function (r) {
+      var a = d(r.start), b = d(r.end);
+      var range = MON[a.getMonth()] + " " + a.getDate() + (r.end !== r.start ? (b.getMonth() !== a.getMonth() ? " \u2013 " + MON[b.getMonth()] + " " + b.getDate() : "\u2013" + b.getDate()) : "") + ", " + a.getFullYear();
+      return '<a class="up-card" href="tournaments.html?q=' + encodeURIComponent(r.name) + '"><span class="up-date">' + range + '</span><strong>' + esc(r.name) + '</strong><span class="up-meta">' + esc(r.org) + ' \u00b7 ' + esc(r.loc || (r.city ? r.city + ", " : "") + r.state) + '</span><span class="up-go">See details &rarr;</span></a>';
+    }).join("");
+    sec.hidden = false;
+  }).catch(function () {});
 })();
 </script>
 </body>
