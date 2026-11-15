@@ -205,3 +205,6 @@
     .nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 12px; width: 100%; }
     .nav a { white-space: nowrap; text-align: center; }
   }
+
+  .trip-links { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .trip-links .linkbtn { margin: 0; }
