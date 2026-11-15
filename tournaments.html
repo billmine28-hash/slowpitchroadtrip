@@ -169,6 +169,12 @@
     if (d1.getMonth() === d2.getMonth()) return MON_SHORT[d1.getMonth()] + " " + d1.getDate() + "–" + d2.getDate() + ", " + y;
     return MON_SHORT[d1.getMonth()] + " " + d1.getDate() + " – " + MON_SHORT[d2.getMonth()] + " " + d2.getDate() + ", " + y;
   }
+  // An event counts as ended the day after its last day.
+  // Where results live: a hand-added link wins. SSUSA posts results on the event page itself (Tournament Results link).
+  // SSUSA and ISSA put results/brackets on the event page itself (TPSSA assumed the same; confirm after its first 2027 event ends).
+  // SPA keeps one results page listing every past event.
+  function resultsUrl(r) { return r.results || (r.org === "SSUSA" || r.org === "ISSA" || r.org === "TPSSA" ? r.url : r.org === "SPA" ? "https://www.softballspa.com/results8.aspx" : ""); }
+  function ended(r) { var t = new Date(); t = new Date(t.getFullYear(), t.getMonth(), t.getDate()); return t > parse(r.end); }
   function fmtDay(iso) { var d = parse(iso); return MON_SHORT[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear(); }
   function uniq(arr) { return arr.filter(function (v, i) { return arr.indexOf(v) === i; }); }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
@@ -311,7 +317,8 @@
         '<td data-label="Organization">' + esc(r.org) + (r.rec ? ' <span class="chip">Rec</span>' : "") + "</td>" +
         '<td data-label="Location">' + (r.loc ? esc(r.loc) : esc(r.city) + ", " + esc(r.state)) + (r._d != null ? '<span class="range"> · about ' + r._d.toLocaleString() + " mi</span>" : "") + "</td>" +
         '<td data-label="Divisions">' + r.divs.map(function (x) { return '<span class="chip">' + esc(x) + "</span>"; }).join("") + (r.ages ? '<span class="range">' + esc(r.ages) + "</span>" : "") + (r.more ? '<span class="range">' + (r.divs.length ? "+ others, " : "") + "see " + esc(r.org) + "</span>" : "") + "</td>" +
-        '<td data-label="Official page"><a class="linkbtn" href="' + esc(r.url) + '" target="_blank" rel="noopener noreferrer">' + esc(r.org) + ' page</a></td>' +
+        '<td data-label="Official page"><a class="linkbtn" href="' + esc(r.url) + '" target="_blank" rel="noopener noreferrer">' + esc(r.org) + ' page</a>' +
+          (ended(r) ? (resultsUrl(r) ? ' <a class="linkbtn results-link" href="' + esc(resultsUrl(r)) + '" target="_blank" rel="noopener noreferrer" title="Official results, on the ' + esc(r.org) + ' site">Results</a>' : ' <span class="range">Event ended</span>') : "") + '</td>' +
         '<td data-label="Last checked">' + fmtDay(r.checked) + "</td>" +
         '<td data-label="My Season"><button type="button" class="linkbtn ms-save' + (saved[r.id] ? " on" : "") + '" data-save="' + r.id + '" aria-pressed="' + (!!saved[r.id]) + '">' + (saved[r.id] ? "Saved" : "Save") + "</button></td>" +
         "</tr>";
