@@ -155,6 +155,11 @@
     { name: "First Flight of Ohio", org: "SPA", lat: 39.96, lon: -83.0, start: "2027-09-16", end: "2027-09-19", city: "Columbus", state: "OH", loc: "", divs: ["50+", "55+", "60+", "65+", "70+", "75+", "80+", "85+"], more: false, url: "https://www.softballspa.com/calendarprint.aspx", checked: "2026-11-12" },
   ];
   var PREVIEW = 6;
+  // Park list per event (names read from official event pages, then corrected by hand). Used only to aim the map search.
+  var PARKS = {"ISSA/WBSC World Tournament of Champions":[["Randy L. Larson Softball Four-Plex","Randy L. Larson Softball Four-Plex, Plant City, FL"],["William Owen Pass Softball Complex","William Owen Pass Softball Complex, FL"],["New Tampa Community Park","New Tampa Community Park, FL"],["Grecco Softball Complex","Grecco Softball Complex, FL"],["Radice Sports Complex","Radice Sports Complex, FL"],["Woodlawn Park","Woodlawn Park, FL"]],"Treasure Coast USA Championships":[["Dick Bird South County Regional Park","Dick Bird South County Regional Park, 800 20th Ave SW, Vero Beach, FL"],["Adams North County Regional Park","Adams North County Regional Park, Vero Beach, FL"]],"Southeastern Spring National":[["Kelly Mill Sports Complex","Kelly Mill Sports Complex, Elgin, SC"],["North Spring Park","North Spring Park, Elgin, SC"]],"Myrtle Beach USA Championships":[["Styers Athletic Complex","Styers Athletic Complex, Myrtle Beach, SC"],["Ned Donkle Park","Ned Donkle Park, Myrtle Beach, SC"]],"Western USA Championships":[["Crossroads Park","Crossroads Park, 1020 Research Pkwy, Temple, TX"]],"Women's Spring National":[["Mazeppa Park","Mazeppa Park, Mooresville, NC"]],"Southern USA Championships":[["Auburn Softball Complex","Auburn Softball Complex, 2560 S College St, Auburn, AL"]],"Great Smoky Mountain Senior Classic":[["Everett Park","Everett Park, TN"],["Sandy Springs Park","Sandy Springs Park, TN"],["Caswell Park","Caswell Park, TN"],["Knox County Softball Complex","Knox County Softball Complex, TN"],["Athens Regional Park","Athens Regional Park, TN"]],"WBSC Senior World Cup":[["Roanoke Valley Softball Complex","Roanoke Valley Softball Complex, VA"]],"USA Softball Senior National Championships":[["Springwood Park","Springwood Park, Burlington, NC"]],"ISSA World Championships":[["Virginia Regional Complex","Virginia Regional Complex, Richmond, VA"]],"Pic-O-Dixie Senior Classic":[["Heritage Point Park","Heritage Point Park, Dalton, GA"],["Summit Softball Complex","Summit Softball Complex, Dalton, GA"],["Murray County Rec Complex","Murray County Rec Complex, Dalton, GA"]],"Southside Indy USA Championships":[["Indianapolis Sports Park","Indianapolis Sports Park, 6701 S Harding St, Indianapolis, IN"]],"Winter World Championships":[["Cesar Chavez Park","Cesar Chavez Park, Phoenix, AZ"],["Desert West Sports Complex","Desert West Sports Complex, Phoenix, AZ"],["Papago Park Softball Complex","Papago Park Softball Complex, Phoenix, AZ"],["Rose Mofford Sports Complex","Rose Mofford Sports Complex, Phoenix, AZ"],["Sahuaro Ranch Park","Sahuaro Ranch Park, Phoenix, AZ"]],"Oahu Open":[["Patsy T. Mink Central Oahu Regional Park","Patsy T. Mink Central Oahu Regional Park, Waipahu, HI"]],"Original Tournament of Champions":[["Diamondplex Softball Complex","Diamondplex Softball Complex, FL"],["Loyce Harpe Sports Complex","Loyce Harpe Sports Complex, FL"],["Walker Road Softball Complex","Walker Road Softball Complex, FL"]]};
+  var mapOpen = {};
+  function mapChoices(r) { if (PARKS[r.name]) return PARKS[r.name]; if (r.lat == null) return null; var p = place(r); return [[p, p]]; }
+  function mapSrc(q) { return "https://maps.google.com/maps?q=" + encodeURIComponent(q) + "&t=k&z=16&output=embed"; }
   var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   var MON_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
@@ -239,8 +244,10 @@
     $("ms-all").hidden = live.length < 2;
     $("ms-all").textContent = "Add all " + live.length + " to my calendar (file)";
   }
+  document.addEventListener("change", function (e) { var m = e.target.closest && e.target.closest("[data-mapsel]"); if (m) { mapOpen[m.getAttribute("data-mapsel")] = +m.value; render(); } });
   document.addEventListener("click", function (e) {
     var b;
+    if ((b = e.target.closest("[data-map]"))) { var mid = b.getAttribute("data-map"); if (mapOpen[mid] != null) delete mapOpen[mid]; else mapOpen[mid] = 0; render(); return; }
     if ((b = e.target.closest("[data-save]"))) { var id = b.getAttribute("data-save"); if (saved[id]) { delete saved[id]; say("Removed from My Season."); } else { saved[id] = "Interested"; say("Saved to My Season."); } persist(); render(); return; }
     if ((b = e.target.closest("[data-rm]"))) { delete saved[b.getAttribute("data-rm")]; persist(); render(); return; }
     if ((b = e.target.closest("[data-status]"))) { var p = b.getAttribute("data-status").split("|"); saved[p[0]] = p[1]; persist(); renderSeason(); return; }
@@ -304,6 +311,15 @@
     });
   }
 
+  function mapRow(r) {
+    var i = mapOpen[r.id]; if (i == null) return "";
+    var ch = mapChoices(r); if (!ch) return "";
+    var c = ch[i] || ch[0];
+    var sel = ch.length > 1 ? '<label class="range">Park: <select data-mapsel="' + esc(r.id) + '">' + ch.map(function (x, k) { return '<option value="' + k + '"' + (k === i ? " selected" : "") + ">" + esc(x[0]) + "</option>"; }).join("") + "</select></label> " : '<span class="range">' + esc(c[0]) + "</span> ";
+    return '<tr class="map-row"><td colspan="8">' + sel + '<a class="linkbtn" href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(c[1]) + '" target="_blank" rel="noopener noreferrer">Open in Google Maps</a>' +
+      '<div class="map-frame"><iframe src="' + esc(mapSrc(c[1])) + '" title="Satellite map of ' + esc(c[0]) + '" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>' +
+      '<p class="range">Satellite view of the park. Field assignments change by event: check the event page.</p></td></tr>';
+  }
   function render() {
     if (!$("rows")) { writeUrl(); return; }
     var all = sorted(filtered());
@@ -318,10 +334,11 @@
         '<td data-label="Location">' + (r.loc ? esc(r.loc) : esc(r.city) + ", " + esc(r.state)) + (r._d != null ? '<span class="range"> · about ' + r._d.toLocaleString() + " mi</span>" : "") + "</td>" +
         '<td data-label="Divisions">' + r.divs.map(function (x) { return '<span class="chip">' + esc(x) + "</span>"; }).join("") + (r.ages ? '<span class="range">' + esc(r.ages) + "</span>" : "") + (r.more ? '<span class="range">' + (r.divs.length ? "+ others, " : "") + "see " + esc(r.org) + "</span>" : "") + "</td>" +
         '<td data-label="Official page"><a class="linkbtn" href="' + esc(r.url) + '" target="_blank" rel="noopener noreferrer">' + esc(r.org) + ' page</a>' +
+          (mapChoices(r) ? ' <button type="button" class="linkbtn map-btn' + (mapOpen[r.id] != null ? ' on' : '') + '" data-map="' + esc(r.id) + '" aria-expanded="' + (mapOpen[r.id] != null) + '">Map</button>' : "") +
           (ended(r) ? (resultsUrl(r) ? ' <a class="linkbtn results-link" href="' + esc(resultsUrl(r)) + '" target="_blank" rel="noopener noreferrer" title="Official results, on the ' + esc(r.org) + ' site">Results</a>' : ' <span class="range">Event ended</span>') : "") + '</td>' +
         '<td data-label="Last checked">' + fmtDay(r.checked) + "</td>" +
         '<td data-label="My Season"><button type="button" class="linkbtn ms-save' + (saved[r.id] ? " on" : "") + '" data-save="' + r.id + '" aria-pressed="' + (!!saved[r.id]) + '">' + (saved[r.id] ? "Saved" : "Save") + "</button></td>" +
-        "</tr>";
+        "</tr>" + mapRow(r);
     }).join("");
     var dn = $("dist-note");
     if (me) { var nc = DATA.filter(function (r) { return r.lat == null; }).length; dn.hidden = false; dn.textContent = "Distances from ZIP " + me.label + ", straight line. " + nc + " event" + (nc === 1 ? " has" : "s have") + " no mapped location and " + (els.miles.value ? "are hidden by the distance filter." : "show no distance."); } else if (dn.textContent.indexOf("not found") < 0) { dn.hidden = true; }
