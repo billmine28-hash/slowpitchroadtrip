@@ -99,6 +99,8 @@
       </div>
       <div class="more-row"><button type="button" class="btn" id="more" hidden>Show all tournaments</button></div>
 
+      <p class="updated" id="last-checked"></p>
+      <p class="updated">See something wrong? Use Report a correction in any row. The organizer's own page is always the authority.</p>
       <p class="updated">Showing ISSA, TPSSA, SPA, and SSUSA events so far, including SSUSA-sanctioned recreational events. Distances are straight-line estimates to the event city. More organizations are being added. Always confirm dates, fees, and divisions with the organizer before you book.</p>
     </div>
   </section>
@@ -342,8 +344,14 @@
       '<div class="map-frame"><iframe src="' + esc(mapSrc(c[1])) + '" title="Satellite map of ' + esc(c[0]) + '" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>' +
       '<p class="range">Satellite view of the park. Field assignments change by event: check the event page.</p></td></tr>';
   }
+  function corrHref(r) {
+    var body = "Event: " + r.name + "\nDates listed: " + fmtRange(r.start, r.end) + "\nOrganizer page: " + r.url + "\n\nWhat looks wrong (and where you saw the right info):\n";
+    return "mailto:slowpitchroadtrip@yahoo.com?subject=" + encodeURIComponent("Correction: " + r.name) + "&body=" + encodeURIComponent(body);
+  }
   function render() {
     if (!$("rows")) { writeUrl(); return; }
+    var lc = $("last-checked");
+    if (lc) { var mx = DATA.reduce(function (a, r) { return r.checked && r.checked > a ? r.checked : a; }, ""); if (mx) lc.textContent = "Event listings last checked " + fmtDay(mx) + "."; }
     var all = sorted(filtered());
     var limited = !showAll && !anyFilter() && all.length > PREVIEW;
     var list = limited ? all.slice(0, PREVIEW) : all;
@@ -358,7 +366,7 @@
         '<td data-label="Official page"><a class="linkbtn" href="' + esc(r.url) + '" target="_blank" rel="noopener noreferrer">' + esc(r.org) + ' page</a>' +
           (mapChoices(r) ? ' <button type="button" class="linkbtn map-btn' + (mapOpen[r.id] != null ? ' on' : '') + '" data-map="' + esc(r.id) + '" aria-expanded="' + (mapOpen[r.id] != null) + '">Map &amp; trip</button>' : "") +
           (ended(r) ? (resultsUrl(r) ? ' <a class="linkbtn results-link" href="' + esc(resultsUrl(r)) + '" target="_blank" rel="noopener noreferrer" title="Official results, on the ' + esc(r.org) + ' site">Results</a>' : ' <span class="range">Event ended</span>') : "") + '</td>' +
-        '<td data-label="Last checked">' + fmtDay(r.checked) + "</td>" +
+        '<td data-label="Last checked">' + fmtDay(r.checked) + '<span class="range"><a href="' + esc(corrHref(r)) + '">Report a correction</a></span></td>' +
         '<td data-label="My Season"><button type="button" class="linkbtn ms-save' + (saved[r.id] ? " on" : "") + '" data-save="' + r.id + '" aria-pressed="' + (!!saved[r.id]) + '">' + (saved[r.id] ? "Saved" : "Save") + "</button></td>" +
         "</tr>" + mapRow(r);
     }).join("");
