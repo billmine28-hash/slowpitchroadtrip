@@ -1,2 +1,4 @@
 User-agent: *
-Disallow: /
+Allow: /
+
+Sitemap: https://billmine28-hash.github.io/slowpitchroadtrip/sitemap.xml
