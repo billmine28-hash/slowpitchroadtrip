@@ -231,7 +231,7 @@
   .season-steps li { margin-bottom: 6px; }
 
 /* Polish pass: readable page headers, quieter empty state, tighter phone header */
-.t-head::before { background: linear-gradient(0deg, rgba(10,26,51,.96) 0%, rgba(10,26,51,.78) 50%, rgba(10,26,51,.3) 100%); }
+.t-head::before { background: linear-gradient(0deg, rgba(10,26,51,.97) 0%, rgba(10,26,51,.88) 60%, rgba(10,26,51,.4) 100%); }
 .subpage h1, .t-head h1 { line-height: 1.12; letter-spacing: .01em; }
 .t-head p { line-height: 1.5; }
 .empty.quiet { padding: 20px 0 8px; text-align: left; }
@@ -243,3 +243,8 @@
   .t-head { min-height: 170px; margin-bottom: 16px; }
   .t-head > div { padding: 18px; }
 }
+
+/* Links page: rows with several links (Name · Rules · Ratings) sit on one line */
+.link-group li:has(> a ~ a) a { display: inline-block; }
+.link-group li:has(> a ~ a) { padding: 9px 0; }
+.link-group li:has(> a ~ a) a { padding: 0; }
