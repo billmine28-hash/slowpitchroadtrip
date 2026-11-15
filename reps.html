@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Senior Slowpitch Equipment Reps | Slowpitch Road Trip</title>
+<meta name="description" content="Contact directory for senior slowpitch equipment and industry representatives, listed at their own request.">
+<link rel="canonical" href="https://billmine28-hash.github.io/slowpitchroadtrip/reps.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Slowpitch Road Trip">
+<meta property="og:title" content="Senior Slowpitch Equipment Reps | Slowpitch Road Trip">
+<meta property="og:description" content="Contact directory for senior slowpitch equipment and industry representatives, listed at their own request.">
+<meta property="og:url" content="https://billmine28-hash.github.io/slowpitchroadtrip/reps.html">
+<meta property="og:image" content="https://billmine28-hash.github.io/slowpitchroadtrip/images/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Slowpitch Road Trip home"><img src="images/logo-small.png" alt="Slowpitch Road Trip logo" width="120" height="80"></a>
+    <nav class="nav" aria-label="Main">
+      <a href="tournaments.html">Tournaments</a>
+      <a href="freeagents.html">Free agents</a>
+      <a href="reviews.html">Bat reviews</a>
+      <a href="ratings.html">Ratings</a>
+      <a href="links.html">Links</a>
+      <a href="index.html#about">About</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top" class="subpage">
+  <section aria-labelledby="rp-h">
+    <div class="wrap">
+      <div class="t-head">
+        <div>
+          <h1 id="rp-h">Equipment reps and industry contacts</h1>
+          <p>Representatives from equipment makers and other senior slowpitch businesses, listed at their own request. Reach out to them directly with questions about bats, gear and team orders.</p>
+        </div>
+      </div>
+
+      <p class="updated" id="rp-count" aria-live="polite"></p>
+      <div class="fa-grid" id="rp-list"></div>
+      <div class="empty" id="rp-empty" hidden><strong>No representatives are listed yet</strong>Check back soon, or use the button below if you represent a company.</div>
+
+      <div class="fa-join">
+        <h2>Are you a representative?</h2>
+        <p>Email us your name, company, role, territory, and the email address or phone number you want published. Please confirm you are OK with it being shown publicly. We list contacts only after we hear from you.</p>
+        <a class="btn" id="rp-join" href="#">Ask to be listed</a>
+      </div>
+
+      <p class="updated">Listings are provided by the representatives themselves. A listing is not an endorsement and does not mean any company has an official relationship with Slowpitch Road Trip. To be removed or corrected, email us.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Independent directory of listed events. Not an official association schedule. Confirm details with the organizer before booking.</p>
+    <p>Slowpitch Road Trip is not affiliated with any tournament organization named on this site. Names are used only to identify the organizer.</p>
+    <p>Contact: <a href="mailto:slowpitchroadtrip@yahoo.com">slowpitchroadtrip@yahoo.com</a></p>
+  </div>
+</footer>
+<style>
+  .fa-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin: 16px 0; }
+  .fa-card { border: 1px solid var(--line, #2a3a5e); border-radius: 6px; padding: 16px; background: rgba(255,255,255,.04); }
+  .fa-card h3 { margin: 0 0 4px; }
+  .fa-card p { margin: 4px 0; }
+  .fa-card .linkbtn { margin-top: 10px; margin-right: 8px; display: inline-block; }
+  .fa-join { margin: 28px 0; }
+</style>
+<script>
+(function () {
+  var SITE_EMAIL = "slowpitchroadtrip@yahoo.com";
+  // Add a rep ONLY after they email asking to be listed and OK publishing these details.
+  // Fields: name, company, role, region, email, phone, site (optional), added (YYYY-MM-DD).
+  var REPS = [];
+
+  function el(tag, text, cls) { var e = document.createElement(tag); if (text) e.textContent = text; if (cls) e.className = cls; return e; }
+  function link(text, href, ext) { var a = el("a", text, "linkbtn"); a.href = href; if (ext) { a.target = "_blank"; a.rel = "noopener noreferrer"; } return a; }
+  function safeUrl(u) { return /^https?:\/\//i.test(u || "") ? u : ""; }
+
+  var list = document.getElementById("rp-list");
+  REPS.forEach(function (r) {
+    var c = el("div", "", "fa-card");
+    c.appendChild(el("h3", r.name));
+    c.appendChild(el("p", r.company + (r.role ? ", " + r.role : ""), "range"));
+    if (r.region) c.appendChild(el("p", "Territory: " + r.region, "range"));
+    if (r.email) c.appendChild(link("Email", "mailto:" + encodeURIComponent(r.email).replace(/%40/g, "@")));
+    if (r.phone) c.appendChild(link("Call " + r.phone, "tel:" + r.phone.replace(/[^0-9+]/g, "")));
+    if (safeUrl(r.site)) c.appendChild(link("Website", r.site, true));
+    list.appendChild(c);
+  });
+  document.getElementById("rp-count").textContent = REPS.length ? REPS.length + (REPS.length === 1 ? " representative listed" : " representatives listed") : "";
+  document.getElementById("rp-empty").hidden = REPS.length > 0;
+  document.getElementById("rp-join").href = "mailto:" + SITE_EMAIL + "?subject=" + encodeURIComponent("Rep listing request") +
+    "&body=" + encodeURIComponent("Name:\nCompany:\nRole:\nTerritory:\nEmail to publish:\nPhone to publish (optional):\nWebsite (optional):\n\nI confirm I am OK with these details being shown publicly on Slowpitch Road Trip.");
+})();
+</script>
+</body>
+</html>
