@@ -221,3 +221,11 @@
   .blog-card { max-width: 640px; }
 
   .w-sub { font-family: var(--display); font-weight: 900; text-transform: uppercase; font-size: 1.7rem; margin: 36px 0 6px; line-height: 1; }
+
+  .subpage h1 { font-family: var(--display); font-weight: 900; text-transform: uppercase; font-size: clamp(2rem, 5.5vw, 3.2rem); line-height: 1; margin: 0 0 10px; }
+  .t-head h1 { margin: 0 0 4px; }
+
+  .signup-note { margin: 8px 0 0; color: var(--mist); font-size: .9rem; }
+  .season-card { background: var(--night-2); border-left: 6px solid var(--ball); border-radius: 4px; padding: 28px; max-width: 760px; }
+  .season-steps { margin: 0 0 8px; padding-left: 22px; line-height: 1.6; }
+  .season-steps li { margin-bottom: 6px; }

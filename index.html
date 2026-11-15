@@ -3,18 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Slowpitch Road Trip: senior slowpitch tournaments, bat reviews, weight training and more</title>
-<meta name="description" content="An independent hub for senior slowpitch players age 40 and up: tournaments, bat reviews, weight training, links, and photos.">
+<title>Slowpitch Road Trip: Senior Tournaments &amp; Bat Reviews</title>
+<meta name="description" content="Find senior slowpitch tournaments with maps and trip links, watch bat reviews, and plan your season. Independent hub for players age 40 and up.">
 <link rel="canonical" href="https://billmine28-hash.github.io/slowpitchroadtrip/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Slowpitch Road Trip">
-<meta property="og:title" content="Slowpitch Road Trip: senior slowpitch tournaments, bat reviews, weight training and more">
-<meta property="og:description" content="An independent hub for senior slowpitch players age 40 and up: tournaments, bat reviews, weight training, links, and photos.">
+<meta property="og:title" content="Slowpitch Road Trip: Senior Tournaments &amp; Bat Reviews">
+<meta property="og:description" content="Find senior slowpitch tournaments with maps and trip links, watch bat reviews, and plan your season. Independent hub for players age 40 and up.">
 <meta property="og:url" content="https://billmine28-hash.github.io/slowpitchroadtrip/">
 <meta property="og:image" content="https://billmine28-hash.github.io/slowpitchroadtrip/images/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -51,7 +53,25 @@
       <h2 id="up-h">Upcoming tournaments</h2>
       <p class="lede" id="up-lede">The next senior events on the calendar.</p>
       <div class="up-grid" id="up-grid"></div>
-      <p class="up-cta"><a class="btn" href="tournaments.html" id="up-all">See all tournaments</a> <a class="btn ghost" href="tournaments.html#myseason">Plan my season</a></p>
+      <p class="up-cta"><a class="btn" href="tournaments.html" id="up-all">See all tournaments</a> <a class="btn ghost" href="#season">Plan my season</a></p>
+    </div>
+  </section>
+
+  <section id="season" aria-labelledby="se-h">
+    <div class="wrap">
+      <div class="season-card">
+        <div>
+          <h2 id="se-h">Plan my season</h2>
+          <p class="lede">Build your own tournament list in three steps. It stays on your device, and no sign-up is needed.</p>
+          <ol class="season-steps">
+            <li><strong>Browse.</strong> Search tournaments by state, month and division.</li>
+            <li><strong>Save.</strong> Tap Save on every event you might play.</li>
+            <li><strong>Add to your calendar.</strong> Download the whole season to Google, Apple or Outlook.</li>
+          </ol>
+          <p class="up-cta"><a class="btn" href="tournaments.html" id="season-go">Start my season</a></p>
+          <p class="range" id="season-count" hidden></p>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -177,6 +197,7 @@
           <button class="btn" type="submit">Join the list</button>
         </form>
         <p class="signup-msg" id="signup-msg" role="status" aria-live="polite"></p>
+        <p class="signup-note">We use your email only to send updates from this site. You can unsubscribe at any time.</p>
       </section>
     </div>
   </div>
@@ -251,6 +272,15 @@ document.querySelectorAll(".deal-code .copy").forEach(function (b) {
     }).join("");
     sec.hidden = false;
   }).catch(function () {});
+})();
+</script>
+<script>
+/* Plan my season card: shows how many events this visitor has saved (stored only in their browser). */
+(function () {
+  try {
+    var saved = JSON.parse(localStorage.getItem("srt_myseason") || "{}"), n = Object.keys(saved).length;
+    if (n) { document.getElementById("season-go").textContent = "Open my season"; var c = document.getElementById("season-count"); c.textContent = "You have " + n + " saved tournament" + (n === 1 ? "" : "s") + ". Find them at the top of the Tournaments page."; c.hidden = false; }
+  } catch (e) {}
 })();
 </script>
 </body>
