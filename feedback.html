@@ -57,11 +57,12 @@
           <textarea id="fb-msg" rows="6" maxlength="1500" placeholder="The more detail the better. For a tournament, include its name and dates."></textarea></div>
         <div class="field"><label for="fb-name">Your name (optional)</label>
           <input id="fb-name" maxlength="60" autocomplete="name"></div>
+        <div style="position:absolute;left:-9999px" aria-hidden="true"><label>Leave empty <input id="fb-site" tabindex="-1" autocomplete="off"></label></div>
         <button type="button" class="btn" id="fb-send">Send feedback</button>
-        <p class="updated" id="fb-note" aria-live="polite">This opens a ready-to-send email in your email app. Nothing is sent until you press Send there. Prefer to write it yourself? Email <a href="mailto:slowpitchroadtrip@yahoo.com">slowpitchroadtrip@yahoo.com</a>.</p>
+        <p class="updated" id="fb-note" aria-live="polite">Your message is sent straight to us. No email app needed. Prefer email? Write <a href="mailto:slowpitchroadtrip@yahoo.com">slowpitchroadtrip@yahoo.com</a>.</p>
       </form>
 
-      <p class="updated">We read every message but can't promise to answer each one or to build every idea. We use your email only to reply to you.</p>
+      <p class="updated">We read every message but can't promise to answer each one or to build every idea. If you give a name, we see it with your message.</p>
     </div>
   </section>
 </main>
@@ -85,14 +86,28 @@
 <script>
 (function () {
   var SITE_EMAIL = "slowpitchroadtrip@yahoo.com";
-  document.getElementById("fb-send").addEventListener("click", function () {
-    var msg = document.getElementById("fb-msg").value.trim();
+  var SUPABASE_URL = "https://dvbgmbyxvmocohmikvga.supabase.co";
+  var SUPABASE_KEY = "sb_publishable_S_mAA_hBwyo2vvh2pJPC5A_fRPg7whu";
+  var btn = document.getElementById("fb-send");
+  btn.addEventListener("click", function () {
+    var msgEl = document.getElementById("fb-msg");
     var note = document.getElementById("fb-note");
-    if (!msg) { note.textContent = "Please write a message first."; document.getElementById("fb-msg").focus(); return; }
-    var type = document.getElementById("fb-type").value;
-    var name = document.getElementById("fb-name").value.trim();
-    var body = msg + "\n\n" + (name ? "From: " + name + "\n" : "") + "(Sent from the Feedback page)";
-    window.location.href = "mailto:" + SITE_EMAIL + "?subject=" + encodeURIComponent("Site feedback: " + type) + "&body=" + encodeURIComponent(body);
+    var msg = msgEl.value.trim();
+    if (document.getElementById("fb-site").value) return; // spam trap
+    if (!msg) { note.textContent = "Please write a message first."; msgEl.focus(); return; }
+    var row = { topic: document.getElementById("fb-type").value, message: msg, name: document.getElementById("fb-name").value.trim() || null };
+    btn.disabled = true;
+    note.textContent = "Sending...";
+    fetch(SUPABASE_URL + "/rest/v1/feedback", { method: "POST", headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + SUPABASE_KEY, "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify(row) })
+      .then(function (r) {
+        if (!r.ok) throw new Error(r.status);
+        msgEl.value = ""; document.getElementById("fb-name").value = "";
+        note.textContent = "Thanks! Your message was sent. We read every one.";
+      })
+      .catch(function () {
+        note.innerHTML = "Sorry, that did not go through. Please try again, or email us at <a href=\"mailto:" + SITE_EMAIL + "\">" + SITE_EMAIL + "</a>.";
+      })
+      .then(function () { btn.disabled = false; });
   });
 })();
 </script>
