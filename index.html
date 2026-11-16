@@ -41,19 +41,34 @@
       <div class="age">Built for players age 40 and up</div>
       <h1 class="hero-logo"><img src="images/logo.png" alt="Slowpitch Road Trip"></h1>
       <p class="tag">Find your next tournament. Keep your game going.</p>
-      <div class="cta-row">
-        <a class="btn" href="tournaments.html">Find a tournament</a>
-        <a class="btn ghost" href="#explore">See what's here</a>
-      </div>
+      <form class="finder" action="tournaments.html" method="get" aria-label="Find a tournament">
+        <label>State<select name="state" id="h-state"><option value="">Any state</option></select></label>
+        <label>Division<select name="div" id="h-div"><option value="">Any division</option></select></label>
+        <label>Month<select name="month" id="h-month"><option value="">Any month</option></select></label>
+        <button class="btn" type="submit">Find</button>
+      </form>
+      <p class="finder-note">Free. No sign-up needed. <a href="#explore">See what's here</a></p>
     </div>
   </div>
+
+  <section id="glance" aria-label="At a glance" hidden>
+    <div class="wrap">
+      <div class="glance">
+        <div class="g-next"><span class="g-k">Next tournament</span><strong id="g-name"></strong><span class="g-when" id="g-when"></span></div>
+        <div class="g-box"><span class="g-num" id="g-days"></span><span class="g-lab" id="g-days-lab">days to go</span></div>
+        <div class="g-box"><span class="g-num" id="g-n"></span><span class="g-lab">upcoming events</span></div>
+        <div class="g-box"><span class="g-num g-sm" id="g-chk"></span><span class="g-lab">newest check</span></div>
+      </div>
+      <ul class="g-news" id="g-news" aria-label="Site updates"></ul>
+    </div>
+  </section>
 
   <section id="upcoming" aria-labelledby="up-h" hidden>
     <div class="wrap">
       <h2 id="up-h">Upcoming tournaments</h2>
       <p class="lede" id="up-lede">The next senior events on the calendar.</p>
       <div class="up-grid" id="up-grid"></div>
-      <p class="up-cta"><a class="btn" href="tournaments.html" id="up-all">See all tournaments</a> <a class="btn ghost" href="#season">Plan my season</a></p>
+      <p class="up-cta"><a class="btn" href="tournaments.html" id="up-all">See all tournaments</a></p>
     </div>
   </section>
 
@@ -166,7 +181,7 @@
             <a class="btn" href="https://www.masterysports.com/" target="_blank" rel="sponsored noopener">Shop Mastery</a>
           </div>
         </article>
-        <article class="deal">
+        <article class="deal deal-sm">
           <a class="deal-art" href="https://anarchybats.com?bg_ref=fi0YpyYpfk" target="_blank" rel="sponsored noopener">
             <img src="https://d2xrtfsb9f45pw.cloudfront.net/creatives/images/anarchybats_15022/1762349123_IGA4p.png" alt="Anarchy Bats" loading="lazy">
           </a>
@@ -283,6 +298,46 @@ document.querySelectorAll(".deal-code .copy").forEach(function (b) {
     var saved = JSON.parse(localStorage.getItem("srt_myseason") || "{}"), n = Object.keys(saved).length;
     if (n) { document.getElementById("season-go").textContent = "Open my season"; var c = document.getElementById("season-count"); c.textContent = "You have " + n + " saved tournament" + (n === 1 ? "" : "s") + ". Find them at the top of the Tournaments page."; c.hidden = false; }
   } catch (e) {}
+})();
+</script>
+<script>
+/* Home finder + at-a-glance strip. Reads the same list the Tournaments page uses. */
+(function () {
+  var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  /* Hand-written site updates. Add a line when something real changes: ["YYYY-MM-DD", "text"]. Newest first. */
+  var NEWS = [
+    ["2026-11-16", "Feedback form now sends straight to us, no email app needed."],
+    ["2026-11-15", "Re-checked 10 event listings against the organizer pages."]
+  ];
+  function d(iso) { var p = iso.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function esc(t) { return String(t).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+  function fmt(iso) { var a = d(iso); return MON[a.getMonth()] + " " + a.getDate() + ", " + a.getFullYear(); }
+  fetch("tournaments.html").then(function (r) { return r.text(); }).then(function (t) {
+    var m = t.match(/var DATA = (\[[\s\S]*?\n  \]);/); if (!m) return;
+    var DATA = (new Function("return " + m[1]))();
+    var now = new Date(); now.setHours(0, 0, 0, 0);
+    var live = DATA.filter(function (r) { return d(r.end) >= now; }).sort(function (a, b) { return d(a.start) - d(b.start); });
+    if (!live.length) return;
+    function fill(id, vals, label) { var el = document.getElementById(id); vals.forEach(function (v) { el.add(new Option(label ? label(v) : v, v)); }); }
+    function uniq(a) { return a.filter(function (v, i) { return v && a.indexOf(v) === i; }); }
+    fill("h-state", uniq(live.map(function (r) { return r.state; })).sort());
+    var divs = uniq([].concat.apply([], live.map(function (r) { return r.divs || []; }))).sort();
+    fill("h-div", divs);
+    var months = uniq(live.map(function (r) { return String(d(r.start).getMonth()); })).sort(function (a, b) { return a - b; });
+    fill("h-month", months, function (v) { return MON[+v]; });
+
+    var next = live[0], days = Math.round((d(next.start) - now) / 86400000);
+    var a = d(next.start), b = d(next.end);
+    document.getElementById("g-name").textContent = next.name;
+    document.getElementById("g-when").textContent = MON[a.getMonth()] + " " + a.getDate() + (next.end !== next.start ? "–" + (b.getMonth() !== a.getMonth() ? MON[b.getMonth()] + " " : "") + b.getDate() : "") + " · " + (next.loc || (next.city ? next.city + ", " : "") + next.state);
+    if (days <= 0) { document.getElementById("g-days").textContent = "Now"; document.getElementById("g-days-lab").textContent = "in progress"; }
+    else { document.getElementById("g-days").textContent = days; document.getElementById("g-days-lab").textContent = days === 1 ? "day to go" : "days to go"; }
+    document.getElementById("g-n").textContent = live.length;
+    var mx = DATA.reduce(function (acc, r) { return r.checked && r.checked > acc ? r.checked : acc; }, "");
+    document.getElementById("g-chk").textContent = mx ? fmt(mx).replace(/, \d{4}$/, "") : "";
+    document.getElementById("g-news").innerHTML = NEWS.slice(0, 3).map(function (n) { return "<li><span>" + esc(fmt(n[0]).replace(/, \d{4}$/, "")) + "</span> " + esc(n[1]) + "</li>"; }).join("");
+    document.getElementById("glance").hidden = false;
+  }).catch(function () {});
 })();
 </script>
 </body>

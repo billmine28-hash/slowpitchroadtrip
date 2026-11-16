@@ -248,3 +248,33 @@
 .link-group li:has(> a ~ a) a { display: inline-block; }
 .link-group li:has(> a ~ a) { padding: 9px 0; }
 .link-group li:has(> a ~ a) a { padding: 0; }
+
+  /* Home: finder in hero + at-a-glance strip */
+  .finder { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin: 22px 0 8px; max-width: 760px; }
+  .finder label { display: flex; flex-direction: column; gap: 4px; font-size: .85rem; font-weight: 700; color: var(--mist); flex: 1 1 150px; }
+  .finder select { font: inherit; font-weight: 700; color: #fff; background: rgba(10,26,51,.88); border: 2px solid #2a4570; border-radius: 4px; padding: 11px 10px; min-height: 50px; }
+  .finder .btn { flex: 0 0 auto; }
+  .finder-note { margin: 6px 0 0; font-size: .92rem; color: var(--mist); }
+  .finder-note a { color: #fff; }
+  #glance { padding: 0 0 8px; margin-top: -28px; position: relative; z-index: 2; }
+  .glance { display: grid; grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr)); gap: 1px; background: #2a4570; border: 1px solid #2a4570; border-radius: 6px; overflow: hidden; }
+  .glance > div { background: #12284a; padding: 16px 18px; display: flex; flex-direction: column; justify-content: center; }
+  .g-k { font-size: .78rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--ball); }
+  .g-next strong { font-size: 1.15rem; color: #fff; margin: 4px 0 2px; }
+  .g-when, .g-lab { font-size: .9rem; color: var(--mist); }
+  .g-num { font-family: var(--display); font-size: 2.2rem; line-height: 1; color: var(--ball); }
+  .g-num.g-sm { font-size: 1.5rem; padding: 7px 0 6px; }
+  .g-news { list-style: none; margin: 12px 0 0; padding: 0; font-size: .92rem; color: var(--mist); }
+  .g-news li { padding: 3px 0; }
+  .g-news li span { color: var(--ball); font-weight: 800; margin-right: 6px; }
+  @media (max-width: 640px) {
+    .glance { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .glance .g-next { grid-column: 1 / -1; }
+    .finder label { flex-basis: 100%; }
+    .finder .btn { flex: 1 1 100%; }
+    #glance { margin-top: -12px; }
+  }
+  /* Gear deals: Mastery is the main partner, Anarchy is shown smaller */
+  @media (min-width: 700px) { .deals { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: start; } }
+  .deal-sm .deal-art { max-height: 190px; aspect-ratio: auto; height: 190px; }
+  .deal-sm .deal-body h3 { font-size: 1.3rem; }
