@@ -278,3 +278,7 @@
   @media (min-width: 700px) { .deals { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: start; } }
   .deal-sm .deal-art { max-height: 190px; aspect-ratio: auto; height: 190px; }
   .deal-sm .deal-body h3 { font-size: 1.3rem; }
+  /* Tournaments: heading row above finished events */
+  .ended-head td { font-weight: 800; text-transform: uppercase; letter-spacing: .06em; font-size: .85rem; color: var(--ball); padding-top: 26px; background: transparent; border: 0; }
+  /* Phones only: show two Watch videos; the rest are one tap away on the reviews page */
+  @media (max-width: 640px) { .watch-grid .watch-item:nth-child(n+3) { display: none; } }

@@ -355,11 +355,14 @@
     var lc = $("last-checked");
     if (lc) { var mx = DATA.reduce(function (a, r) { return r.checked && r.checked > a ? r.checked : a; }, ""); if (mx) lc.textContent = "Each listing shows the date it was last checked against the organizer page. Newest check: " + fmtDay(mx) + "."; }
     var all = sorted(filtered());
+    var up = all.filter(function (r) { return !ended(r); }), done = all.filter(ended);
+    all = up.concat(done); /* finished events always go last, under their own heading */
     var limited = !showAll && !anyFilter() && all.length > PREVIEW;
     var list = limited ? all.slice(0, PREVIEW) : all;
+    var firstDone = done.length ? done[0].id : null;
     $("rows").innerHTML = list.map(function (r) {
       var d = parse(r.start);
-      return "<tr>" +
+      return (r.id === firstDone ? '<tr class="ended-head"><td colspan="8">Recently finished</td></tr>' : "") + "<tr>" +
         '<td data-label="Dates"><div class="date-cell"><span class="cal"><span class="m">' + MON_SHORT[d.getMonth()] + '</span><span class="d">' + d.getDate() + '</span></span><span class="range">' + fmtRange(r.start, r.end) + "</span></div></td>" +
         '<td class="event">' + esc(r.name) + "</td>" +
         '<td data-label="Organization">' + esc(r.org) + (r.rec ? ' <span class="chip">Rec</span>' : "") + "</td>" +
@@ -377,8 +380,8 @@
     $("empty").hidden = all.length > 0;
     $("tbl").hidden = all.length === 0;
     $("more").hidden = !limited;
-    $("more").textContent = "Show all " + all.length + " tournaments";
-    $("count").textContent = all.length === 1 ? "1 tournament found" : all.length + " tournaments found";
+    $("more").textContent = "Show all " + up.length + " tournaments";
+    $("count").textContent = (up.length === 1 ? "1 upcoming tournament found" : up.length + " upcoming tournaments found") + (done.length ? ", plus " + done.length + " recently finished at the bottom" : "");
 
     document.querySelectorAll("thead th[data-key]").forEach(function (th) {
       var on = th.getAttribute("data-key") === sortKey;
