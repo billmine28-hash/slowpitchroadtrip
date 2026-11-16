@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Season Tracker | Slowpitch Road Trip</title>
+<meta name="description" content="A free season stat tracker for senior slowpitch players. Saved on your own phone.">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+<link rel="stylesheet" href="style.css">
+<style>
+  :root { --night: #0a1a33; --ball: #fbb41b; --mist: #b9c6dd; --display: Impact, "Arial Narrow Bold", sans-serif; }
+  body { background: var(--night); color: #fff; font-family: "Avenir Next", Arial, sans-serif; margin: 0; }
+  .tk a, footer a, .nav a { color: var(--ball); }
+  .tk { max-width: 880px; margin: 0 auto; padding: 0 16px; }
+  .tk h1 { margin-bottom: 4px; }
+  .tk-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; margin: 14px 0 18px; }
+  .tk-bar label, .tk-form label { font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--mist); display: block; margin-bottom: 3px; }
+  .tk select, .tk input[type=text], .tk input[type=date], .tk input[type=number] { background: rgba(255,255,255,.07); border: 1px solid #2a3a5e; border-radius: 6px; color: #fff; font-size: 16px; padding: 9px 10px; width: 100%; font-family: inherit; }
+  .tk-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .tk-tabs button, .tk-btn { background: rgba(255,255,255,.08); color: #fff; border: 1px solid #2a3a5e; border-radius: 6px; padding: 10px 16px; font-size: .9rem; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .tk-tabs button.on, .tk-btn.main { background: var(--ball); color: #0a1a33; border-color: var(--ball); }
+  .tk-btn.warn { color: #ff9b9b; }
+  .tk-pane { display: none; }
+  .tk-pane.on { display: block; }
+  .tk-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-bottom: 18px; }
+  .tk-card { border: 1px solid #2a3a5e; border-radius: 8px; padding: 12px 8px; text-align: center; background: rgba(255,255,255,.04); }
+  .tk-card b { display: block; font-size: 1.6rem; font-family: var(--display); color: #fff; }
+  .tk-card.hi b { color: var(--ball); }
+  .tk-card span { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--mist); }
+  .tk-form { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .tk-step { display: flex; gap: 4px; }
+  .tk-step button { width: 42px; flex: none; background: rgba(255,255,255,.1); border: 1px solid #2a3a5e; color: #fff; border-radius: 6px; font-size: 1.2rem; cursor: pointer; }
+  .tk-step input { text-align: center; }
+  .tk-wide { grid-column: 1 / -1; }
+  .tk-table { overflow-x: auto; }
+  .tk-table table { border-collapse: collapse; width: 100%; min-width: 560px; }
+  .tk-table th, .tk-table td { padding: 8px 6px; text-align: center; border-bottom: 1px solid #22345a; font-size: .85rem; }
+  .tk-table th { color: var(--mist); font-size: .7rem; text-transform: uppercase; }
+  .tk-msg { min-height: 1.4em; margin: 10px 0; color: var(--ball); font-weight: 700; }
+  .tk-note { font-size: .8rem; color: var(--mist); margin-top: 6px; }
+  .tk-trend { display: flex; gap: 4px; align-items: flex-end; height: 70px; margin: 8px 0 18px; }
+  .tk-trend i { flex: 1; background: var(--ball); border-radius: 3px 3px 0 0; min-height: 3px; }
+  .tk-warn { border: 1px solid var(--ball); border-radius: 8px; padding: 12px 14px; margin-bottom: 16px; background: rgba(251,180,27,.12); }
+  .tk-warn p { margin: 0 0 8px; font-weight: 700; }
+  .tk-warn .tk-btn { margin-right: 8px; }
+  .tk-print-head { display: none; }
+  @media print {
+    .tk-warn, #tk-backupline { display: none !important; }
+    body { background: #fff !important; color: #000 !important; }
+    .topbar, footer, .tk-tabs, .tk-bar, .tk-pane:not(#p-stats), .tk-noprint { display: none !important; }
+    #p-stats { display: block !important; }
+    .tk-print-head { display: block; margin-bottom: 10px; }
+    .tk-card { border-color: #999; background: #fff; }
+    .tk-card b, .tk-card.hi b { color: #000; }
+    .tk-card span { color: #333; }
+    .tk-trend i { background: #444; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Slowpitch Road Trip home"><img src="images/logo-small.png" alt="Slowpitch Road Trip logo" width="120" height="80"></a>
+    <nav class="nav" aria-label="Main">
+      <a href="tournaments.html">Tournaments</a>
+      <a href="freeagents.html">Free agents</a>
+      <a href="reviews.html">Bat reviews</a>
+      <a href="ratings.html">Ratings</a>
+      <a href="links.html">Links</a>
+      <a href="index.html#about">About</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top" class="subpage">
+  <section class="wrap tk" aria-labelledby="tk-h">
+    <h1 id="tk-h">Season Tracker</h1>
+    <p class="lede">Log each game and watch your season add up. It is saved on this phone only.</p>
+
+    <div class="tk-bar">
+      <div style="min-width:100%;flex:1 1 100%"><label for="tk-name">Player name</label><input type="text" id="tk-name" placeholder="Your name" autocomplete="off"></div>
+      <div style="min-width:130px;flex:1"><label for="tk-season">Season</label><select id="tk-season"></select></div>
+      <button type="button" class="tk-btn" id="tk-newseason" style="flex:1;min-width:130px">+ New season</button>
+    </div>
+
+    <div class="tk-tabs" role="tablist">
+      <button type="button" class="on" data-tab="stats">My stats</button>
+      <button type="button" data-tab="add">Add a game</button>
+      <button type="button" data-tab="log">Game log</button>
+      <button type="button" data-tab="backup">Backup</button>
+    </div>
+
+    <div class="tk-msg" id="tk-msg" role="status" aria-live="polite"></div>
+
+    <div class="tk-pane on" id="p-stats">
+      <div class="tk-warn tk-noprint" id="tk-warn" hidden>
+        <p id="tk-warntext"></p>
+        <button type="button" class="tk-btn main" id="tk-warnsave">Save backup now</button>
+        <button type="button" class="tk-btn" id="tk-warnlater">Remind me later</button>
+      </div>
+      <p class="tk-note" id="tk-backupline"></p>
+      <p class="tk-noprint"><button type="button" class="tk-btn" id="tk-quicksave">Save backup</button> <button type="button" class="tk-btn" id="tk-quickrestore">Restore backup</button></p>
+      <div class="tk-print-head"><h2 id="tk-printtitle"></h2></div>
+      <div class="tk-cards" id="tk-cards"></div>
+      <h2 style="font-size:1.1rem">Batting average, game by game</h2>
+      <div class="tk-trend" id="tk-trend" aria-hidden="true"></div>
+      <p class="tk-note" id="tk-trendnote"></p>
+      <p class="tk-noprint"><button type="button" class="tk-btn main" id="tk-print">Print my season</button></p>
+    </div>
+
+    <div class="tk-pane" id="p-add">
+      <div class="tk-form" id="tk-form">
+        <div><label for="g-date">Date</label><input type="date" id="g-date"></div>
+        <div class="tk-wide"><label for="g-opp">Opponent (optional)</label><input type="text" id="g-opp" placeholder="Team name" autocomplete="off"></div>
+      </div>
+      <p class="tk-note">At-bats do not include walks or sacrifices. Hits cannot be more than at-bats.</p>
+      <div class="tk-form" id="tk-steppers" style="margin-top:12px"></div>
+      <div class="tk-form" style="margin-top:12px"><div class="tk-wide"><label for="g-notes">Notes (optional)</label><input type="text" id="g-notes" autocomplete="off"></div></div>
+      <p style="margin-top:16px"><button type="button" class="tk-btn main" id="tk-save">Save game</button></p>
+    </div>
+
+    <div class="tk-pane" id="p-log"><div class="tk-table" id="tk-log"></div></div>
+
+    <div class="tk-pane" id="p-backup">
+      <p>Your games live in this browser only. If you clear your browser data or switch phones, they will not follow you. Save a backup file once in a while.</p>
+      <p><button type="button" class="tk-btn main" id="tk-export">Save backup file</button></p>
+      <p><button type="button" class="tk-btn" id="tk-importbtn">Restore from backup file</button>
+      <input type="file" id="tk-import" accept=".json,application/json" hidden></p>
+      <p class="tk-note" id="tk-backupline2"></p>
+      <p class="tk-note" id="tk-persist"></p>
+      <p class="tk-note">Restoring adds games that are missing. It will not create duplicates.</p>
+      <p style="margin-top:28px"><button type="button" class="tk-btn warn" id="tk-clear">Erase everything on this phone</button></p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Slowpitch Road Trip is independent. Stats are only as accurate as what you enter.</p>
+    <p><a href="feedback.html">Send feedback</a></p>
+    <p>Contact: <a href="mailto:slowpitchroadtrip@yahoo.com">slowpitchroadtrip@yahoo.com</a></p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var KEY = "srt_tracker_v1";
+  var FIELDS = [
+    ["ab", "At-bats"], ["s", "Singles"], ["d", "Doubles"], ["t", "Triples"], ["hr", "Home runs"],
+    ["bb", "Walks"], ["rbi", "RBI"], ["r", "Runs"], ["sac", "Sacrifices"], ["k", "Strikeouts"]
+  ];
+  var db = { name: "", season: "", seasons: [], games: [] };
+  try { var raw = JSON.parse(localStorage.getItem(KEY) || "null"); if (raw && Array.isArray(raw.games)) db = raw; } catch (e) {}
+  if (!Array.isArray(db.seasons)) db.seasons = [];
+
+  function $(id) { return document.getElementById(id); }
+  function persist() { try { localStorage.setItem(KEY, JSON.stringify(db)); return true; } catch (e) { say("Could not save on this phone.", true); return false; } }
+  var msgTimer;
+  function say(t) { $("tk-msg").textContent = t; clearTimeout(msgTimer); msgTimer = setTimeout(function () { $("tk-msg").textContent = ""; }, 3500); }
+  function el(tag, text, cls) { var e = document.createElement(tag); if (text !== undefined && text !== null) e.textContent = text; if (cls) e.className = cls; return e; }
+  function n(v) { v = parseInt(v, 10); return isFinite(v) && v > 0 ? v : 0; }
+  function fmtDate(iso) { var d = new Date(iso); return isNaN(d) ? "" : d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }); }
+  function backupInfo() {
+    var total = db.games.length, since = total - (db.backupGames || 0);
+    var line = db.lastBackup ? "Last backup: " + fmtDate(db.lastBackup) : "Last backup: never";
+    var warn = "";
+    if (total > 0 && since > 0 && !(db.snoozeUntil && Date.now() < db.snoozeUntil)) {
+      var age = db.lastBackup ? (Date.now() - new Date(db.lastBackup).getTime()) / 86400000 : 9999;
+      if (!db.lastBackup && total >= 3) warn = "You have " + total + " game" + (total > 1 ? "s" : "") + " and no backup. Save one.";
+      else if (db.lastBackup && (since >= 5 || (age > 30 && since >= 1))) warn = "You have " + since + " game" + (since > 1 ? "s" : "") + " added since your last backup (" + fmtDate(db.lastBackup) + "). Save a new one.";
+    }
+    $("tk-backupline").textContent = line; $("tk-backupline2").textContent = line;
+    $("tk-warn").hidden = !warn; $("tk-warntext").textContent = warn;
+  }
+  function askPersist() {
+    var out = $("tk-persist");
+    try {
+      if (navigator.storage && navigator.storage.persist) {
+        navigator.storage.persist().then(function (ok) { out.textContent = ok ? "Your browser agreed to keep this data. A backup file is still the safest copy." : "Your browser did not promise to keep this data. Keep a backup file."; }, function () {});
+      } else { out.textContent = "This browser cannot promise to keep your data. Keep a backup file."; }
+    } catch (e) {}
+  }
+  function rate(a, b) { if (!b) return ".000"; var x = (a / b).toFixed(3); return x.indexOf("0.") === 0 ? x.slice(1) : x; }
+  function hits(g) { return g.s + g.d + g.t + g.hr; }
+  function bases(g) { return g.s + 2 * g.d + 3 * g.t + 4 * g.hr; }
+
+  // Seasons
+  var thisYear = String(new Date().getFullYear());
+  if (!db.seasons.length) { db.seasons = [thisYear]; }
+  db.games.forEach(function (g) { if (db.seasons.indexOf(g.season) < 0 && g.season) db.seasons.push(g.season); });
+  if (db.seasons.indexOf(db.season) < 0) db.season = db.seasons[db.seasons.length - 1];
+  db.seasons.sort();
+
+  function fillSeasons() {
+    var s = $("tk-season"); s.textContent = "";
+    db.seasons.forEach(function (y) { var o = el("option", y); o.value = y; if (y === db.season) o.selected = true; s.appendChild(o); });
+  }
+  function cur() { return db.games.filter(function (g) { return g.season === db.season; }).sort(function (a, b) { return (a.date || "").localeCompare(b.date || "") || a.id - b.id; }); }
+
+  // Steppers
+  var st = $("tk-steppers");
+  FIELDS.forEach(function (f) {
+    var w = el("div"); var l = el("label", f[1]); l.setAttribute("for", "g-" + f[0]);
+    var row = el("div", "", "tk-step");
+    var minus = el("button", "−"); minus.type = "button"; minus.setAttribute("aria-label", "Less " + f[1]);
+    var inp = el("input"); inp.type = "number"; inp.min = "0"; inp.value = "0"; inp.id = "g-" + f[0]; inp.inputMode = "numeric";
+    var plus = el("button", "+"); plus.type = "button"; plus.setAttribute("aria-label", "More " + f[1]);
+    minus.onclick = function () { inp.value = Math.max(0, n(inp.value) - 1); };
+    plus.onclick = function () { inp.value = n(inp.value) + 1; };
+    row.appendChild(minus); row.appendChild(inp); row.appendChild(plus);
+    w.appendChild(l); w.appendChild(row); st.appendChild(w);
+  });
+
+  function today() { var d = new Date(); return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
+  function resetForm() {
+    FIELDS.forEach(function (f) { $("g-" + f[0]).value = "0"; });
+    $("g-opp").value = ""; $("g-notes").value = ""; $("g-date").value = today();
+  }
+
+  // Stats
+  function totals(list) {
+    var t = { g: list.length }; FIELDS.forEach(function (f) { t[f[0]] = 0; });
+    list.forEach(function (g) { FIELDS.forEach(function (f) { t[f[0]] += g[f[0]] || 0; }); });
+    t.h = t.s + t.d + t.t + t.hr; t.tb = t.s + 2 * t.d + 3 * t.t + 4 * t.hr;
+    return t;
+  }
+  function card(label, value, hi) { var c = el("div", "", "tk-card" + (hi ? " hi" : "")); c.appendChild(el("b", value)); c.appendChild(el("span", label)); return c; }
+
+  function renderStats() {
+    var list = cur(), t = totals(list);
+    var pa = t.ab + t.bb + t.sac;
+    var obp = pa ? (t.h + t.bb) / pa : 0, slg = t.ab ? t.tb / t.ab : 0;
+    var best = 0; list.forEach(function (g) { best = Math.max(best, hits(g)); });
+    var last = list.slice(-5), lt = totals(last);
+    var box = $("tk-cards"); box.textContent = "";
+    if (!list.length) { box.appendChild(el("p", "No games yet for " + db.season + ". Tap \"Add a game\" after your next one.")); }
+    else {
+      [["Games", t.g], ["Avg", rate(t.h, t.ab), 1], ["OBP", rate(t.h + t.bb, pa), 1], ["SLG", rate(t.tb, t.ab)], ["OPS", (obp + slg).toFixed(3).replace(/^0/, "")],
+       ["Hits", t.h], ["Home runs", t.hr, t.hr > 0], ["RBI", t.rbi], ["Runs", t.r], ["Walks", t.bb], ["At-bats", t.ab],
+       ["Hits / game", (t.h / t.g).toFixed(2)], ["Best game (hits)", best], ["Last 5 avg", rate(lt.h, lt.ab)]].forEach(function (c) { box.appendChild(card(c[0], c[1], c[2])); });
+    }
+    var tr = $("tk-trend"); tr.textContent = "";
+    var hasAB = list.filter(function (g) { return g.ab > 0; });
+    hasAB.forEach(function (g) { var i = el("i"); i.style.height = Math.max(3, Math.round(70 * hits(g) / g.ab)) + "px"; i.title = (g.date || "") + ": " + hits(g) + " for " + g.ab; tr.appendChild(i); });
+    $("tk-trendnote").textContent = hasAB.length ? "Each bar is one game: hits divided by at-bats. A full bar is a perfect day." : "";
+    $("tk-printtitle").textContent = (db.name ? db.name + " – " : "") + db.season + " season, Slowpitch Road Trip";
+  }
+
+  function renderLog() {
+    var list = cur(), box = $("tk-log"); box.textContent = "";
+    if (!list.length) { box.appendChild(el("p", "No games yet for " + db.season + ".")); return; }
+    var tb = el("table"), hd = el("tr");
+    ["Date", "Opp", "AB", "H", "2B", "3B", "HR", "BB", "RBI", "R", "AVG", ""].forEach(function (h) { hd.appendChild(el("th", h)); });
+    tb.appendChild(hd);
+    list.forEach(function (g) {
+      var r = el("tr");
+      [g.date ? g.date.slice(5).replace("-", "/") : "—", g.opp || "—", g.ab, hits(g), g.d, g.t, g.hr, g.bb, g.rbi, g.r, rate(hits(g), g.ab)].forEach(function (v) { r.appendChild(el("td", v)); });
+      var td = el("td"), x = el("button", "✕", "tk-btn warn"); x.type = "button"; x.setAttribute("aria-label", "Delete this game");
+      x.onclick = function () { if (!confirm("Delete this game?")) return; db.games = db.games.filter(function (q) { return q.id !== g.id; }); persist(); render(); say("Game deleted."); };
+      td.appendChild(x); r.appendChild(td); tb.appendChild(r);
+    });
+    box.appendChild(tb);
+  }
+  function render() { renderStats(); renderLog(); backupInfo(); }
+
+  // Tabs
+  function tab(name) {
+    document.querySelectorAll(".tk-tabs button").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-tab") === name); });
+    document.querySelectorAll(".tk-pane").forEach(function (p) { p.classList.toggle("on", p.id === "p-" + name); });
+  }
+  document.querySelectorAll(".tk-tabs button").forEach(function (b) { b.onclick = function () { tab(b.getAttribute("data-tab")); }; });
+
+  // Save a game
+  $("tk-save").onclick = function () {
+    var g = { id: Date.now() + Math.floor(Math.random() * 1000), season: db.season, date: $("g-date").value, opp: $("g-opp").value.trim().slice(0, 60), notes: $("g-notes").value.trim().slice(0, 200) };
+    FIELDS.forEach(function (f) { g[f[0]] = n($("g-" + f[0]).value); });
+    if (hits(g) > g.ab) { say("Hits cannot be more than at-bats."); return; }
+    if (!g.ab && !g.bb && !g.sac) { say("Enter at least one at-bat or walk."); return; }
+    if (!g.date) { say("Pick a date."); return; }
+    db.games.push(g); if (!persist()) { db.games.pop(); return; }
+    askPersist(); resetForm(); render(); tab("stats"); say("Game saved.");
+  };
+
+  $("tk-name").value = db.name || "";
+  $("tk-name").addEventListener("input", function () { db.name = this.value.slice(0, 60); persist(); renderStats(); });
+  $("tk-season").onchange = function () { db.season = this.value; persist(); render(); };
+  $("tk-newseason").onclick = function () {
+    var y = (prompt("New season (for example 2028):") || "").trim();
+    if (!/^\d{4}$/.test(y)) { if (y) say("Use a four digit year."); return; }
+    if (db.seasons.indexOf(y) < 0) db.seasons.push(y);
+    db.seasons.sort(); db.season = y; persist(); fillSeasons(); render();
+  };
+  $("tk-warnsave").onclick = function () { $("tk-export").click(); };
+  $("tk-warnlater").onclick = function () { db.snoozeUntil = Date.now() + 7 * 86400000; persist(); backupInfo(); };
+  $("tk-quicksave").onclick = function () { $("tk-export").click(); };
+  $("tk-quickrestore").onclick = function () { $("tk-import").click(); };
+  $("tk-print").onclick = function () { window.print(); };
+
+  // Backup
+  $("tk-export").onclick = function () {
+    var blob = new Blob([JSON.stringify({ app: "srt-tracker", version: 1, exported: new Date().toISOString(), name: db.name, seasons: db.seasons, games: db.games }, null, 2)], { type: "application/json" });
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+    a.download = "season-tracker-backup-" + today() + ".json"; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    db.lastBackup = new Date().toISOString(); db.backupGames = db.games.length; db.snoozeUntil = 0; persist(); backupInfo(); say("Backup saved to your downloads. Check that the file is there.");
+  };
+  $("tk-importbtn").onclick = function () { $("tk-import").click(); };
+  $("tk-import").onchange = function (e) {
+    var f = e.target.files[0]; if (!f) return;
+    var rd = new FileReader();
+    rd.onload = function () {
+      try {
+        var d = JSON.parse(rd.result);
+        if (!d || !Array.isArray(d.games)) throw 0;
+        var have = {}; db.games.forEach(function (g) { have[g.id] = 1; }); var add = 0;
+        d.games.forEach(function (g) {
+          if (!g || have[g.id] || !/^\d{4}$/.test(String(g.season))) return;
+          var c = { id: +g.id || Date.now() + add, season: String(g.season), date: String(g.date || "").slice(0, 10), opp: String(g.opp || "").slice(0, 60), notes: String(g.notes || "").slice(0, 200) };
+          FIELDS.forEach(function (q) { c[q[0]] = n(g[q[0]]); });
+          db.games.push(c); have[c.id] = 1; add++;
+          if (db.seasons.indexOf(c.season) < 0) db.seasons.push(c.season);
+        });
+        if (!db.name && d.name) db.name = String(d.name).slice(0, 60);
+        db.seasons.sort(); persist(); fillSeasons(); $("tk-name").value = db.name || ""; render();
+        say(add ? "Restored " + add + " game" + (add > 1 ? "s" : "") + "." : "No new games to add.");
+      } catch (x) { say("That file is not a valid backup."); }
+    };
+    rd.readAsText(f); e.target.value = "";
+  };
+  $("tk-clear").onclick = function () {
+    if (!confirm("Erase ALL games on this phone? This cannot be undone.")) return;
+    if (!confirm("Last chance. Erase everything?")) return;
+    db = { name: "", season: thisYear, seasons: [thisYear], games: [], lastBackup: "", backupGames: 0 }; persist(); fillSeasons(); $("tk-name").value = ""; render(); say("Everything erased.");
+  };
+
+  fillSeasons(); resetForm(); render();
+  try { if (navigator.storage && navigator.storage.persisted) navigator.storage.persisted().then(function (p) { if (p) $("tk-persist").textContent = "Your browser agreed to keep this data. A backup file is still the safest copy."; }); } catch (e) {}
+})();
+</script>
+</body>
+</html>
