@@ -195,12 +195,12 @@
         <p>Slowpitch Road Trip is an independent project by a senior slowpitch player who runs the All Things Slowpitch Facebook group.</p>
       </section>
       <section aria-labelledby="e-h">
-        <h2 id="e-h">New listings by email</h2>
-        <p>About one email a month with new tournaments and site updates. Nothing else.</p>
+        <h2 id="e-h">Get the free Season Tracker</h2>
+        <p>Join the email list and get a free season stat tracker for your phone. Log each game and watch your average, on-base and slugging add up. You also get about one email a month with new tournaments and site updates. Nothing else.</p>
         <form class="signup" id="signup" action="https://app.kit.com/forms/10168040/subscriptions" method="post">
           <label for="email" style="position:absolute;left:-9999px">Email address</label>
           <input id="email" name="email_address" type="email" placeholder="you@example.com" autocomplete="email" required>
-          <button class="btn" type="submit">Join the list</button>
+          <button class="btn" type="submit">Get the free tracker</button>
         </form>
         <p class="signup-msg" id="signup-msg" role="status" aria-live="polite"></p>
         <p class="signup-note">We use your email only to send updates from this site. You can unsubscribe at any time.</p>
@@ -247,13 +247,13 @@ document.querySelectorAll(".deal-code .copy").forEach(function (b) {
       .then(function (res) {
         if (res.ok && (!res.d.status || res.d.status === "success")) {
           form.reset();
-          say("Thanks, you're on the list! Check your inbox for a confirmation email.", "ok");
+          say("Thanks! Check your inbox and tap the confirm button. Your free Season Tracker opens right after you confirm.", "ok");
         } else {
           say("That didn't go through. Please check your email address and try again.", "err");
         }
       })
       .catch(function () { say("Something went wrong. Please try again, or email slowpitchroadtrip@yahoo.com.", "err"); })
-      .then(function () { btn.disabled = false; btn.textContent = "Join the list"; });
+      .then(function () { btn.disabled = false; btn.textContent = "Get the free tracker"; });
   });
 })();
 </script>
