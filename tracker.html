@@ -103,8 +103,12 @@
         <button type="button" class="tk-btn main" id="tk-warnsave">Save backup now</button>
         <button type="button" class="tk-btn" id="tk-warnlater">Remind me later</button>
       </div>
+      <div class="tk-noprint" id="tk-first" hidden>
+        <p><strong>Welcome.</strong> Your stats show up here once you add a game.</p>
+        <p><button type="button" class="tk-btn main" id="tk-firstadd">Add your first game</button></p>
+      </div>
       <p class="tk-note" id="tk-backupline"></p>
-      <p class="tk-noprint"><button type="button" class="tk-btn" id="tk-quicksave">Save backup</button> <button type="button" class="tk-btn" id="tk-quickrestore">Restore backup</button></p>
+      <p class="tk-noprint" id="tk-quickrow"><button type="button" class="tk-btn" id="tk-quicksave">Save backup</button> <button type="button" class="tk-btn" id="tk-quickrestore">Restore backup</button></p>
       <div class="tk-print-head"><h2 id="tk-printtitle"></h2></div>
       <div class="tk-cards" id="tk-cards"></div>
       <h2 style="font-size:1.1rem">Batting average, game by game</h2>
@@ -176,6 +180,8 @@
     }
     $("tk-backupline").textContent = line; $("tk-backupline2").textContent = line;
     $("tk-warn").hidden = !warn; $("tk-warntext").textContent = warn;
+    var empty = total === 0;
+    $("tk-first").hidden = !empty; $("tk-quickrow").hidden = empty; $("tk-backupline").hidden = empty;
   }
   function askPersist() {
     var out = $("tk-persist");
@@ -297,6 +303,7 @@
   };
   $("tk-warnsave").onclick = function () { $("tk-export").click(); };
   $("tk-warnlater").onclick = function () { db.snoozeUntil = Date.now() + 7 * 86400000; persist(); backupInfo(); };
+  $("tk-firstadd").onclick = function () { var b = document.querySelector('.tk-tabs button[data-tab="add"]'); if (b) b.click(); };
   $("tk-quicksave").onclick = function () { $("tk-export").click(); };
   $("tk-quickrestore").onclick = function () { $("tk-import").click(); };
   $("tk-print").onclick = function () { window.print(); };
