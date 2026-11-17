@@ -113,6 +113,11 @@
   .deal-code strong { color: var(--ball); font-size: 1.1rem; letter-spacing: .04em; user-select: all; overflow-wrap: anywhere; }
   .deal-code .copy { margin-left: auto; font: inherit; font-size: .85rem; font-weight: 800; background: transparent; color: var(--white); border: 2px solid var(--white); border-radius: 4px; padding: 4px 12px; min-height: 40px; cursor: pointer; }
   .deal-code .copy:hover { background: var(--white); color: var(--night); }
+  @media (max-width: 560px) {
+    .deal-code { flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 6px; padding: 12px 10px; }
+    .deal-code strong { font-size: 1.25rem; }
+    .deal-code .copy { margin-left: 0; width: 100%; }
+  }
   .disclosure { color: var(--mist); font-size: .85rem; margin: 18px 0 0; max-width: 80ch; }
 
   /* about */
