@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Senior Slowpitch Tournament Results | Slowpitch Road Trip</title>
+<meta name="description" content="Official results for finished senior slowpitch tournaments from SSUSA, ISSA, TPSSA and SPA, one tap away on each organizer's own site.">
+<link rel="canonical" href="https://slowpitchroadtrip.com/results.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Slowpitch Road Trip">
+<meta property="og:title" content="Senior Slowpitch Tournament Results | Slowpitch Road Trip">
+<meta property="og:description" content="Official results for finished senior slowpitch tournaments, one tap away on each organizer's own site.">
+<meta property="og:url" content="https://slowpitchroadtrip.com/results.html">
+<meta property="og:image" content="https://slowpitchroadtrip.com/images/og-image-logo.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+<link rel="stylesheet" href="style.css">
+<style>
+  .rs-bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin: 16px 0 6px; }
+  .rs-bar label { display: block; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--mist); margin-bottom: 4px; }
+  .rs-bar select { background: rgba(255,255,255,.07); border: 2px solid var(--night-3); border-radius: 4px; color: #fff; font: inherit; padding: 10px 12px; min-height: 44px; }
+  .rs-month { font-family: var(--display); text-transform: uppercase; font-size: 1.4rem; margin: 26px 0 10px; color: var(--ball); }
+  .rs-list { display: grid; gap: 12px; }
+  .rs-card { background: var(--night-2); border-left: 4px solid var(--ball); border-radius: 4px; padding: 14px 16px; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; }
+  .rs-card h3 { margin: 0; font-size: 1.15rem; }
+  .rs-meta { color: var(--mist); font-size: .95rem; margin: 2px 0 0; }
+  .rs-org { display: inline-block; font-size: .75rem; font-weight: 800; letter-spacing: .06em; border: 2px solid var(--ball); border-radius: 4px; padding: 1px 8px; margin-right: 8px; color: var(--ball); }
+  .rs-empty { background: var(--night-2); border-radius: 4px; padding: 18px 20px; margin: 16px 0; }
+  .rs-next { margin-top: 36px; }
+  .rs-next ul { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 8px; }
+  .rs-next li { background: var(--night-2); border-radius: 4px; padding: 10px 14px; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Slowpitch Road Trip home"><img src="images/logo-small.png" alt="Slowpitch Road Trip logo" width="120" height="80"></a>
+    <nav class="nav" aria-label="Main">
+      <a href="tournaments.html">Tournaments</a>
+      <a href="results.html" aria-current="page">Results</a>
+      <a href="freeagents.html">Free agents</a>
+      <a href="reviews.html">Bat reviews</a>
+      <a href="ratings.html">Ratings</a>
+      <a href="links.html">Links</a>
+      <a href="index.html#about">About</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top" class="subpage">
+  <section aria-labelledby="rs-h">
+    <div class="wrap">
+      <h1 id="rs-h">Results</h1>
+      <p class="lede">Finished senior slowpitch tournaments, newest first. Each one links straight to the organizer's own official results, so you always see their numbers, not ours.</p>
+
+      <div class="rs-bar">
+        <div><label for="rs-org">Organization</label>
+          <select id="rs-org"><option value="">All organizations</option></select></div>
+      </div>
+      <p class="updated" id="rs-count" role="status" aria-live="polite"></p>
+
+      <div id="rs-out"></div>
+
+      <div class="rs-next" id="rs-next" hidden>
+        <h2>Results coming soon</h2>
+        <p class="updated">These events finish next. Come back after the last day and the results link will be waiting here.</p>
+        <ul id="rs-next-list"></ul>
+      </div>
+
+      <p class="updated" style="margin-top:28px">We don't copy standings, brackets or scores. The links open the organizer's site in a new tab. If a link is missing or goes to the wrong place, <a href="feedback.html">tell us</a> and we'll fix it. TPSSA links go to the event page, which may not post results there.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Independent directory of listed events. Not an official association schedule. Confirm details with the organizer before booking.</p>
+    <p>Slowpitch Road Trip is not affiliated with any tournament organization named on this site. Names are used only to identify the organizer.</p>
+    <p><a href="reps.html">Equipment reps and industry contacts</a></p>
+    <p><a href="feedback.html">Send feedback</a></p>
+    <p>Contact: <a href="mailto:slowpitchroadtrip@yahoo.com">slowpitchroadtrip@yahoo.com</a></p>
+  </div>
+</footer>
+
+<script>
+/* Results: reads the same event list the Tournaments page uses, so finished events appear here on their own. */
+(function () {
+  var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  function d(iso) { var p = iso.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function el(tag, text, cls) { var e = document.createElement(tag); if (text) e.textContent = text; if (cls) e.className = cls; return e; }
+  function safeUrl(u) { return /^https?:\/\//i.test(u || "") ? u : ""; }
+  function range(r) {
+    var a = d(r.start), b = d(r.end);
+    if (r.start === r.end) return MON[a.getMonth()] + " " + a.getDate() + ", " + a.getFullYear();
+    return a.getMonth() === b.getMonth() ? MON[a.getMonth()] + " " + a.getDate() + "–" + b.getDate() + ", " + b.getFullYear()
+      : MON[a.getMonth()] + " " + a.getDate() + " – " + MON[b.getMonth()] + " " + b.getDate() + ", " + b.getFullYear();
+  }
+  /* Same rule as the Tournaments page: a hand-added results link wins, otherwise the organizer's page. */
+  function resultsUrl(r) { return r.results || (r.org === "SSUSA" || r.org === "ISSA" || r.org === "TPSSA" ? r.url : r.org === "SPA" ? "https://www.softballspa.com/results8.aspx" : ""); }
+  var today = new Date(); today.setHours(0, 0, 0, 0);
+  var out = document.getElementById("rs-out"), count = document.getElementById("rs-count"), sel = document.getElementById("rs-org");
+  var ENDED = [];
+
+  function render() {
+    var org = sel.value;
+    var list = ENDED.filter(function (r) { return !org || r.org === org; });
+    out.textContent = "";
+    if (!ENDED.length) {
+      var e = el("div", "", "rs-empty");
+      e.appendChild(el("p", "No events on the list have finished yet. Results will show up here after each event ends."));
+      out.appendChild(e); count.textContent = ""; return;
+    }
+    count.textContent = list.length + (list.length === 1 ? " finished event" : " finished events") + (org ? " from " + org : "");
+    var lastKey = "";
+    list.forEach(function (r) {
+      var b = d(r.end), key = b.getFullYear() + "-" + b.getMonth();
+      if (key !== lastKey) { out.appendChild(el("h2", MONTHS[b.getMonth()] + " " + b.getFullYear(), "rs-month")); lastKey = key; }
+      var card = el("div", "", "rs-card"), left = el("div");
+      var h = el("h3"); h.appendChild(el("span", r.org, "rs-org")); h.appendChild(document.createTextNode(r.name)); left.appendChild(h);
+      left.appendChild(el("p", range(r) + (r.city ? " · " + r.city + (r.state ? ", " + r.state : "") : ""), "rs-meta"));
+      card.appendChild(left);
+      var u = safeUrl(resultsUrl(r));
+      if (u) { var a = el("a", "See official results", "btn"); a.href = u; a.target = "_blank"; a.rel = "noopener noreferrer"; a.title = "Opens the " + r.org + " site"; card.appendChild(a); }
+      else card.appendChild(el("span", "Event ended", "rs-meta"));
+      out.appendChild(card);
+    });
+    if (!list.length) out.appendChild(el("div", "No finished events for that organization yet.", "rs-empty"));
+  }
+
+  fetch("tournaments.html").then(function (r) { return r.text(); }).then(function (t) {
+    var m = t.match(/var DATA = (\[[\s\S]*?\n  \]);/); if (!m) throw 0;
+    var DATA = (new Function("return " + m[1]))();
+    ENDED = DATA.filter(function (r) { return d(r.end) < today; }).sort(function (a, b) { return d(b.end) - d(a.end); });
+    var orgs = {}; DATA.forEach(function (r) { orgs[r.org] = 1; });
+    Object.keys(orgs).sort().forEach(function (o) { var op = el("option", o); op.value = o; sel.appendChild(op); });
+    render();
+    var soon = DATA.filter(function (r) { return d(r.end) >= today; }).sort(function (a, b) { return d(a.end) - d(b.end); }).slice(0, 5);
+    if (soon.length) {
+      var ul = document.getElementById("rs-next-list");
+      soon.forEach(function (r) { var li = el("li"); li.appendChild(el("strong", r.name)); li.appendChild(document.createTextNode(" · " + r.org + " · " + range(r))); ul.appendChild(li); });
+      document.getElementById("rs-next").hidden = false;
+    }
+  }).catch(function () {
+    out.textContent = ""; out.appendChild(el("div", "We couldn't load the results list right now. Please try again, or see the Tournaments page.", "rs-empty"));
+  });
+  sel.addEventListener("change", render);
+})();
+</script>
+</body>
+</html>
