@@ -46,6 +46,7 @@
         <div>
           <h1 id="t-h">Tournament finder</h1>
           <p>Senior divisions only. Search by state, month, organization, or division, and click a heading to sort. Tap Save on any tournament to build your own season list.</p>
+          <p class="updated"><a href="events/">Browse tournaments by state or month &rarr;</a></p>
         </div>
       </div>
 
@@ -360,6 +361,7 @@
   function byId(id) { for (var i = 0; i < DATA.length; i++) if (DATA[i].id === id) return DATA[i]; return null; }
   var sayT; function say(m) { var n = document.getElementById("ms-status"); if (!n) return; n.textContent = m; clearTimeout(sayT); sayT = setTimeout(function () { n.textContent = ""; }, 4000); }
   function overlaps(a, b) { return parse(a.start) <= parse(b.end) && parse(b.start) <= parse(a.end); }
+  function pageSlug(r) { return (r.org + " " + r.name + " " + r.start.slice(0, 4)).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""); }
   function place(r) { return r.loc || ((r.city ? r.city + ", " : "") + r.state).replace(/, $/, ""); }
   function ymd(d) { return d.getFullYear() + ("0" + (d.getMonth() + 1)).slice(-2) + ("0" + d.getDate()).slice(-2); }
   function dayAfter(iso) { var d = parse(iso); d.setDate(d.getDate() + 1); return d; }
@@ -518,7 +520,7 @@
       var d = parse(r.start);
       return (r.id === firstDone ? '<tr class="ended-head"><td colspan="8">Recently finished</td></tr>' : "") + "<tr>" +
         '<td data-label="Dates"><div class="date-cell"><span class="cal"><span class="m">' + MON_SHORT[d.getMonth()] + '</span><span class="d">' + d.getDate() + '</span></span><span class="range">' + fmtRange(r.start, r.end) + "</span></div></td>" +
-        '<td class="event">' + esc(r.name) + "</td>" +
+        '<td class="event"><a href="events/' + pageSlug(r) + '.html">' + esc(r.name) + "</a></td>" +
         '<td data-label="Organization">' + esc(r.org) + (r.rec ? ' <span class="chip">Rec</span>' : "") + (r.toc ? ' <span class="chip">TOC</span>' : "") + "</td>" +
         '<td data-label="Location">' + (r.loc ? esc(r.loc) : esc(r.city) + ", " + esc(r.state)) + (r._d != null ? '<span class="range"> · about ' + r._d.toLocaleString() + " mi</span>" : "") + "</td>" +
         '<td data-label="Divisions">' + r.divs.map(function (x) { return '<span class="chip">' + esc(x) + "</span>"; }).join("") + (r.ages ? '<span class="range">' + esc(r.ages) + "</span>" : "") + (r.more ? '<span class="range">' + (r.divs.length ? "+ others, " : "") + "see " + esc(r.org) + "</span>" : "") + "</td>" +
