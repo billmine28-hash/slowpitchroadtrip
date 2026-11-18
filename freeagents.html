@@ -48,9 +48,11 @@
         </div>
       </div>
 
+      <p id="lead" class="lead" hidden>Looking for a team, or a player? Be the first to post.</p>
+
       <p><a class="btn" id="join" href="#fa-join">Add yourself to the list</a> <a class="btn" href="#tm-join">Post a team needing players</a> <a class="linkbtn" href="#tm-list">Jump to teams looking for players</a></p>
 
-      <form class="filters" onsubmit="return false" aria-label="Filter free agents">
+      <form class="filters" id="fa-filters" onsubmit="return false" aria-label="Filter free agents">
         <div class="field"><label for="fa-state">State</label><select id="fa-state"><option value="">All states</option></select></div>
         <div class="field"><label for="fa-div">Division</label><select id="fa-div"><option value="">All divisions</option></select></div>
         <div class="field"><label for="fa-q">Search</label><input id="fa-q" type="search" placeholder="Name, city, or position"></div>
@@ -79,7 +81,7 @@
 
       <h2 id="tm-list">Teams looking for players</h2>
       <p>Senior teams that need players for a tournament. Find a team, then email the contact directly.</p>
-      <form class="filters" onsubmit="return false" aria-label="Filter teams">
+      <form class="filters" id="tm-filters" onsubmit="return false" aria-label="Filter teams">
         <div class="field"><label for="tm-state">State</label><select id="tm-state"><option value="">All states</option></select></div>
         <div class="field"><label for="tm-div">Division</label><select id="tm-div"><option value="">All divisions</option></select></div>
         <div class="field"><label for="tm-q">Search</label><input id="tm-q" type="search" placeholder="Team, city, or position"></div>
@@ -177,6 +179,17 @@
       .then(function () { $("j-send").disabled = false; });
   });
 
+  // Empty state: when nothing is listed yet, show one short line and hide the filters
+  var faLoaded = false, tmLoaded = false;
+  function updateEmpty() {
+    var faNone = faLoaded && AGENTS.length === 0, tmNone = tmLoaded && TEAMS.length === 0;
+    $("lead").hidden = !(faNone && tmNone);
+    $("fa-filters").hidden = AGENTS.length === 0;
+    $("tm-filters").hidden = TEAMS.length === 0;
+    $("fa-empty").hidden = !faNone || tmNone;
+    $("tm-empty").hidden = !tmNone || faNone;
+  }
+
   function render() {
     var q = $("fa-q").value.toLowerCase(), st = $("fa-state").value, dv = $("fa-div").value;
     var list = AGENTS.filter(function (a) {
@@ -185,7 +198,7 @@
       if (q && (a.name + " " + a.city + " " + a.positions).toLowerCase().indexOf(q) < 0) return false;
       return true;
     });
-    $("fa-empty").hidden = AGENTS.length > 0;
+    faLoaded = true; updateEmpty();
     $("fa-count").textContent = AGENTS.length ? list.length + " free agent" + (list.length === 1 ? "" : "s") + " found" : "";
     $("fa-list").innerHTML = list.map(function (a) {
       var sub = encodeURIComponent("Free agent: tournament team?");
@@ -223,7 +236,7 @@
       if (q && ((t.team || "") + " " + (t.city || "") + " " + (t.positions_needed || "")).toLowerCase().indexOf(q) < 0) return false;
       return true;
     });
-    $("tm-empty").hidden = TEAMS.length > 0;
+    tmLoaded = true; updateEmpty();
     $("tm-count").textContent = TEAMS.length ? list.length + " team" + (list.length === 1 ? "" : "s") + " found" : "";
     $("tm-grid").innerHTML = list.map(function (t) {
       var sub = encodeURIComponent("Interested in playing for " + t.team);
