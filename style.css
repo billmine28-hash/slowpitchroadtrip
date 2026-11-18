@@ -296,3 +296,4 @@
   .promo:hover, .promo:focus-visible { background: #ffc94a; }
   .lead { font-size: 1.15rem; font-weight: 700; margin: 4px 0 14px; }
   .filters[hidden] { display: none; }
+  .fa-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
