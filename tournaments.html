@@ -257,6 +257,12 @@
     { name: "Washington State Senior Games", org: "SSUSA", rec: true, lat: 47.22, lon: -123.1, start: "2027-09-09", end: "2027-09-12", city: "Shelton", state: "WA", loc: "", divs: [], more: true, url: "https://seniorsoftball.com/event/2381", checked: "2026-11-18" },
     { name: "Last Swings", org: "SSUSA", rec: true, lat: 47.18, lon: -122.29, start: "2027-09-11", end: "2027-09-11", city: "Puyallup", state: "WA", loc: "", divs: [], more: true, url: "https://seniorsoftball.com/event/2383", checked: "2026-11-18" },
     { name: "Winter World Tune-Up", org: "SSUSA", rec: true, lat: 33.45, lon: -112.07, start: "2027-10-21", end: "2027-10-24", city: "Phoenix", state: "AZ", loc: "", divs: [], more: true, url: "https://seniorsoftball.com/event/2385", checked: "2026-11-18" },
+    { name: "Aloha Bowl", org: "SSUSA", toc: true, tba: true, start: "2027-03-01", end: "2027-03-31", city: "TBA", state: "HI", loc: "", divs: [], more: true, url: "https://seniorsoftball.com/event/2315", checked: "2026-11-18" },
+    { name: "STPA Spring Qualifier", org: "SSUSA", tba: true, start: "2027-04-01", end: "2027-05-31", city: "TBA", state: "CA", loc: "", divs: [], more: true, url: "https://seniorsoftball.com/event/2339", checked: "2026-11-18" },
+    { name: "Top Gun Reno Tune-Up", org: "SSUSA", tba: true, start: "2027-05-01", end: "2027-05-31", city: "TBA", state: "CA", loc: "", divs: [], more: true, url: "https://seniorsoftball.com/event/2335", checked: "2026-11-18" },
+    { name: "CT Masters Games", org: "SSUSA", tba: true, lat: 41.56, lon: -72.65, start: "2027-06-01", end: "2027-06-30", city: "Middletown / Meriden", state: "CT", loc: "", divs: [], more: true, url: "https://seniorsoftball.com/event/2349", checked: "2026-11-18" },
+    { name: "Southern California State Championships", org: "SSUSA", toc: true, tba: true, lat: 33.75, lon: -116.97, start: "2027-06-01", end: "2027-06-30", city: "Hemet", state: "CA", loc: "", divs: [], more: true, url: "https://seniorsoftball.com/event/2350", checked: "2026-11-18" },
+    { name: "Top Gun Summer Classic", org: "SSUSA", tba: true, start: "2027-08-01", end: "2027-08-31", city: "TBA", state: "CA", loc: "", divs: [], more: true, url: "https://seniorsoftball.com/event/2379", checked: "2026-11-18" },
     { name: "Angel Kids Christmas Benefit (Toys For Kids)", org: "SSUSA", rec: true, lat: 33.45, lon: -112.07, start: "2027-12-03", end: "2027-12-05", city: "Phoenix", state: "AZ", loc: "", divs: [], more: true, url: "https://seniorsoftball.com/event/2386", checked: "2026-11-18" },
   ];
   var PREVIEW = 6;
@@ -350,6 +356,11 @@
   // SSUSA and ISSA put results/brackets on the event page itself (TPSSA assumed the same; confirm after its first 2027 event ends).
   // SPA keeps one results page listing every past event.
   function resultsUrl(r) { return r.results || (r.org === "SSUSA" || r.org === "ISSA" || r.org === "TPSSA" ? r.url : r.org === "SPA" ? "https://www.softballspa.com/results8.aspx" : ""); }
+  function when(r) { /* dates TBA rows: start/end hold the first/last day of the month(s) SSUSA lists */
+    if (!r.tba) return fmtRange(r.start, r.end);
+    var a = parse(r.start), b = parse(r.end);
+    return MON_SHORT[a.getMonth()] + (a.getMonth() !== b.getMonth() ? "–" + MON_SHORT[b.getMonth()] : "") + " " + b.getFullYear() + " · dates TBA";
+  }
   function ended(r) { var t = new Date(); t = new Date(t.getFullYear(), t.getMonth(), t.getDate()); return t > parse(r.end); }
   function fmtDay(iso) { var d = parse(iso); return MON_SHORT[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear(); }
   function uniq(arr) { return arr.filter(function (v, i) { return arr.indexOf(v) === i; }); }
@@ -361,7 +372,7 @@
   function persist() { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) { say("Could not save on this device."); } }
   function byId(id) { for (var i = 0; i < DATA.length; i++) if (DATA[i].id === id) return DATA[i]; return null; }
   var sayT; function say(m) { var n = document.getElementById("ms-status"); if (!n) return; n.textContent = m; clearTimeout(sayT); sayT = setTimeout(function () { n.textContent = ""; }, 4000); }
-  function overlaps(a, b) { return parse(a.start) <= parse(b.end) && parse(b.start) <= parse(a.end); }
+  function overlaps(a, b) { if (a.tba || b.tba) return false; return parse(a.start) <= parse(b.end) && parse(b.start) <= parse(a.end); }
   function pageSlug(r) { return (r.org + " " + r.name + " " + r.start.slice(0, 4)).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""); }
   function place(r) { return r.loc || ((r.city ? r.city + ", " : "") + r.state).replace(/, $/, ""); }
   function ymd(d) { return d.getFullYear() + ("0" + (d.getMonth() + 1)).slice(-2) + ("0" + d.getDate()).slice(-2); }
@@ -405,16 +416,17 @@
       var clash = live.filter(function (o) { return o.id !== r.id && overlaps(r, o); });
       return '<div class="ms-card">' +
         '<h4>' + esc(r.name) + (parse(r.end) < today ? ' <span class="chip">Ended</span>' : "") + '</h4>' +
-        '<div class="range">' + fmtRange(r.start, r.end) + " · " + esc(place(r)) + " · " + esc(r.org) + "</div>" +
+        '<div class="range">' + when(r) + " · " + esc(place(r)) + " · " + esc(r.org) + "</div>" +
         (clash.length ? '<div class="ms-warn">Dates overlap with: ' + clash.map(function (c) { return esc(c.name); }).join(", ") + "</div>" : "") +
         '<div class="ms-seg" role="group" aria-label="Your status for ' + esc(r.name) + '">' +
         ["Interested", "Going", "Booked"].map(function (s) { return '<button type="button" data-status="' + esc(r.id) + "|" + s + '" class="' + (st === s ? "on" : "") + '" aria-pressed="' + (st === s) + '">' + s + "</button>"; }).join("") + "</div>" +
-        '<div class="ms-row"><a class="linkbtn" href="' + esc(gcalUrl(r)) + '" target="_blank" rel="noopener noreferrer">Add to Google Calendar</a> ' +
-        '<button type="button" class="linkbtn" data-ics="' + esc(r.id) + '">Apple / Outlook (file)</button> ' +
+        '<div class="ms-row">' + (r.tba ? '<span class="range">Calendar buttons appear once dates are posted.</span> ' : '<a class="linkbtn" href="' + esc(gcalUrl(r)) + '" target="_blank" rel="noopener noreferrer">Add to Google Calendar</a> ' +
+        '<button type="button" class="linkbtn" data-ics="' + esc(r.id) + '">Apple / Outlook (file)</button> ') +
         '<button type="button" class="btn-reset" data-rm="' + esc(r.id) + '">Remove</button></div></div>';
     }).join("");
-    $("ms-all").hidden = live.length < 2;
-    $("ms-all").textContent = "Add all " + live.length + " to my calendar (file)";
+    var dated = live.filter(function (r) { return !r.tba; });
+    $("ms-all").hidden = dated.length < 2;
+    $("ms-all").textContent = "Add all " + dated.length + " to my calendar (file)";
   }
   document.addEventListener("change", function (e) { var m = e.target.closest && e.target.closest("[data-mapsel]"); if (m) { mapOpen[m.getAttribute("data-mapsel")] = +m.value; render(); } });
   document.addEventListener("click", function (e) {
@@ -426,7 +438,7 @@
     if ((b = e.target.closest("[data-ics]"))) { var r = byId(b.getAttribute("data-ics")); if (r) download([r], r.name.replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "") + ".ics"); return; }
   });
   var msAll = document.getElementById("ms-all");
-  if (msAll) msAll.addEventListener("click", function () { var l = mine().filter(function (x) { return x.r; }).map(function (x) { return x.r; }); if (l.length) download(l, "My-Season.ics"); });
+  if (msAll) msAll.addEventListener("click", function () { var l = mine().filter(function (x) { return x.r && !x.r.tba; }).map(function (x) { return x.r; }); if (l.length) download(l, "My-Season.ics"); });
 
   function fillOptions() {
     uniq(DATA.map(function (r) { return r.state; })).filter(Boolean).sort().forEach(function (s) { els.state.add(new Option(s, s)); });
@@ -491,7 +503,7 @@
       a("https://www.google.com/maps/search/?api=1&query=" + enc("hotels near " + q), "Hotels nearby") +
       a("https://www.google.com/maps/search/?api=1&query=" + enc("restaurants near " + q), "Food nearby") +
       a("weather.html?q=" + enc(place(r).replace(/\s*\/[^,]*/, "")), "Forecast") +
-      (ended(r) ? "" : a(gcalUrl(r), "Add to calendar")) + "</div>";
+      (ended(r) || r.tba ? "" : a(gcalUrl(r), "Add to calendar")) + "</div>";
   }
   function mapRow(r) {
     var i = mapOpen[r.id]; if (i == null) return "";
@@ -520,7 +532,7 @@
     $("rows").innerHTML = list.map(function (r) {
       var d = parse(r.start);
       return (r.id === firstDone ? '<tr class="ended-head"><td colspan="8">Recently finished</td></tr>' : "") + "<tr>" +
-        '<td data-label="Dates"><div class="date-cell"><span class="cal"><span class="m">' + MON_SHORT[d.getMonth()] + '</span><span class="d">' + d.getDate() + '</span></span><span class="range">' + fmtRange(r.start, r.end) + "</span></div></td>" +
+        '<td data-label="Dates"><div class="date-cell"><span class="cal"><span class="m">' + MON_SHORT[d.getMonth()] + '</span><span class="d">' + (r.tba ? "TBA" : d.getDate()) + '</span></span><span class="range">' + when(r) + "</span></div></td>" +
         '<td class="event"><a href="events/' + pageSlug(r) + '.html">' + esc(r.name) + "</a></td>" +
         '<td data-label="Organization">' + esc(r.org) + (r.rec ? ' <span class="chip">Rec</span>' : "") + (r.toc ? ' <span class="chip">TOC</span>' : "") + "</td>" +
         '<td data-label="Location">' + (r.loc ? esc(r.loc) : esc(r.city) + ", " + esc(r.state)) + (r._d != null ? '<span class="range"> · about ' + r._d.toLocaleString() + " mi</span>" : "") + "</td>" +
@@ -603,7 +615,7 @@
   (function () {
     try {
       var now = new Date(); now.setHours(0, 0, 0, 0);
-      var ev = DATA.filter(function (r) { return parse(r.end) >= now; }).map(function (r) {
+      var ev = DATA.filter(function (r) { return !r.tba && parse(r.end) >= now; }).map(function (r) {
         var loc = { "@type": "Place", "name": place(r), "address": { "@type": "PostalAddress", "addressLocality": (r.city || "").split("/")[0].trim(), "addressRegion": r.state || "" } };
         if (r.lat != null) loc.geo = { "@type": "GeoCoordinates", "latitude": r.lat, "longitude": r.lon };
         return { "@context": "https://schema.org", "@type": "SportsEvent", "name": r.name, "startDate": r.start, "endDate": r.end, "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode", "location": loc, "url": r.url, "organizer": { "@type": "Organization", "name": r.org }, "sport": "Slowpitch softball" };
