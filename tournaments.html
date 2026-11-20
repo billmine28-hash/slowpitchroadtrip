@@ -614,18 +614,7 @@
   });
 
   fillOptions();
-  // Event structured data for search engines (upcoming events only).
-  (function () {
-    try {
-      var now = new Date(); now.setHours(0, 0, 0, 0);
-      var ev = DATA.filter(function (r) { return !r.tba && parse(r.end) >= now; }).map(function (r) {
-        var loc = { "@type": "Place", "name": place(r), "address": { "@type": "PostalAddress", "addressLocality": (r.city || "").split("/")[0].trim(), "addressRegion": r.state || "" } };
-        if (r.lat != null) loc.geo = { "@type": "GeoCoordinates", "latitude": r.lat, "longitude": r.lon };
-        return { "@context": "https://schema.org", "@type": "SportsEvent", "name": r.name, "startDate": r.start, "endDate": r.end, "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode", "location": loc, "url": r.url, "organizer": { "@type": "Organization", "name": r.org }, "sport": "Slowpitch softball" };
-      });
-      var el = document.createElement("script"); el.type = "application/ld+json"; el.text = JSON.stringify(ev); document.head.appendChild(el);
-    } catch (e) {}
-  })();
+  // Event structured data now lives on each events/*.html page (one complete copy per event).
   readUrl();
   render();
 })();
