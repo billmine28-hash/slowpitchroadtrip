@@ -84,7 +84,9 @@
   var SITE_EMAIL = "slowpitchroadtrip@yahoo.com";
   // Add a rep ONLY after they email asking to be listed and OK publishing these details.
   // Fields: name, company, role, region, email, phone, site (optional), added (YYYY-MM-DD).
-  var REPS = [];
+  var REPS = [
+    { name: "Charles Briscoe", company: "But, Thank God Clothing and Apparel", role: "Owner", region: "Worldwide", email: "Charles@briscoetrinity.com", phone: "682-500-1162", added: "2026-11-19" }
+  ];
 
   function el(tag, text, cls) { var e = document.createElement(tag); if (text) e.textContent = text; if (cls) e.className = cls; return e; }
   function link(text, href, ext) { var a = el("a", text, "linkbtn"); a.href = href; if (ext) { a.target = "_blank"; a.rel = "noopener noreferrer"; } return a; }
