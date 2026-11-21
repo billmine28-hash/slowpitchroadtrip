@@ -20,4 +20,12 @@
 .ev-grid a{font-weight:800}
 .ev-links{line-height:2;max-width:900px}
 .subpage h2{font-family:var(--display);text-transform:uppercase;letter-spacing:.01em;font-size:1.5rem;margin:34px 0 8px}
+.subpage section.ev-signup{background:var(--night-2);border:1px solid var(--night-3);border-left:4px solid var(--ball);border-radius:6px;padding:10px 14px;max-width:760px;margin:4px 0 18px;font-size:.95rem}
+.ev-signup p{margin:0}
+.ev-signup .ev-signup-h{font-size:1rem}
+.ev-signup .ev-signup-t{color:var(--mist);font-size:.9rem}
+.ev-signup .signup{margin-top:8px;gap:8px}
+.ev-signup .signup input{min-height:42px;flex:1 1 200px}
+.ev-signup .signup .btn{min-height:42px;padding-top:6px;padding-bottom:6px}
+.ev-signup .signup-msg{margin:6px 0 0;min-height:0}
 @media (max-width:520px){.ev-card dl{grid-template-columns:1fr;gap:2px}.ev-card dd{margin-bottom:10px}.ev-cta .btn{flex:1 1 100%;text-align:center}}

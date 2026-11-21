@@ -46,6 +46,38 @@
       <h1 id="pg-h">Senior softball tournaments in Virginia</h1>
       <p class="ev-sub">7 senior slowpitch tournaments listed for 2027 &middot; Director, ISSA, SSUSA</p>
       <div class="ev-about"><p>Senior slowpitch events in Virginia in Henrico, Loudoun County, Richmond, Roanoke Valley, Sterling, Virginia Beach, sorted by date. Tap any tournament for dates, divisions, the official event page, directions, hotels and the forecast.</p></div>
+            <section class="ev-signup" aria-labelledby="su-h">
+        <div class="ev-signup-body">
+          <p class="ev-signup-h" id="su-h"><strong>Free Season Tracker</strong> for your phone</p>
+          <p class="ev-signup-t">Log your games, see your average. Free when you join the email list (about one email a month).</p>
+          <form class="signup" id="signup" action="https://app.kit.com/forms/10168040/subscriptions" method="post">
+            <label for="email" style="position:absolute;left:-9999px">Email address</label>
+            <input id="email" name="email_address" type="email" placeholder="you@example.com" autocomplete="email" required>
+            <button class="btn" type="submit">Get the free tracker</button>
+          </form>
+          <p class="signup-msg" id="signup-msg" role="status" aria-live="polite"></p>
+          
+        </div>
+      </section>
+      <script>
+(function () {
+  var form = document.getElementById("signup");
+  if (!form || !window.fetch) return;
+  var msg = document.getElementById("signup-msg"), btn = form.querySelector("button");
+  function say(t, c) { msg.textContent = t; msg.className = "signup-msg " + c; }
+  form.addEventListener("submit", function (e) {
+    e.preventDefault(); btn.disabled = true; btn.textContent = "Joining..."; say("", "");
+    fetch(form.action, { method: "POST", body: new FormData(form), headers: { Accept: "application/json" } })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (res) {
+        if (res.ok && (!res.d.status || res.d.status === "success")) { form.reset(); say("Thanks! Check your inbox and tap the confirm button. Your free Season Tracker opens right after you confirm.", "ok"); }
+        else { say("That didn't go through. Please check your email address and try again.", "err"); }
+      })
+      .catch(function () { say("Something went wrong. Please try again, or email slowpitchroadtrip@yahoo.com.", "err"); })
+      .then(function () { btn.disabled = false; btn.textContent = "Get the free tracker"; });
+  });
+})();
+      </script>
       <ul class="ev-list">
 <li data-end="2027-03-27"><a href="ssusa-first-responders-salute-to-service-qualifier-2027.html">First Responders/Salute to Service Qualifier</a><span class="range">Mar 27, 2027 &middot; Sterling &middot; SSUSA</span></li>
 <li data-end="2027-04-11"><a href="ssusa-tidewater-classic-2027.html">Tidewater Classic</a> <span class="chip">TOC</span> <span class="chip">Women</span><span class="range">Apr 7&ndash;11, 2027 &middot; Virginia Beach &middot; SSUSA</span></li>
