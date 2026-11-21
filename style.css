@@ -314,4 +314,4 @@
   .yt-btn { position: absolute; left: 50%; top: 50%; width: 68px; height: 48px; margin: -24px 0 0 -34px; background: rgba(0,0,0,.75); border-radius: 12px; }
   .yt-btn::after { content: ""; position: absolute; left: 27px; top: 14px; border-style: solid; border-width: 10px 0 10px 18px; border-color: transparent transparent transparent #fff; }
   .yt-play:hover .yt-btn, .yt-play:focus-visible .yt-btn { background: #f00; }
-
+  .watch-frame { position: relative; }
