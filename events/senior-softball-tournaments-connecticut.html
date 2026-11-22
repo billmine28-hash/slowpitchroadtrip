@@ -70,7 +70,7 @@
     fetch(form.action, { method: "POST", body: new FormData(form), headers: { Accept: "application/json" } })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, d: d }; }); })
       .then(function (res) {
-        if (res.ok && (!res.d.status || res.d.status === "success")) { form.reset(); say("Thanks! Check your inbox and tap the confirm button. Your free Season Tracker opens right after you confirm.", "ok"); }
+        if (res.ok && (!res.d.status || res.d.status === "success")) { form.reset(); say("Thanks! Check your inbox and tap the confirm button. If you don't see it, check Spam or Promotions and add hello@slowpitchroadtrip.com to your contacts. Your free Season Tracker opens right after you confirm.", "ok"); }
         else { say("That didn't go through. Please check your email address and try again.", "err"); }
       })
       .catch(function () { say("Something went wrong. Please try again, or email slowpitchroadtrip@yahoo.com.", "err"); })

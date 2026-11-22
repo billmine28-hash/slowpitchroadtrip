@@ -273,7 +273,7 @@ document.querySelectorAll(".deal-code .copy").forEach(function (b) {
       .then(function (res) {
         if (res.ok && (!res.d.status || res.d.status === "success")) {
           form.reset();
-          say("Thanks! Check your inbox and tap the confirm button. Your free Season Tracker opens right after you confirm.", "ok");
+          say("Thanks! Check your inbox and tap the confirm button. If you don't see it, check Spam or Promotions and add hello@slowpitchroadtrip.com to your contacts. Your free Season Tracker opens right after you confirm.", "ok");
         } else {
           say("That didn't go through. Please check your email address and try again.", "err");
         }
