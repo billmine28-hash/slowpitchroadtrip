@@ -60,12 +60,14 @@
           <textarea id="fb-msg" rows="6" maxlength="1500" placeholder="The more detail the better. For a tournament, include its name and dates."></textarea></div>
         <div class="field"><label for="fb-name">Your name (optional)</label>
           <input id="fb-name" maxlength="60" autocomplete="name"></div>
+        <div class="field"><label for="fb-email">Your email (optional, only if you'd like a reply)</label>
+          <input id="fb-email" type="email" maxlength="120" autocomplete="email" placeholder="Never shown on the site"></div>
         <div style="position:absolute;left:-9999px" aria-hidden="true"><label>Leave empty <input id="fb-site" tabindex="-1" autocomplete="off"></label></div>
         <button type="button" class="btn" id="fb-send">Send feedback</button>
         <p class="updated" id="fb-note" aria-live="polite">Your message is sent straight to us. No email app needed. Prefer email? Write <a href="mailto:slowpitchroadtrip@yahoo.com">slowpitchroadtrip@yahoo.com</a>.</p>
       </form>
 
-      <p class="updated">We read every message but can't promise to answer each one or to build every idea. If you give a name, we see it with your message.</p>
+      <p class="updated">We read every message but can't promise to answer each one or to build every idea. If you give a name or email, only we see it with your message. It is never shown on the site, and we use an email only to reply to you.</p>
     </div>
   </section>
 </main>
@@ -98,13 +100,14 @@
     var msg = msgEl.value.trim();
     if (document.getElementById("fb-site").value) return; // spam trap
     if (!msg) { note.textContent = "Please write a message first."; msgEl.focus(); return; }
-    var row = { topic: document.getElementById("fb-type").value, message: msg, name: document.getElementById("fb-name").value.trim() || null };
+    var row = { topic: document.getElementById("fb-type").value, message: msg, name: document.getElementById("fb-name").value.trim() || null, email: document.getElementById("fb-email").value.trim() || null };
+    if (row.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(row.email)) { note.textContent = "That email doesn't look right. Fix it or leave it blank."; document.getElementById("fb-email").focus(); return; }
     btn.disabled = true;
     note.textContent = "Sending...";
     fetch(SUPABASE_URL + "/rest/v1/feedback", { method: "POST", headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + SUPABASE_KEY, "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify(row) })
       .then(function (r) {
         if (!r.ok) throw new Error(r.status);
-        msgEl.value = ""; document.getElementById("fb-name").value = "";
+        msgEl.value = ""; document.getElementById("fb-name").value = ""; document.getElementById("fb-email").value = "";
         note.textContent = "Thanks! Your message was sent. We read every one.";
       })
       .catch(function () {
