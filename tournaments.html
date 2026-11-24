@@ -55,7 +55,7 @@
         <h3 id="ms-h">My Season</h3>
         <p class="updated">Tournaments you saved. Mark where you stand, and add them to your calendar. Saved on this device only: if you clear your browser data or switch phones, your list will not follow you.</p>
         <div id="ms-list"></div>
-        <div class="ms-actions"><button type="button" class="btn" id="ms-all" hidden>Add all to my calendar (file)</button></div>
+        <div class="ms-actions"><button type="button" class="btn" id="ms-share">Share with team</button> <button type="button" class="btn" id="ms-all" hidden>Add all to my calendar (file)</button></div>
         <p class="updated" id="ms-status" role="status" aria-live="polite"></p>
       </div>
 
@@ -486,6 +486,17 @@
     if ((b = e.target.closest("[data-rm]"))) { delete saved[b.getAttribute("data-rm")]; persist(); render(); return; }
     if ((b = e.target.closest("[data-status]"))) { var p = b.getAttribute("data-status").split("|"); saved[p[0]] = p[1]; persist(); renderSeason(); return; }
     if ((b = e.target.closest("[data-ics]"))) { var r = byId(b.getAttribute("data-ics")); if (r) download([r], r.name.replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "") + ".ics"); return; }
+  });
+  var msShare = document.getElementById("ms-share");
+  if (msShare) msShare.addEventListener("click", function () {
+    var slugs = mine().filter(function (x) { return x.r; }).map(function (x) { return pageSlug(x.r); });
+    if (!slugs.length) { say("Save a tournament first, then share your list."); return; }
+    var url = location.origin + "/trip.html?e=" + slugs.slice(0, 15).join(",");
+    var note = slugs.length > 15 ? " Only the first 15 were included." : "";
+    if (navigator.share) { navigator.share({ title: "Our tournament plan", text: "Tournaments we are looking at:", url: url }).catch(function () {}); return; }
+    var done = function () { say("Link copied. Paste it into a text or message to your team." + note); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, function () { window.prompt("Copy this link and send it to your team:", url); });
+    else window.prompt("Copy this link and send it to your team:", url);
   });
   var msAll = document.getElementById("ms-all");
   if (msAll) msAll.addEventListener("click", function () { var l = mine().filter(function (x) { return x.r && !x.r.tba; }).map(function (x) { return x.r; }); if (l.length) download(l, "My-Season.ics"); });

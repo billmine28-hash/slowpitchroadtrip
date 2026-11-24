@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Team Trip Plan | Slowpitch Road Trip</title>
+<meta name="description" content="A tournament list shared by a teammate or team manager on Slowpitch Road Trip.">
+<meta name="robots" content="noindex, follow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Slowpitch Road Trip">
+<meta property="og:title" content="Our tournament plan | Slowpitch Road Trip">
+<meta property="og:description" content="Tournaments our team is looking at. Tap to see dates, locations and the official pages.">
+<meta property="og:image" content="https://slowpitchroadtrip.com/images/og-image-logo.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="images/favicon.png?v=2">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png?v=2">
+<link rel="stylesheet" href="style.css">
+<style>
+  .tp-empty { background: var(--night-2); border-radius: 4px; padding: 18px 20px; margin: 16px 0; }
+  .tp-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 14px 0; }
+</style>
+</head>
+<body>
+
+<a class="promo" href="index.html#e-h"><strong>Free Season Tracker</strong> for your phone. Log your games, see your average. <span>Get it free &rarr;</span></a>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Slowpitch Road Trip home"><img src="images/logo-small.png" alt="Slowpitch Road Trip logo" width="120" height="80"></a>
+    <nav class="nav" aria-label="Main">
+      <a href="tournaments.html">Tournaments</a>
+      <a href="results.html">Results</a>
+      <a href="freeagents.html">Free agents</a>
+      <a href="reviews.html">Bat reviews</a>
+      <a href="ratings.html">Ratings</a>
+      <a href="photos.html">Photos</a>
+      <a href="links.html">Links</a>
+      <a href="index.html#about">About</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top" class="subpage">
+  <section aria-labelledby="tp-h">
+    <div class="wrap">
+      <h1 id="tp-h">Team trip plan</h1>
+      <p class="lede">Tournaments a teammate shared with you. Look them over, save the ones you want, and add the dates to your calendar.</p>
+
+      <div id="tp-out"><p>Loading the tournaments&hellip;</p></div>
+      <p class="updated" id="tp-status" role="status" aria-live="polite"></p>
+
+      <p class="updated" style="margin-top:28px">Dates and details can change. Always confirm with the organizer before you book. Want to build your own list? Use <strong>Save</strong> on the <a href="tournaments.html">tournament finder</a>, then tap <strong>Share with team</strong>.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Independent directory of listed events. Not an official association schedule. Confirm details with the organizer before booking.</p>
+    <p>Slowpitch Road Trip is not affiliated with any tournament organization named on this site. Names are used only to identify the organizer.</p>
+    <p><a href="reps.html">Equipment reps and industry contacts</a></p>
+    <p><a href="feedback.html">Send feedback</a></p>
+    <p>Contact: <a href="mailto:slowpitchroadtrip@yahoo.com">slowpitchroadtrip@yahoo.com</a></p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var out = document.getElementById("tp-out"), statusEl = document.getElementById("tp-status");
+  var MS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var KEY = "srt_myseason", sayT;
+
+  function say(m) { statusEl.textContent = m; clearTimeout(sayT); sayT = setTimeout(function () { statusEl.textContent = ""; }, 4000); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function parse(iso) { var p = iso.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function range(r) {
+    var a = parse(r.start), b = parse(r.end), y = a.getFullYear();
+    if (r.tba) return MS[a.getMonth()] + (a.getMonth() !== b.getMonth() ? "\u2013" + MS[b.getMonth()] : "") + " " + b.getFullYear() + " \u00b7 dates TBA";
+    if (r.start === r.end) return MS[a.getMonth()] + " " + a.getDate() + ", " + y;
+    if (a.getMonth() === b.getMonth()) return MS[a.getMonth()] + " " + a.getDate() + "\u2013" + b.getDate() + ", " + y;
+    return MS[a.getMonth()] + " " + a.getDate() + " \u2013 " + MS[b.getMonth()] + " " + b.getDate() + ", " + y;
+  }
+  function safeUrl(u) { return /^https?:\/\//i.test(u || "") ? u : ""; }
+  function place(r) { return r.loc || ((r.city ? r.city + ", " : "") + r.state).replace(/, $/, ""); }
+  function overlaps(a, b) { if (a.tba || b.tba) return false; return parse(a.start) <= parse(b.end) && parse(b.start) <= parse(a.end); }
+  function ymd(d) { return d.getFullYear() + ("0" + (d.getMonth() + 1)).slice(-2) + ("0" + d.getDate()).slice(-2); }
+  function dayAfter(iso) { var d = parse(iso); d.setDate(d.getDate() + 1); return d; }
+  function details(r) { return "Confirm dates and details with the organizer before you book. Official page: " + r.url + " (listed on slowpitchroadtrip.com)"; }
+  function gcalUrl(r) {
+    return "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + encodeURIComponent(r.name) +
+      "&dates=" + ymd(parse(r.start)) + "/" + ymd(dayAfter(r.end)) + "&location=" + encodeURIComponent(place(r)) + "&details=" + encodeURIComponent(details(r));
+  }
+  function icsEsc(x) { return String(x).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n"); }
+  function stamp() { var n = new Date(); function z(v) { return ("0" + v).slice(-2); } return n.getUTCFullYear() + z(n.getUTCMonth() + 1) + z(n.getUTCDate()) + "T" + z(n.getUTCHours()) + z(n.getUTCMinutes()) + z(n.getUTCSeconds()) + "Z"; }
+  function makeIcs(list) {
+    var L = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Slowpitch Road Trip//Team Trip//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH"];
+    list.forEach(function (r) {
+      L.push("BEGIN:VEVENT", "UID:" + r.id + "-" + r.start + "@slowpitchroadtrip.com", "DTSTAMP:" + stamp(),
+        "DTSTART;VALUE=DATE:" + ymd(parse(r.start)), "DTEND;VALUE=DATE:" + ymd(dayAfter(r.end)),
+        "SUMMARY:" + icsEsc(r.name), "LOCATION:" + icsEsc(place(r)), "DESCRIPTION:" + icsEsc(details(r)), "END:VEVENT");
+    });
+    L.push("END:VCALENDAR");
+    return L.join("\r\n") + "\r\n";
+  }
+  function download(list, name) {
+    var blob = new Blob([makeIcs(list)], { type: "text/calendar;charset=utf-8" });
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+    say("Calendar file ready. Open it to add the dates.");
+  }
+  function getSaved() { try { return JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { return {}; } }
+  function putSaved(o) { try { localStorage.setItem(KEY, JSON.stringify(o)); return true; } catch (e) { return false; } }
+  function message(html) { out.innerHTML = '<div class="tp-empty">' + html + "</div>"; }
+
+  var slugs = [];
+  try {
+    var raw = new URLSearchParams(location.search).get("e") || "";
+    slugs = raw.split(",").map(function (s) { return s.trim().toLowerCase(); }).filter(function (s) { return /^[a-z0-9-]{3,160}$/.test(s); });
+    slugs = slugs.filter(function (s, i) { return slugs.indexOf(s) === i; }).slice(0, 15);
+  } catch (e) { slugs = []; }
+
+  if (!slugs.length) {
+    message("<strong>This link has no tournaments in it.</strong> Ask your teammate to send it again, or build your own list on the <a href=\"tournaments.html\">tournament finder</a>.");
+    return;
+  }
+
+  fetch("tournaments.html").then(function (r) { return r.text(); }).then(function (t) {
+    var m = t.match(/var DATA = (\[[\s\S]*?\n  \]);/); if (!m) throw 0;
+    var DATA = (new Function("return " + m[1]))();
+    var bySlug = {};
+    DATA.forEach(function (r) {
+      r.id = (r.org + " " + r.name).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      r.slug = (r.org + " " + r.name + " " + r.start.slice(0, 4)).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+      bySlug[r.slug] = r;
+    });
+    var list = [], missing = 0;
+    slugs.forEach(function (s) { if (bySlug[s]) list.push(bySlug[s]); else missing++; });
+    list.sort(function (a, b) { return a.start < b.start ? -1 : a.start > b.start ? 1 : 0; });
+    if (!list.length) { message("<strong>None of the tournaments in this link are on the list anymore.</strong> Check the <a href=\"tournaments.html\">tournament finder</a> for what is current."); return; }
+
+    var today = new Date(); today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    var html = '<div class="myseason" style="margin-top:6px"><h3>' + list.length + " tournament" + (list.length === 1 ? "" : "s") + " on the plan</h3>";
+    list.forEach(function (r) {
+      var clash = list.filter(function (o) { return o !== r && overlaps(r, o); });
+      html += '<div class="ms-card"><h4>' + esc(r.name) + (parse(r.end) < today ? ' <span class="chip">Ended</span>' : "") + "</h4>" +
+        '<div class="range">' + esc(range(r)) + " \u00b7 " + esc(place(r)) + " \u00b7 " + esc(r.org) + "</div>" +
+        '<div class="range">Divisions: ' + ((r.divs || []).length ? esc(r.divs.join(", ")) + (r.more ? " (see the organizer for others)" : "") : "see the organizer") + "</div>" +
+        (clash.length ? '<div class="ms-warn">Dates overlap with: ' + clash.map(function (c) { return esc(c.name); }).join(", ") + "</div>" : "") +
+        '<div class="ms-row" style="margin-top:8px">' +
+        '<a class="linkbtn" href="events/' + esc(r.slug) + '.html">Event page</a>' +
+        (safeUrl(r.url) ? '<a class="linkbtn" href="' + esc(safeUrl(r.url)) + '" target="_blank" rel="noopener noreferrer">Official page</a>' : "") +
+        (r.tba ? "" : '<a class="linkbtn" href="' + esc(gcalUrl(r)) + '" target="_blank" rel="noopener noreferrer">Google Calendar</a>' +
+          '<button type="button" class="linkbtn" data-ics="' + esc(r.slug) + '">Apple / Outlook (file)</button>') +
+        '<button type="button" class="linkbtn" data-save="' + esc(r.id) + '">Save to My Season</button></div></div>';
+    });
+    html += "</div>";
+    if (missing) html += '<p class="updated">' + missing + " tournament" + (missing === 1 ? " in this link is" : "s in this link are") + " no longer listed.</p>";
+    var dated = list.filter(function (r) { return !r.tba; });
+    html += '<div class="tp-actions">' +
+      (dated.length > 1 ? '<button type="button" class="btn" id="tp-all">Add all ' + dated.length + " to my calendar (file)</button>" : "") +
+      '<button type="button" class="btn" id="tp-saveall">Save all to My Season</button></div>';
+    out.innerHTML = html;
+
+    out.addEventListener("click", function (e) {
+      var b;
+      if ((b = e.target.closest("[data-ics]"))) { var r = bySlug[b.getAttribute("data-ics")]; if (r) download([r], r.name.replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "") + ".ics"); return; }
+      if ((b = e.target.closest("[data-save]"))) { var s = getSaved(); var id = b.getAttribute("data-save"); if (!s[id]) s[id] = "Interested"; if (putSaved(s)) { b.textContent = "Saved"; say("Saved to My Season. Find it on the tournament finder page."); } else say("Could not save on this device."); return; }
+      if (e.target.id === "tp-all") { download(dated, "Team-Trip.ics"); return; }
+      if (e.target.id === "tp-saveall") { var s2 = getSaved(); list.forEach(function (r) { if (!s2[r.id]) s2[r.id] = "Interested"; }); if (putSaved(s2)) { say("All " + list.length + " saved to My Season. Find them on the tournament finder page."); out.querySelectorAll("[data-save]").forEach(function (x) { x.textContent = "Saved"; }); } else say("Could not save on this device."); return; }
+    });
+  }).catch(function () {
+    message("We couldn't load the tournaments right now. Please try again, or see the <a href=\"tournaments.html\">tournament finder</a>.");
+  });
+})();
+</script>
+<script data-goatcounter="https://slowpitchroadtrip.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
