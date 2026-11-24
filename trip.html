@@ -20,6 +20,13 @@
 <style>
   .tp-empty { background: var(--night-2); border-radius: 4px; padding: 18px 20px; margin: 16px 0; }
   .tp-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 14px 0; }
+  .tp-name { background: var(--night-3); border-radius: 4px; padding: 14px 16px; margin: 12px 0; }
+  .tp-name label { display: block; font-weight: 800; margin-bottom: 6px; }
+  .tp-name input { font: inherit; min-height: 44px; padding: 8px 12px; border-radius: 4px; border: 2px solid var(--ball); background: rgba(255,255,255,.07); color: #fff; width: 100%; max-width: 280px; }
+  .rv { margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.12); }
+  .rv .ms-seg { margin: 0 0 8px; }
+  .rv-tally { margin: 4px 0 0; font-size: .95rem; }
+  .rv-tally span { display: block; margin: 2px 0; }
 </style>
 </head>
 <body>
@@ -72,6 +79,38 @@
   var out = document.getElementById("tp-out"), statusEl = document.getElementById("tp-status");
   var MS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   var KEY = "srt_myseason", sayT;
+  var SB_URL = "https://dvbgmbyxvmocohmikvga.supabase.co", SB_KEY = "sb_publishable_S_mAA_hBwyo2vvh2pJPC5A_fRPg7whu";
+  var TRIP = ""; try { TRIP = (new URLSearchParams(location.search).get("t") || "").toLowerCase(); } catch (e) {} if (!/^[a-z0-9]{6,16}$/.test(TRIP)) TRIP = "";
+  var NAME_KEY = "srt_rsvp_name", rows = [];
+  function rpc(fn, body) {
+    return fetch(SB_URL + "/rest/v1/rpc/" + fn, { method: "POST", headers: { apikey: SB_KEY, Authorization: "Bearer " + SB_KEY, "Content-Type": "application/json" }, body: JSON.stringify(body) })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.status === 204 ? null : r.json(); });
+  }
+  function myName() { var n = document.getElementById("rv-name"); return n ? n.value.trim().slice(0, 30) : ""; }
+  var LABEL = { "in": "I’m in", maybe: "Maybe", out: "Can’t" };
+  function rsvpBlock(r) {
+    if (!TRIP) return "";
+    return '<div class="rv" data-rv="' + esc(r.slug) + '"><div class="ms-seg" role="group" aria-label="Your answer for ' + esc(r.name) + '">' +
+      ["in", "maybe", "out"].map(function (a) { return '<button type="button" data-ans="' + a + '|' + esc(r.slug) + '" aria-pressed="false">' + LABEL[a] + "</button>"; }).join("") +
+      '</div><p class="rv-tally" data-tally="' + esc(r.slug) + '">Loading answers&hellip;</p></div>';
+  }
+  function nameBox() {
+    if (!TRIP) return "";
+    return '<div class="tp-name"><label for="rv-name">Your first name</label><input id="rv-name" maxlength="30" autocomplete="given-name" placeholder="First name"><p class="updated" style="margin:8px 0 0">Tap I&rsquo;m in, Maybe or Can&rsquo;t under each tournament. Everyone with this link can see the first names and answers. You can change your answer any time.</p></div>';
+  }
+  function paintRsvps() {
+    var me = myName().toLowerCase();
+    document.querySelectorAll("[data-tally]").forEach(function (el) {
+      var slug = el.getAttribute("data-tally"), mine = "";
+      var by = { "in": [], maybe: [], out: [] };
+      rows.forEach(function (x) { if (x.event === slug && by[x.answer]) { by[x.answer].push(x.name); if (me && x.name.toLowerCase() === me) mine = x.answer; } });
+      var parts = ["in", "maybe", "out"].filter(function (a) { return by[a].length; }).map(function (a) { return "<span><strong>" + LABEL[a] + " (" + by[a].length + "):</strong> " + by[a].map(esc).join(", ") + "</span>"; });
+      el.innerHTML = parts.length ? parts.join("") : "No answers yet.";
+      var box = el.closest(".rv");
+      box.querySelectorAll("button[data-ans]").forEach(function (b) { var on = b.getAttribute("data-ans").split("|")[0] === mine; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false"); });
+    });
+  }
+  function loadRsvps() { if (!TRIP) return; rpc("get_trip_rsvps", { p_trip: TRIP }).then(function (d) { rows = d || []; paintRsvps(); }).catch(function () { document.querySelectorAll("[data-tally]").forEach(function (el) { el.textContent = "Could not load answers right now."; }); }); }
 
   function say(m) { statusEl.textContent = m; clearTimeout(sayT); sayT = setTimeout(function () { statusEl.textContent = ""; }, 4000); }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
@@ -145,7 +184,7 @@
     if (!list.length) { message("<strong>None of the tournaments in this link are on the list anymore.</strong> Check the <a href=\"tournaments.html\">tournament finder</a> for what is current."); return; }
 
     var today = new Date(); today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    var html = '<div class="myseason" style="margin-top:6px"><h3>' + list.length + " tournament" + (list.length === 1 ? "" : "s") + " on the plan</h3>";
+    var html = '<div class="myseason" style="margin-top:6px"><h3>' + list.length + " tournament" + (list.length === 1 ? "" : "s") + " on the plan</h3>" + nameBox();
     list.forEach(function (r) {
       var clash = list.filter(function (o) { return o !== r && overlaps(r, o); });
       html += '<div class="ms-card"><h4>' + esc(r.name) + (parse(r.end) < today ? ' <span class="chip">Ended</span>' : "") + "</h4>" +
@@ -157,7 +196,7 @@
         (safeUrl(r.url) ? '<a class="linkbtn" href="' + esc(safeUrl(r.url)) + '" target="_blank" rel="noopener noreferrer">Official page</a>' : "") +
         (r.tba ? "" : '<a class="linkbtn" href="' + esc(gcalUrl(r)) + '" target="_blank" rel="noopener noreferrer">Google Calendar</a>' +
           '<button type="button" class="linkbtn" data-ics="' + esc(r.slug) + '">Apple / Outlook (file)</button>') +
-        '<button type="button" class="linkbtn" data-save="' + esc(r.id) + '">Save to My Season</button></div></div>';
+        '<button type="button" class="linkbtn" data-save="' + esc(r.id) + '">Save to My Season</button></div>' + rsvpBlock(r) + '</div>';
     });
     html += "</div>";
     if (missing) html += '<p class="updated">' + missing + " tournament" + (missing === 1 ? " in this link is" : "s in this link are") + " no longer listed.</p>";
@@ -166,9 +205,23 @@
       (dated.length > 1 ? '<button type="button" class="btn" id="tp-all">Add all ' + dated.length + " to my calendar (file)</button>" : "") +
       '<button type="button" class="btn" id="tp-saveall">Save all to My Season</button></div>';
     out.innerHTML = html;
+    if (TRIP) {
+      var nb = document.getElementById("rv-name");
+      try { nb.value = localStorage.getItem(NAME_KEY) || ""; } catch (e) {}
+      nb.addEventListener("input", paintRsvps);
+      loadRsvps();
+      document.addEventListener("visibilitychange", function () { if (!document.hidden) loadRsvps(); });
+    }
 
     out.addEventListener("click", function (e) {
       var b;
+      if ((b = e.target.closest("[data-ans]"))) {
+        var pa = b.getAttribute("data-ans").split("|"), nm = myName();
+        if (!nm) { say("Type your first name first, then tap your answer."); var nb2 = document.getElementById("rv-name"); if (nb2) nb2.focus(); return; }
+        try { localStorage.setItem(NAME_KEY, nm); } catch (er) {}
+        rpc("set_rsvp", { p_trip: TRIP, p_event: pa[1], p_name: nm, p_answer: pa[0] }).then(function () { say("Saved: " + LABEL[pa[0]] + "."); loadRsvps(); }).catch(function () { say("Could not save your answer. Please try again."); });
+        return;
+      }
       if ((b = e.target.closest("[data-ics]"))) { var r = bySlug[b.getAttribute("data-ics")]; if (r) download([r], r.name.replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "") + ".ics"); return; }
       if ((b = e.target.closest("[data-save]"))) { var s = getSaved(); var id = b.getAttribute("data-save"); if (!s[id]) s[id] = "Interested"; if (putSaved(s)) { b.textContent = "Saved"; say("Saved to My Season. Find it on the tournament finder page."); } else say("Could not save on this device."); return; }
       if (e.target.id === "tp-all") { download(dated, "Team-Trip.ics"); return; }

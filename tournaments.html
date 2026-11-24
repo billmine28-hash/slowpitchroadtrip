@@ -493,7 +493,10 @@
   if (msShare) msShare.addEventListener("click", function () {
     var slugs = mine().filter(function (x) { return x.r; }).map(function (x) { return pageSlug(x.r); });
     if (!slugs.length) { say("Save a tournament first, then share your list."); return; }
-    var url = location.origin + "/trip.html?e=" + slugs.slice(0, 15).join(",");
+    /* One private trip key per device, reused each time so answers survive when the list changes. */
+    var tk = ""; try { tk = localStorage.getItem("srt_tripkey") || ""; } catch (e) {}
+    if (!/^[a-z0-9]{8}$/.test(tk)) { tk = ""; var al = "abcdefghijklmnopqrstuvwxyz0123456789", rb = new Uint8Array(8); (window.crypto || window.msCrypto).getRandomValues(rb); for (var q = 0; q < 8; q++) tk += al.charAt(rb[q] % 36); try { localStorage.setItem("srt_tripkey", tk); } catch (e) {} }
+    var url = location.origin + "/trip.html?t=" + tk + "&e=" + slugs.slice(0, 15).join(",");
     var note = slugs.length > 15 ? " Only the first 15 were included." : "";
     if (navigator.share) { navigator.share({ title: "Our tournament plan", text: "Tournaments we are looking at:", url: url }).catch(function () {}); return; }
     var done = function () { say("Link copied. Paste it into a text or message to your team." + note); };
