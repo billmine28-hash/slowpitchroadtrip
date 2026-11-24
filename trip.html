@@ -131,8 +131,11 @@
     var m = t.match(/var DATA = (\[[\s\S]*?\n  \]);/); if (!m) throw 0;
     var DATA = (new Function("return " + m[1]))();
     var bySlug = {};
+    var seenId = {};
     DATA.forEach(function (r) {
-      r.id = (r.org + " " + r.name).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      var id = (r.org + " " + r.name).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      if (seenId[id]) id += "-" + r.start.slice(0, 4);
+      seenId[id] = 1; r.id = id;
       r.slug = (r.org + " " + r.name + " " + r.start.slice(0, 4)).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
       bySlug[r.slug] = r;
     });

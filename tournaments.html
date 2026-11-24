@@ -416,7 +416,9 @@
   function uniq(arr) { return arr.filter(function (v, i) { return arr.indexOf(v) === i; }); }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
 
-  DATA.forEach(function (r) { r.id = (r.org + " " + r.name).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); });
+  /* Same org + name in two years would share one id. The first keeps its id (so saved lists still work); later ones get the year added. */
+  var seenId = {};
+  DATA.forEach(function (r) { var id = (r.org + " " + r.name).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); if (seenId[id]) id += "-" + r.start.slice(0, 4); seenId[id] = 1; r.id = id; });
   var KEY = "srt_myseason", saved = {};
   try { saved = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { saved = {}; }
   function persist() { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) { say("Could not save on this device."); } }
