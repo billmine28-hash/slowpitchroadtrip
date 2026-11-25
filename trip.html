@@ -27,6 +27,9 @@
   .rv .ms-seg { margin: 0 0 8px; }
   .rv-tally { margin: 4px 0 0; font-size: .95rem; }
   .rv-tally span { display: block; margin: 2px 0; }
+  #tp-status:not(:empty) { position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 60; margin: 0; padding: 12px 16px; border-radius: 4px; border: 2px solid var(--ball); background: var(--night); color: #fff; font-weight: 800; box-shadow: 0 4px 16px rgba(0,0,0,.5); }
+  .tp-hint { margin: 8px 0 0; font-size: .9rem; }
+  .tp-refresh { margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -80,7 +83,7 @@
   var MS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   var KEY = "srt_myseason", sayT;
   var SB_URL = "https://dvbgmbyxvmocohmikvga.supabase.co", SB_KEY = "sb_publishable_S_mAA_hBwyo2vvh2pJPC5A_fRPg7whu";
-  var TRIP = ""; try { TRIP = (new URLSearchParams(location.search).get("t") || "").toLowerCase(); } catch (e) {} if (!/^[a-z0-9]{6,16}$/.test(TRIP)) TRIP = "";
+  var TRIP = "", TRIP_GIVEN = false; try { TRIP = (new URLSearchParams(location.search).get("t") || "").toLowerCase(); } catch (e) {} TRIP_GIVEN = !!TRIP; if (!/^[a-z0-9]{6,16}$/.test(TRIP)) TRIP = "";
   var NAME_KEY = "srt_rsvp_name", rows = [];
   function rpc(fn, body) {
     return fetch(SB_URL + "/rest/v1/rpc/" + fn, { method: "POST", headers: { apikey: SB_KEY, Authorization: "Bearer " + SB_KEY, "Content-Type": "application/json" }, body: JSON.stringify(body) })
@@ -96,7 +99,7 @@
   }
   function nameBox() {
     if (!TRIP) return "";
-    return '<div class="tp-name"><label for="rv-name">Your first name</label><input id="rv-name" maxlength="30" autocomplete="given-name" placeholder="First name"><p class="updated" style="margin:8px 0 0">Tap I&rsquo;m in, Maybe or Can&rsquo;t under each tournament. Everyone with this link can see the first names and answers. You can change your answer any time.</p></div>';
+    return '<div class="tp-name"><label for="rv-name">Your first name</label><input id="rv-name" maxlength="30" autocomplete="given-name" placeholder="First name"><p class="updated tp-hint">Up to 30 characters.</p><p class="updated" style="margin:8px 0 0">Tap I&rsquo;m in, Maybe or Can&rsquo;t under each tournament. Everyone with this link can see the first names and answers. You can change your answer any time. Answers from teammates update by themselves every 30 seconds.</p><button type="button" class="btn tp-refresh" id="tp-refresh">Refresh answers</button></div>';
   }
   function paintRsvps() {
     var me = myName().toLowerCase();
@@ -204,6 +207,7 @@
     html += '<div class="tp-actions">' +
       (dated.length > 1 ? '<button type="button" class="btn" id="tp-all">Add all ' + dated.length + " to my calendar (file)</button>" : "") +
       '<button type="button" class="btn" id="tp-saveall">Save all to My Season</button></div>';
+    if (!TRIP) html = '<div class="tp-empty"><strong>Answers are turned off for this link.</strong> ' + (TRIP_GIVEN ? "The trip code in this link isn&rsquo;t valid (it may have been cut off when it was sent)." : "This link has no trip code.") + " Ask your teammate to tap <strong>Share with team</strong> again and send you the new link. You can still look over the tournaments below.</div>" + html;
     out.innerHTML = html;
     if (TRIP) {
       var nb = document.getElementById("rv-name");
@@ -211,15 +215,26 @@
       nb.addEventListener("input", paintRsvps);
       loadRsvps();
       document.addEventListener("visibilitychange", function () { if (!document.hidden) loadRsvps(); });
+      setInterval(function () { if (!document.hidden) loadRsvps(); }, 30000);
+      var rf = document.getElementById("tp-refresh");
+      if (rf) rf.addEventListener("click", function () { loadRsvps(); say("Answers refreshed."); });
     }
 
     out.addEventListener("click", function (e) {
       var b;
       if ((b = e.target.closest("[data-ans]"))) {
         var pa = b.getAttribute("data-ans").split("|"), nm = myName();
-        if (!nm) { say("Type your first name first, then tap your answer."); var nb2 = document.getElementById("rv-name"); if (nb2) nb2.focus(); return; }
-        try { localStorage.setItem(NAME_KEY, nm); } catch (er) {}
-        rpc("set_rsvp", { p_trip: TRIP, p_event: pa[1], p_name: nm, p_answer: pa[0] }).then(function () { say("Saved: " + LABEL[pa[0]] + "."); loadRsvps(); }).catch(function () { say("Could not save your answer. Please try again."); });
+        if (!nm) { say("Type your first name first, then tap your answer."); var nb2 = document.getElementById("rv-name"); if (nb2) { nb2.scrollIntoView({ block: "center" }); nb2.focus(); } return; }
+        var old = ""; try { old = localStorage.getItem(NAME_KEY) || ""; } catch (er) {}
+        var doSave = function () {
+          try { localStorage.setItem(NAME_KEY, nm); } catch (er) {}
+          return rpc("set_rsvp", { p_trip: TRIP, p_event: pa[1], p_name: nm, p_answer: pa[0] }).then(function () { say("Saved: " + LABEL[pa[0]] + "."); loadRsvps(); }).catch(function () { say("Could not save your answer. Please try again."); });
+        };
+        /* Same person typing a different name: offer to move their earlier answers instead of leaving a second person behind. */
+        if (old && old.toLowerCase() !== nm.toLowerCase() && rows.some(function (x) { return x.name.toLowerCase() === old.toLowerCase(); }) &&
+            window.confirm("You answered earlier as \"" + old + "\". Change that name to \"" + nm + "\" and keep your earlier answers?\n\nOK = same person, new name.\nCancel = a different person.")) {
+          rpc("rename_rsvp", { p_trip: TRIP, p_old: old, p_new: nm }).catch(function () {}).then(doSave);
+        } else doSave();
         return;
       }
       if ((b = e.target.closest("[data-ics]"))) { var r = bySlug[b.getAttribute("data-ics")]; if (r) download([r], r.name.replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "") + ".ics"); return; }

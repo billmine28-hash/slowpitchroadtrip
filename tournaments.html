@@ -54,10 +54,11 @@
       <div id="myseason" class="myseason" hidden>
         <h3 id="ms-h">My Season</h3>
         <p class="updated">Tournaments you saved. Mark where you stand, and add them to your calendar. Saved on this device only: if you clear your browser data or switch phones, your list will not follow you.</p>
-        <div id="ms-list"></div>
         <div class="ms-actions"><button type="button" class="btn" id="ms-share">Share with team</button> <button type="button" class="btn" id="ms-all" hidden>Add all to my calendar (file)</button></div>
+        <div id="ms-list"></div>
         <p class="updated" id="ms-status" role="status" aria-live="polite"></p>
       </div>
+      <button type="button" class="ms-bar" id="ms-bar" hidden></button>
 
       <form class="filters" id="filters" onsubmit="return false" aria-label="Filter tournaments">
         <div class="field"><label for="f-state">State</label><select id="f-state"><option value="">All states</option></select></div>
@@ -459,10 +460,13 @@
     return Object.keys(saved).map(function (id) { return { id: id, r: byId(id) }; })
       .sort(function (a, b) { if (!a.r) return 1; if (!b.r) return -1; return a.r.start < b.r.start ? -1 : a.r.start > b.r.start ? 1 : 0; });
   }
+  var msVisible = false;
+  if (window.IntersectionObserver) { var msBox = document.getElementById("myseason"); if (msBox) new IntersectionObserver(function (en) { msVisible = en[0].isIntersecting; var bar = document.getElementById("ms-bar"); if (bar) bar.hidden = !Object.keys(saved).length || msVisible; }).observe(msBox); }
   function renderSeason() {
     var box = document.getElementById("myseason"); if (!box) return;
     var list = mine();
     box.hidden = list.length === 0;
+    var bar = $("ms-bar"); if (bar) { bar.textContent = "My Season (" + list.length + " saved) · Share with team"; bar.hidden = list.length === 0 || msVisible; }
     var live = list.filter(function (x) { return x.r; }).map(function (x) { return x.r; });
     var today = new Date(); today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     $("ms-list").innerHTML = list.map(function (x) {
@@ -486,6 +490,7 @@
   document.addEventListener("change", function (e) { var m = e.target.closest && e.target.closest("[data-mapsel]"); if (m) { mapOpen[m.getAttribute("data-mapsel")] = +m.value; render(); } });
   document.addEventListener("click", function (e) {
     var b;
+    if (e.target.closest("#ms-bar")) { document.getElementById("myseason").scrollIntoView({ behavior: "smooth", block: "start" }); return; }
     if ((b = e.target.closest("[data-map]"))) { var mid = b.getAttribute("data-map"); if (mapOpen[mid] != null) delete mapOpen[mid]; else mapOpen[mid] = 0; render(); return; }
     if ((b = e.target.closest("[data-save]"))) { var id = b.getAttribute("data-save"); if (saved[id]) { delete saved[id]; say("Removed from My Season."); } else { saved[id] = "Interested"; say("Saved to My Season."); } persist(); render(); return; }
     if ((b = e.target.closest("[data-rm]"))) { delete saved[b.getAttribute("data-rm")]; persist(); render(); return; }
