@@ -576,6 +576,7 @@
     return '<div class="trip-links"><span class="range">Plan your trip:</span> ' +
       a(dir, me ? "Drive from " + esc(me.label === "your location" ? "you" : "ZIP " + me.label) : "Directions") +
       a("https://www.google.com/maps/search/?api=1&query=" + enc("hotels near " + q), "Hotels nearby") +
+      '<a class="linkbtn" href="links.html#where-to-stay">Where to stay (affiliate links)</a> ' +
       a("https://www.google.com/maps/search/?api=1&query=" + enc("restaurants near " + q), "Food nearby") +
       a("weather.html?q=" + enc(place(r).replace(/\s*\/[^,]*/, "")), "Forecast") +
       (ended(r) || r.tba ? "" : a(gcalUrl(r), "Add to calendar")) + "</div>";
