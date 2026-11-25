@@ -85,7 +85,7 @@
   var KEY = "srt_myseason", sayT;
   var SB_URL = "https://dvbgmbyxvmocohmikvga.supabase.co", SB_KEY = "sb_publishable_S_mAA_hBwyo2vvh2pJPC5A_fRPg7whu";
   var TRIP = "", TRIP_GIVEN = false; try { TRIP = (new URLSearchParams(location.search).get("t") || "").toLowerCase(); } catch (e) {} TRIP_GIVEN = !!TRIP; if (!/^[a-z0-9]{6,16}$/.test(TRIP)) TRIP = "";
-  var NAME_KEY = "srt_rsvp_name", rows = [];
+  var NAME_KEY = "srt_rsvp_name", TNAME_KEY = "srt_rsvp_name_" + TRIP, rows = [], suggested = false;
   function rpc(fn, body) {
     return fetch(SB_URL + "/rest/v1/rpc/" + fn, { method: "POST", headers: { apikey: SB_KEY, Authorization: "Bearer " + SB_KEY, "Content-Type": "application/json" }, body: JSON.stringify(body) })
       .then(function (r) { if (!r.ok) throw new Error(r.status); return r.status === 204 ? null : r.json(); });
@@ -114,7 +114,10 @@
       box.querySelectorAll("button[data-ans]").forEach(function (b) { var on = b.getAttribute("data-ans").split("|")[0] === mine; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false"); });
     });
   }
-  function loadRsvps() { if (!TRIP) return; rpc("get_trip_rsvps", { p_trip: TRIP }).then(function (d) { rows = d || []; paintRsvps(); }).catch(function () { document.querySelectorAll("[data-tally]").forEach(function (el) { el.textContent = "Could not load answers right now."; }); }); }
+  function loadRsvps() { if (!TRIP) return; rpc("get_trip_rsvps", { p_trip: TRIP }).then(function (d) { rows = d || [];
+      /* Suggest the name used on other team pages only if nobody on THIS team already uses it, so a shared first name never silently becomes yours. */
+      if (!suggested) { suggested = true; var nbx = document.getElementById("rv-name"); try { var g = localStorage.getItem(NAME_KEY) || ""; if (nbx && !nbx.value && g && !rows.some(function (x) { return x.name.toLowerCase() === g.toLowerCase(); })) nbx.value = g; } catch (e) {} }
+      paintRsvps(); }).catch(function () { document.querySelectorAll("[data-tally]").forEach(function (el) { el.textContent = "Could not load answers right now."; }); }); }
 
   function say(m) { statusEl.textContent = m; clearTimeout(sayT); sayT = setTimeout(function () { statusEl.textContent = ""; }, 4000); }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
@@ -212,7 +215,7 @@
     out.innerHTML = html;
     if (TRIP) {
       var nb = document.getElementById("rv-name");
-      try { nb.value = localStorage.getItem(NAME_KEY) || ""; } catch (e) {}
+      try { nb.value = localStorage.getItem(TNAME_KEY) || ""; } catch (e) {}
       nb.addEventListener("input", paintRsvps);
       loadRsvps();
       document.addEventListener("visibilitychange", function () { if (!document.hidden) loadRsvps(); });
@@ -226,7 +229,7 @@
       if ((b = e.target.closest("[data-ans]"))) {
         var pa = b.getAttribute("data-ans").split("|"), nm = myName();
         if (!nm) { say("Type your first name first, then tap your answer."); var nb2 = document.getElementById("rv-name"); if (nb2) { nb2.scrollIntoView({ block: "center" }); nb2.focus(); } return; }
-        var old = ""; try { old = localStorage.getItem(NAME_KEY) || ""; } catch (er) {}
+        var old = ""; try { old = localStorage.getItem(TNAME_KEY) || ""; } catch (er) {}
         /* A different person with the same first name would overwrite the other person's answers, so ask first. */
         if (old.toLowerCase() !== nm.toLowerCase() && rows.some(function (x) { return x.name.toLowerCase() === nm.toLowerCase(); }) &&
             !window.confirm("Someone named \"" + nm + "\" has already answered on this team page.\n\nOK = that's me (for example, on another phone).\nCancel = a different person with the same name.")) {
@@ -235,7 +238,7 @@
           return;
         }
         var doSave = function () {
-          try { localStorage.setItem(NAME_KEY, nm); } catch (er) {}
+          try { localStorage.setItem(NAME_KEY, nm); localStorage.setItem(TNAME_KEY, nm); } catch (er) {}
           return rpc("set_rsvp", { p_trip: TRIP, p_event: pa[1], p_name: nm, p_answer: pa[0] }).then(function () { say("Saved: " + LABEL[pa[0]] + "."); loadRsvps(); }).catch(function () { say("Could not save your answer. Please try again."); });
         };
         /* Same person typing a different name: offer to move their earlier answers instead of leaving a second person behind. */
