@@ -620,3 +620,11 @@
   .yt-btn::after { content: ""; position: absolute; left: 27px; top: 14px; border-style: solid; border-width: 10px 0 10px 18px; border-color: transparent transparent transparent #fff; }
   .yt-play:hover .yt-btn, .yt-play:focus-visible .yt-btn { background: #f00; }
   .watch-frame { position: relative; }
+
+/* Where to stay card on the home page */
+.stay-card { background: var(--night-3); border-radius: 4px; padding: 18px 16px; margin-top: 18px; text-align: center; border-top: 3px solid var(--ball); }
+.stay-card h3 { margin: 0 0 6px; }
+.stay-banner { max-width: 100%; margin: 12px auto; }
+.stay-banner .b-wide, .stay-banner .b-small { display: flex; justify-content: center; }
+.stay-banner .b-small { display: none; }
+@media (max-width: 760px) { .stay-banner .b-wide { display: none; } .stay-banner .b-small { display: flex; } }
