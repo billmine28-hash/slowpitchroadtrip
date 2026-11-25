@@ -628,3 +628,9 @@
 .stay-banner .b-wide, .stay-banner .b-small { display: flex; justify-content: center; }
 .stay-banner .b-small { display: none; }
 @media (max-width: 760px) { .stay-banner .b-wide { display: none; } .stay-banner .b-small { display: flex; } }
+
+/* Support card: visible Ko-fi ask above the footer */
+.support-card { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; border: 2px solid var(--ball); border-radius: 6px; background: var(--night-2); padding: 16px 20px; margin: 28px 0; }
+.support-card p { margin: 0; flex: 1 1 260px; }
+.support-card .btn { flex: 0 0 auto; }
+@media (max-width: 560px) { .support-card .btn { flex: 1 1 100%; text-align: center; } }
