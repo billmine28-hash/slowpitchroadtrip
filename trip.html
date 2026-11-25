@@ -29,6 +29,7 @@
   .rv-tally span { display: block; margin: 2px 0; }
   #tp-status:not(:empty) { position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 60; margin: 0; padding: 12px 16px; border-radius: 4px; border: 2px solid var(--ball); background: var(--night); color: #fff; font-weight: 800; box-shadow: 0 4px 16px rgba(0,0,0,.5); }
   .tp-hint { margin: 8px 0 0; font-size: .9rem; }
+  #tp-out .linkbtn, #tp-out .btn, #tp-out .btn-reset { min-height: 44px; display: inline-flex; align-items: center; }
   .tp-refresh { margin-top: 10px; }
 </style>
 </head>
@@ -226,6 +227,13 @@
         var pa = b.getAttribute("data-ans").split("|"), nm = myName();
         if (!nm) { say("Type your first name first, then tap your answer."); var nb2 = document.getElementById("rv-name"); if (nb2) { nb2.scrollIntoView({ block: "center" }); nb2.focus(); } return; }
         var old = ""; try { old = localStorage.getItem(NAME_KEY) || ""; } catch (er) {}
+        /* A different person with the same first name would overwrite the other person's answers, so ask first. */
+        if (old.toLowerCase() !== nm.toLowerCase() && rows.some(function (x) { return x.name.toLowerCase() === nm.toLowerCase(); }) &&
+            !window.confirm("Someone named \"" + nm + "\" has already answered on this team page.\n\nOK = that's me (for example, on another phone).\nCancel = a different person with the same name.")) {
+          say("Add a last initial to your name, like \"" + nm + " S.\", then tap your answer again.");
+          var nb3 = document.getElementById("rv-name"); if (nb3) { nb3.scrollIntoView({ block: "center" }); nb3.focus(); }
+          return;
+        }
         var doSave = function () {
           try { localStorage.setItem(NAME_KEY, nm); } catch (er) {}
           return rpc("set_rsvp", { p_trip: TRIP, p_event: pa[1], p_name: nm, p_answer: pa[0] }).then(function () { say("Saved: " + LABEL[pa[0]] + "."); loadRsvps(); }).catch(function () { say("Could not save your answer. Please try again."); });

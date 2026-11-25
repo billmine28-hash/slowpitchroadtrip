@@ -397,6 +397,8 @@
   @media (max-width: 480px) { .ms-seg { display: flex; width: 100%; } .ms-seg button { flex: 1 1 0; padding: 4px 6px; } }
   .ms-bar { position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 50; min-height: 48px; border: 0; border-radius: 4px; background: var(--ball); color: var(--night); font: inherit; font-weight: 800; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,.5); }
   .ms-bar[hidden] { display: none; }
+  #ms-status:not(:empty) { position: fixed; left: 12px; right: 12px; bottom: 72px; z-index: 55; margin: 0; padding: 12px 16px; border-radius: 4px; border: 2px solid var(--ball); background: var(--night); color: #fff; font-weight: 800; box-shadow: 0 4px 16px rgba(0,0,0,.5); }
+  .ms-row .linkbtn, .ms-row .btn-reset { min-height: 44px; display: inline-flex; align-items: center; }
 
   .ms-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 
