@@ -57,7 +57,7 @@
   <section aria-labelledby="tp-h">
     <div class="wrap">
       <h1 id="tp-h">Team trip plan</h1>
-      <p class="lede">Tournaments a teammate shared with you. Look them over, save the ones you want, and add the dates to your calendar.</p>
+      <p class="lede">Tournaments a teammate shared with you. Type your first name below each one and tell the team if you're in. You can also save them or add the dates to your calendar.</p>
 
       <div id="tp-out"><p>Loading the tournaments&hellip;</p></div>
       <p class="updated" id="tp-status" role="status" aria-live="polite"></p>
@@ -203,7 +203,7 @@
         (safeUrl(r.url) ? '<a class="linkbtn" href="' + esc(safeUrl(r.url)) + '" target="_blank" rel="noopener noreferrer">Official page</a>' : "") +
         (r.tba ? "" : '<a class="linkbtn" href="' + esc(gcalUrl(r)) + '" target="_blank" rel="noopener noreferrer">Google Calendar</a>' +
           '<button type="button" class="linkbtn" data-ics="' + esc(r.slug) + '">Apple / Outlook (file)</button>') +
-        '<button type="button" class="linkbtn" data-save="' + esc(r.id) + '">Save to My Season</button></div>' + rsvpBlock(r) + '</div>';
+        '<button type="button" class="linkbtn" data-save="' + esc(r.id) + '">' + (getSaved()[r.id] ? "Saved" : "Save to My Season") + "</button></div>" + rsvpBlock(r) + '</div>';
     });
     html += "</div>";
     if (missing) html += '<p class="updated">' + missing + " tournament" + (missing === 1 ? " in this link is" : "s in this link are") + " no longer listed.</p>";
@@ -230,8 +230,11 @@
         var pa = b.getAttribute("data-ans").split("|"), nm = myName();
         if (!nm) { say("Type your first name first, then tap your answer."); var nb2 = document.getElementById("rv-name"); if (nb2) { nb2.scrollIntoView({ block: "center" }); nb2.focus(); } return; }
         var old = ""; try { old = localStorage.getItem(TNAME_KEY) || ""; } catch (er) {}
-        /* A different person with the same first name would overwrite the other person's answers, so ask first. */
-        if (old.toLowerCase() !== nm.toLowerCase() && rows.some(function (x) { return x.name.toLowerCase() === nm.toLowerCase(); }) &&
+        var renaming = old && old.toLowerCase() !== nm.toLowerCase() && rows.some(function (x) { return x.name.toLowerCase() === old.toLowerCase(); });
+        var renameOk = false;
+        if (renaming) renameOk = window.confirm("You answered earlier as \"" + old + "\". Change that name to \"" + nm + "\" and keep your earlier answers?\n\nOK = same person, new name.\nCancel = a different person.");
+        /* A different person with the same first name would overwrite the other person's answers, so ask first (skipped if they just confirmed a rename). */
+        if (!renameOk && old.toLowerCase() !== nm.toLowerCase() && rows.some(function (x) { return x.name.toLowerCase() === nm.toLowerCase(); }) &&
             !window.confirm("Someone named \"" + nm + "\" has already answered on this team page.\n\nOK = that's me (for example, on another phone).\nCancel = a different person with the same name.")) {
           say("Add a last initial to your name, like \"" + nm + " S.\", then tap your answer again.");
           var nb3 = document.getElementById("rv-name"); if (nb3) { nb3.scrollIntoView({ block: "center" }); nb3.focus(); }
@@ -242,8 +245,7 @@
           return rpc("set_rsvp", { p_trip: TRIP, p_event: pa[1], p_name: nm, p_answer: pa[0] }).then(function () { say("Saved: " + LABEL[pa[0]] + "."); loadRsvps(); }).catch(function () { say("Could not save your answer. Please try again."); });
         };
         /* Same person typing a different name: offer to move their earlier answers instead of leaving a second person behind. */
-        if (old && old.toLowerCase() !== nm.toLowerCase() && rows.some(function (x) { return x.name.toLowerCase() === old.toLowerCase(); }) &&
-            window.confirm("You answered earlier as \"" + old + "\". Change that name to \"" + nm + "\" and keep your earlier answers?\n\nOK = same person, new name.\nCancel = a different person.")) {
+        if (renameOk) {
           rpc("rename_rsvp", { p_trip: TRIP, p_old: old, p_new: nm }).catch(function () {}).then(doSave);
         } else doSave();
         return;
