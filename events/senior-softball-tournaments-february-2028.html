@@ -23,7 +23,7 @@
 <body>
 <a class="skip" href="#top">Skip to content</a>
 
-<a class="promo" href="../index.html#e-h"><strong>Free Season Tracker</strong> for your phone. Log your games, see your average. <span>Get it free &rarr;</span></a>
+<a class="promo" href="../index.html#e-h"><strong>New senior tournaments by email</strong>, about once a month. Free, with a bonus Season Tracker. <span>Sign up &rarr;</span></a>
 
 <header class="topbar">
   <div class="wrap">
@@ -50,12 +50,12 @@
       <div class="ev-about"><p>Every senior slowpitch tournament we list for February 2028, in date order: Florida. Tap any tournament for the official event page and trip links.</p></div>
             <section class="ev-signup" aria-labelledby="su-h">
         <div class="ev-signup-body">
-          <p class="ev-signup-h" id="su-h"><strong>Free Season Tracker</strong> for your phone</p>
-          <p class="ev-signup-t">Log your games, see your average. Free when you join the email list (about one email a month).</p>
+          <p class="ev-signup-h" id="su-h"><strong>Get new senior tournaments by email</strong></p>
+          <p class="ev-signup-t">About once a month: newly added tournaments and schedule changes. Free. Bonus: a Season Tracker for your phone.</p>
           <form class="signup" id="signup" action="https://app.kit.com/forms/10168040/subscriptions" method="post">
             <label for="email" style="position:absolute;left:-9999px">Email address</label>
             <input id="email" name="email_address" type="email" placeholder="you@example.com" autocomplete="email" required>
-            <button class="btn" type="submit">Get the free tracker</button>
+            <button class="btn" type="submit">Send me new tournaments</button>
           </form>
           <p class="signup-msg" id="signup-msg" role="status" aria-live="polite"></p>
           
@@ -76,7 +76,7 @@
         else { say("That didn't go through. Please check your email address and try again.", "err"); }
       })
       .catch(function () { say("Something went wrong. Please try again, or email slowpitchroadtrip@yahoo.com.", "err"); })
-      .then(function () { btn.disabled = false; btn.textContent = "Get the free tracker"; });
+      .then(function () { btn.disabled = false; btn.textContent = "Send me new tournaments"; });
   });
 })();
       </script>

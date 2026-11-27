@@ -22,7 +22,7 @@
 <body>
 <a class="skip" href="#top">Skip to content</a>
 
-<a class="promo" href="index.html#e-h"><strong>Free Season Tracker</strong> for your phone. Log your games, see your average. <span>Get it free &rarr;</span></a>
+<a class="promo" href="index.html#e-h"><strong>New senior tournaments by email</strong>, about once a month. Free, with a bonus Season Tracker. <span>Sign up &rarr;</span></a>
 <a class="promo-support" href="https://ko-fi.com/slowpitchroadtrip" target="_blank" rel="noopener noreferrer">Free for every player. Would you consider helping cover expenses? <span>Chip in on Ko-fi &rarr;</span></a>
 
 <header class="topbar">
@@ -77,6 +77,22 @@
       <p class="up-cta"><a class="btn" href="tournaments.html" id="up-all">See all tournaments</a></p>
     </div>
   </section>
+
+  <div class="about join" id="join">
+    <div class="wrap">
+      <section aria-labelledby="e-h">
+        <h2 id="e-h">New tournaments, sent to you</h2>
+        <p>Join the free email list. About once a month you get the senior tournaments we've added and any schedule changes, so you don't have to keep checking. Bonus: a free Season Tracker for your phone to log games and watch your average.</p>
+        <form class="signup" id="signup" action="https://app.kit.com/forms/10168040/subscriptions" method="post">
+          <label for="email" style="position:absolute;left:-9999px">Email address</label>
+          <input id="email" name="email_address" type="email" placeholder="you@example.com" autocomplete="email" required>
+          <button class="btn" type="submit">Send me new tournaments</button>
+        </form>
+        <p class="signup-msg" id="signup-msg" role="status" aria-live="polite"></p>
+        <p class="signup-note">About one email a month. We use your email only for this site. Unsubscribe any time.</p>
+      </section>
+    </div>
+  </div>
 
   <section id="season" aria-labelledby="se-h">
     <div class="wrap">
@@ -249,17 +265,6 @@
         <h2 id="a-h">About this site</h2>
         <p>Slowpitch Road Trip is an independent project by a senior slowpitch player who runs the All Things Slowpitch Facebook group.</p>
       </section>
-      <section aria-labelledby="e-h">
-        <h2 id="e-h">Get the free Season Tracker</h2>
-        <p>Join the email list and get a free season stat tracker for your phone. Log each game and watch your average, on-base and slugging add up. You also get about one email a month with new tournaments and site updates. Nothing else.</p>
-        <form class="signup" id="signup" action="https://app.kit.com/forms/10168040/subscriptions" method="post">
-          <label for="email" style="position:absolute;left:-9999px">Email address</label>
-          <input id="email" name="email_address" type="email" placeholder="you@example.com" autocomplete="email" required>
-          <button class="btn" type="submit">Get the free tracker</button>
-        </form>
-        <p class="signup-msg" id="signup-msg" role="status" aria-live="polite"></p>
-        <p class="signup-note">We use your email only to send updates from this site. You can unsubscribe at any time.</p>
-      </section>
     </div>
   </div>
 </main>
@@ -333,7 +338,7 @@ document.querySelectorAll(".deal-code .copy").forEach(function (b) {
         }
       })
       .catch(function () { say("Something went wrong. Please try again, or email slowpitchroadtrip@yahoo.com.", "err"); })
-      .then(function () { btn.disabled = false; btn.textContent = "Get the free tracker"; });
+      .then(function () { btn.disabled = false; btn.textContent = "Send me new tournaments"; });
   });
 })();
 </script>

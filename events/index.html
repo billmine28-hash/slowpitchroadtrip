@@ -23,7 +23,7 @@
 <body>
 <a class="skip" href="#top">Skip to content</a>
 
-<a class="promo" href="../index.html#e-h"><strong>Free Season Tracker</strong> for your phone. Log your games, see your average. <span>Get it free &rarr;</span></a>
+<a class="promo" href="../index.html#e-h"><strong>New senior tournaments by email</strong>, about once a month. Free, with a bonus Season Tracker. <span>Sign up &rarr;</span></a>
 
 <header class="topbar">
   <div class="wrap">
@@ -47,6 +47,38 @@
       <p class="crumbs"><a href="../tournaments.html">Tournaments</a> &rsaquo; Browse</p>
       <h1 id="pg-h">Browse senior tournaments</h1>
       <p class="ev-sub">188 senior slowpitch tournaments, by state and by month</p>
+      <section class="ev-signup" aria-labelledby="su-h">
+        <div class="ev-signup-body">
+          <p class="ev-signup-h" id="su-h"><strong>Get new senior tournaments by email</strong></p>
+          <p class="ev-signup-t">About once a month: newly added tournaments and schedule changes. Free. Bonus: a Season Tracker for your phone.</p>
+          <form class="signup" id="signup" action="https://app.kit.com/forms/10168040/subscriptions" method="post">
+            <label for="email" style="position:absolute;left:-9999px">Email address</label>
+            <input id="email" name="email_address" type="email" placeholder="you@example.com" autocomplete="email" required>
+            <button class="btn" type="submit">Send me new tournaments</button>
+          </form>
+          <p class="signup-msg" id="signup-msg" role="status" aria-live="polite"></p>
+          
+        </div>
+      </section>
+      <script>
+(function () {
+  var form = document.getElementById("signup");
+  if (!form || !window.fetch) return;
+  var msg = document.getElementById("signup-msg"), btn = form.querySelector("button");
+  function say(t, c) { msg.textContent = t; msg.className = "signup-msg " + c; }
+  form.addEventListener("submit", function (e) {
+    e.preventDefault(); btn.disabled = true; btn.textContent = "Joining..."; say("", "");
+    fetch(form.action, { method: "POST", body: new FormData(form), headers: { Accept: "application/json" } })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (res) {
+        if (res.ok && (!res.d.status || res.d.status === "success")) { form.reset(); say("Thanks! Check your inbox and tap the confirm button. If you don't see it, check Spam or Promotions and add hello@slowpitchroadtrip.com to your contacts. Your free Season Tracker opens right after you confirm.", "ok"); }
+        else { say("That didn't go through. Please check your email address and try again.", "err"); }
+      })
+      .catch(function () { say("Something went wrong. Please try again, or email slowpitchroadtrip@yahoo.com.", "err"); })
+      .then(function () { btn.disabled = false; btn.textContent = "Send me new tournaments"; });
+  });
+})();
+      </script>
       <p><a class="btn" href="senior-womens-softball-tournaments.html">Senior women&#39;s tournaments &rarr;</a></p>
       <h2>By state</h2>
       <ul class="ev-grid"><li><a href="senior-softball-tournaments-alabama.html">Alabama</a> <span class="range">3</span></li><li><a href="senior-softball-tournaments-arizona.html">Arizona</a> <span class="range">17</span></li><li><a href="senior-softball-tournaments-california.html">California</a> <span class="range">26</span></li><li><a href="senior-softball-tournaments-colorado.html">Colorado</a> <span class="range">1</span></li><li><a href="senior-softball-tournaments-connecticut.html">Connecticut</a> <span class="range">1</span></li><li><a href="senior-softball-tournaments-florida.html">Florida</a> <span class="range">8</span></li><li><a href="senior-softball-tournaments-georgia.html">Georgia</a> <span class="range">5</span></li><li><a href="senior-softball-tournaments-hawaii.html">Hawaii</a> <span class="range">4</span></li><li><a href="senior-softball-tournaments-idaho.html">Idaho</a> <span class="range">1</span></li><li><a href="senior-softball-tournaments-illinois.html">Illinois</a> <span class="range">2</span></li><li><a href="senior-softball-tournaments-indiana.html">Indiana</a> <span class="range">2</span></li><li><a href="senior-softball-tournaments-kansas.html">Kansas</a> <span class="range">2</span></li><li><a href="senior-softball-tournaments-kentucky.html">Kentucky</a> <span class="range">1</span></li><li><a href="senior-softball-tournaments-maryland.html">Maryland</a> <span class="range">7</span></li><li><a href="senior-softball-tournaments-michigan.html">Michigan</a> <span class="range">5</span></li><li><a href="senior-softball-tournaments-minnesota.html">Minnesota</a> <span class="range">3</span></li><li><a href="senior-softball-tournaments-mississippi.html">Mississippi</a> <span class="range">1</span></li><li><a href="senior-softball-tournaments-missouri.html">Missouri</a> <span class="range">4</span></li><li><a href="senior-softball-tournaments-nevada.html">Nevada</a> <span class="range">4</span></li><li><a href="senior-softball-tournaments-new-mexico.html">New Mexico</a> <span class="range">1</span></li><li><a href="senior-softball-tournaments-new-york.html">New York</a> <span class="range">1</span></li><li><a href="senior-softball-tournaments-north-carolina.html">North Carolina</a> <span class="range">4</span></li><li><a href="senior-softball-tournaments-ohio.html">Ohio</a> <span class="range">6</span></li><li><a href="senior-softball-tournaments-oklahoma.html">Oklahoma</a> <span class="range">3</span></li><li><a href="senior-softball-tournaments-oregon.html">Oregon</a> <span class="range">1</span></li><li><a href="senior-softball-tournaments-pennsylvania.html">Pennsylvania</a> <span class="range">1</span></li><li><a href="senior-softball-tournaments-south-carolina.html">South Carolina</a> <span class="range">5</span></li><li><a href="senior-softball-tournaments-tennessee.html">Tennessee</a> <span class="range">6</span></li><li><a href="senior-softball-tournaments-texas.html">Texas</a> <span class="range">41</span></li><li><a href="senior-softball-tournaments-utah.html">Utah</a> <span class="range">2</span></li><li><a href="senior-softball-tournaments-virginia.html">Virginia</a> <span class="range">7</span></li><li><a href="senior-softball-tournaments-washington.html">Washington</a> <span class="range">9</span></li><li><a href="senior-softball-tournaments-wisconsin.html">Wisconsin</a> <span class="range">1</span></li></ul>
