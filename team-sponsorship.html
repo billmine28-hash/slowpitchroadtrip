@@ -106,11 +106,14 @@
           <div><label for="sp-has">Do you have a sponsor now?</label>
             <select id="sp-has"><option>No</option><option>Yes, but we'd like more help</option><option>Yes</option></select></div>
         </div>
+        <div class="field"><label for="sp-where">Where will you play tournaments in 2027? (optional)</label>
+          <input type="text" id="sp-where" maxlength="300" placeholder="States or cities, e.g. FL, TX, Reno NV"></div>
         <div class="field"><label for="sp-note">Anything else? (optional)</label>
-          <textarea id="sp-note" rows="4" maxlength="1000" placeholder="Where you usually play, businesses you already know, anything a sponsor should hear."></textarea></div>
+          <textarea id="sp-note" rows="4" maxlength="1000" placeholder="Businesses you already know, anything a sponsor should hear."></textarea></div>
         <div style="position:absolute;left:-9999px" aria-hidden="true"><label>Leave empty <input id="sp-site" tabindex="-1" autocomplete="off"></label></div>
         <p><strong>Signing up is no guarantee of sponsorship.</strong> Teams get matched as sponsors sign on.</p>
-        <p class="updated"><strong>Disclaimer:</strong> Slowpitch Road Trip only tries to connect teams with sponsors. We don't promise that any team will get a sponsor, or any amount, item or date. Any sponsorship is between the sponsor and the team. Slowpitch Road Trip and its owner aren't responsible if a sponsor changes, delays, cancels or doesn't pay, or for any cost or loss that comes from it. Don't order or spend anything counting on sponsor money until your sponsor has confirmed it. By signing up, you agree to this.</p>
+        <p class="updated"><strong>Disclaimer:</strong> Slowpitch Road Trip only tries to connect teams with sponsors. We don't promise that any team will get a sponsor, or any amount, item or date. Any sponsorship is between the sponsor and the team. Slowpitch Road Trip and its owner aren't responsible if a sponsor changes, delays, cancels or doesn't pay, or for any cost or loss that comes from it. Don't order or spend anything counting on sponsor money until your sponsor has confirmed it.</p>
+        <div class="field checks"><label for="sp-agree"><input type="checkbox" id="sp-agree"> I have read the disclaimer and I agree. Signing up is no guarantee of sponsorship.</label></div>
         <button type="button" class="btn" id="sp-send">Add my team to the list</button>
         <p class="updated" id="sp-note-msg" aria-live="polite"></p>
       </form>
@@ -161,6 +164,7 @@
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { note.textContent = "That email doesn't look right."; $("sp-email").focus(); return; }
     var players = parseInt($("sp-players").value, 10);
     if (!(players >= 1 && players <= 40)) { note.textContent = "Please enter how many players are on the roster (1 to 40)."; $("sp-players").focus(); return; }
+    if (!$("sp-agree").checked) { note.textContent = "Please check the box to agree to the disclaimer."; $("sp-agree").focus(); return; }
     var orgs = checked("org"); var other = $("sp-org-other").value.trim(); if (other) orgs.push(other);
     var row = {
       team: $("sp-team").value.trim(), contact_name: $("sp-name").value.trim(), role: $("sp-role").value,
@@ -168,7 +172,7 @@
       city: $("sp-city").value.trim(), state: $("sp-state").value.trim(),
       orgs: orgs.join(", ") || null, division: $("sp-div").value, players: players,
       needs: checked("need").join(", ") || null, tournaments: $("sp-tourn").value,
-      has_sponsor: $("sp-has").value, note: $("sp-note").value.trim() || null
+      has_sponsor: $("sp-has").value, play_where: $("sp-where").value.trim() || null, note: $("sp-note").value.trim() || null
     };
     btn.disabled = true; note.textContent = "Sending...";
     fetch(SUPABASE_URL + "/rest/v1/team_interest", { method: "POST", headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + SUPABASE_KEY, "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify(row) })
