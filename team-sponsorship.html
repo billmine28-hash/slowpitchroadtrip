@@ -48,7 +48,7 @@
         <div>
           <h1 id="sp-h">Get your senior team sponsored</h1>
           <p><strong>What we're trying to do:</strong> tournament entries often run several hundred dollars a weekend, and on top of that come uniforms and travel. For a lot of senior teams, that all comes out of the players' own pockets. We want to help by connecting teams with local businesses and national brands that want to reach senior players, so the sponsor helps cover the costs and gets its name on your jerseys and banner.</p>
-          <p>This is a first try for the 2027 season, so we want to see how many teams are interested before we start asking sponsors. Sponsor money goes straight to what your team needs: <strong>uniforms, tournament entry fees or a team banner</strong>. It's paid directly for those things, so there's no cash for anyone to handle.</p>
+          <p>This is a first try for the 2027 season, so we want to see how many teams are interested before we start asking sponsors. After a 10% admin fee, sponsor money goes straight to what your team needs: <strong>uniforms, tournament entry fees or a team banner</strong>. It's paid directly for those things, so there's no cash for anyone to handle.</p>
         </div>
       </div>
       <div class="sp-box">
@@ -58,7 +58,7 @@
           <li>We'll reach out to local businesses and national brands and try to match them with teams on the list.</li>
           <li>If a sponsor picks your team, we'll contact you before anything is set. You wear their logo and fly their banner at tournaments.</li>
         </ol>
-        <p class="updated">This is an interest list, not a promise of sponsorship. Signing up is free and doesn't commit your team to anything. Sign up by <strong>February 15, 2027</strong>.</p>
+        <p class="updated">This is an interest list, not a promise of sponsorship. Signing up is free and doesn't commit your team to anything. If we find your team a sponsor, there's a 10% admin fee, taken from the sponsorship. Sign up by <strong>February 15, 2027</strong>.</p>
       </div>
       <form class="fb-form" id="sp-form" onsubmit="return false" aria-label="Team sponsorship interest">
         <div class="field"><label for="sp-team">Team name</label>
@@ -112,8 +112,9 @@
           <textarea id="sp-note" rows="4" maxlength="1000" placeholder="Businesses you already know, anything a sponsor should hear."></textarea></div>
         <div style="position:absolute;left:-9999px" aria-hidden="true"><label>Leave empty <input id="sp-site" tabindex="-1" autocomplete="off"></label></div>
         <p><strong>Signing up is no guarantee of sponsorship.</strong> Teams get matched as sponsors sign on.</p>
+        <p><strong>Admin fee:</strong> Signing up is free. If we find your team a sponsor, Slowpitch Road Trip keeps a 10% admin fee from the sponsorship. For example, on a $750 sponsorship the fee is $75, and $675 goes to your uniforms, tournament entries or banner. If we don't find you a sponsor, you owe nothing.</p>
         <p class="updated"><strong>Disclaimer:</strong> Slowpitch Road Trip only tries to connect teams with sponsors. We don't promise that any team will get a sponsor, or any amount, item or date. Any sponsorship is between the sponsor and the team. Slowpitch Road Trip and its owner aren't responsible if a sponsor changes, delays, cancels or doesn't pay, or for any cost or loss that comes from it. Don't order or spend anything counting on sponsor money until your sponsor has confirmed it.</p>
-        <div class="field checks"><label for="sp-agree"><input type="checkbox" id="sp-agree"> I have read the disclaimer and I agree. Signing up is no guarantee of sponsorship.</label></div>
+        <div class="field checks"><label for="sp-agree"><input type="checkbox" id="sp-agree"> I have read the admin fee and the disclaimer, and I agree to both. Signing up is no guarantee of sponsorship.</label></div>
         <button type="button" class="btn" id="sp-send">Add my team to the list</button>
         <p class="updated" id="sp-note-msg" aria-live="polite"></p>
       </form>
@@ -164,7 +165,7 @@
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { note.textContent = "That email doesn't look right."; $("sp-email").focus(); return; }
     var players = parseInt($("sp-players").value, 10);
     if (!(players >= 1 && players <= 40)) { note.textContent = "Please enter how many players are on the roster (1 to 40)."; $("sp-players").focus(); return; }
-    if (!$("sp-agree").checked) { note.textContent = "Please check the box to agree to the disclaimer."; $("sp-agree").focus(); return; }
+    if (!$("sp-agree").checked) { note.textContent = "Please check the box to agree to the admin fee and disclaimer."; $("sp-agree").focus(); return; }
     var orgs = checked("org"); var other = $("sp-org-other").value.trim(); if (other) orgs.push(other);
     var row = {
       team: $("sp-team").value.trim(), contact_name: $("sp-name").value.trim(), role: $("sp-role").value,
